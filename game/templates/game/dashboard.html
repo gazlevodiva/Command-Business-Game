@@ -1,0 +1,131 @@
+{% extends 'game/base.html' %}
+{% block content %}
+
+    <meta http-equiv="refresh" content="3">
+
+    <div class="container mt-5">
+      <div class="row">
+
+        {% for player in players %}
+        <div class="col-xl-2 col-md-5 mb-4">
+          <div class="card border-0 shadow">
+            <!-- <img src="https://source.unsplash.com/TMgQMXoglsM/500x350" class="card-img-top" alt="..."> -->
+            <div class="card-body text-center">
+
+              <a class="card-title text-dark h3 text-decoration-none" href="/player_control_{{player.player.id}}/">
+                  {{ player.player.name }}
+              </a>
+              
+              <div class="">
+                <b>Круг:</b> {{ player.player.level }}
+              </div>
+
+              {% if player.balance < 0 %}
+
+                  <div class="text-danger mt-2 h3">
+                    {{ player.balance }}
+                  </div>
+
+              {% else %}
+
+                  <div class="mt-2 h3">
+                    {{ player.balance }}
+                  </div>
+
+              {% endif %}              
+
+              <ul class="list-group list-group-flush">
+
+                  {% for player_business in player.businesses %}
+
+                    {% if player_business.is_command %}
+                        <li class="list-group-item">
+                          {{ player_business.business.name }} 🏛
+                        </li>
+                    {% else %}
+                        <li class="list-group-item">
+                          {{ player_business.business.name }} 
+                        </li>
+                    {% endif %}
+
+                  {% endfor %}
+
+              </ul>
+              
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+
+
+      <!-- /.row -->
+      <div class="row">
+        <!-- Command Business -->
+          <div class="card border-0 shadow">
+            <div class="card-body">
+              <h3 class="card-title text-center mb-5">Командный бизнес</h3>
+
+              <div class="row">
+
+                <div class="col-8">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Игроки</th>
+                        <th scope="col">Доля</th>
+                        <th scope="col">Стоимость доли</th>
+                        <th scope="col">Администратор</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for command_player in command_players %}
+                          <tr>
+                                <th scope="row">{{ command_player.command_player.player.name }}</th>
+
+                                <td>{{ command_player.command_player.share }}%</td>
+
+                                <td>{{ command_player.command_player.count }}</td>
+
+                                <td>
+                                      {% for command_business in command_player.command_businesses %}
+                                          {{ command_business.business.name }}
+                                      {% endfor %}
+                                </td>
+                          </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="col-4">
+                  <h1 class="">{{ command_bank }}</h1>
+                  <p>Баланс</p>
+                  {% for action in actions %}
+
+                    {% if action.player.name != 'X' %}
+                  
+                      {% if action.count < 0 %}
+                          <div class="p text-danger">
+                            <b>{{ action.player }}</b> {{ action.name }} 
+                          </div>
+                      {% else %}
+                          <div class="p text-muted">
+                            <b>{{ action.player }}</b> {{ action.name }} 
+                          </div>
+                      {% endif %}
+
+                    {% endif %}
+
+                  {% endfor %}
+                  ...
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+
+      </div>
+    </div>
+
+{% endblock %}

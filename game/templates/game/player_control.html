@@ -1,0 +1,690 @@
+{% extends 'game/base.html' %}
+{% load static %}
+{% block content %}
+
+    <!-- PRELOADER -->
+    <div 
+    id="preloader" 
+    class="text-center"
+    style="
+      width: 100%; 
+      height: 100%; 
+      background-color: #0000007d; 
+      overflow: hidden; 
+      position: fixed; 
+      z-index: 100;
+      margin-top: -50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    "
+    hidden
+    >
+        <div 
+        class="spinner-border text-light" 
+        role="status"
+        style="
+          width:  3rem; 
+          height: 3rem;
+        "
+        >
+            <span class="visually-hidden">
+                Loading...
+            </span>
+        </div>
+    </div>
+    <!-- ENDPRELOADER -->
+
+
+
+    <div class="container mt-5">
+      <div class="row justify-content-md-center">
+        <div 
+          class="card border-0 col-md-5 mb-5" 
+          style="min-height: 100vh;"
+        >
+
+          <!-- ABP logo -->
+          <img 
+            src="{% static 'game/img/logo2.svg' %}" 
+            alt="abp-logo" 
+            class="card-img-top mt-3 mb-3"            
+            style="height: 8vh;"
+          />
+
+          <div class="card-body">
+
+            <!-- Player Information -->
+            <div class="d-grid gap-2 col-md-8 mx-auto text-center">
+
+                  <div class="display-6">
+                    <b>{{player.name}}</b>
+                  </div>
+
+                  <div class="">
+                      <b>Круг:</b> {{player.level}}
+                  </div>
+                  
+                  {% if player_balance < 0 %}
+
+                    <div class="display-6 text-danger">
+                      <b>Баланс: </b>{{player_balance}}
+                    </div>
+
+                  {% else %}
+
+                    <div class="display-6">
+                        <b>Баланс: {{player_balance}}</b>
+                    </div>
+
+                  {% endif %}
+                  
+                  <div class="">
+                    <b>Доля КБ:</b> {{command_count}} - {{command_share}}% 
+                  </div>
+
+            </div>           
+
+            <!-- Buttons -->
+            <div class="d-grid gap-2 col-md-8 mx-auto mt-4 mb-5">
+
+              <a 
+                class="btn btn-outline-secondary " 
+                href="/new_level_{{player.id}}/" 
+                type="button"
+                id="new_level_btn"
+              >
+                Новый круг
+              </a>
+
+              <a 
+                class="btn btn-outline-secondary " 
+                href="/get_surprise_{{player.id}}/" 
+                type="button" 
+                id="surprisebtn"
+              >
+                Сюрпрайз
+              </a>
+
+              <button 
+                class="btn btn-outline-secondary " 
+                type="button" 
+                data-bs-toggle="modal" 
+                data-bs-target="#BusinessModal"
+              >
+                Бизнес
+              </button>
+
+              <button 
+                class="btn btn-outline-secondary " 
+                type="button" 
+                data-bs-toggle="modal" 
+                data-bs-target="#CommandBusinessModal"
+              >
+                Командный бизнес
+              </button>
+              <a 
+                class="btn btn-outline-secondary mb-4" 
+                href="/rules/" 
+                type="button"
+              >
+                Правила
+              </a>
+
+                <!-- Business cards -->
+                {% for player_business in player_businesses%}
+                <div class="card text-center">
+
+                    {% if player_business.business.is_command %}
+
+                      <div class="card-header text-secondary">
+                        Коммандный бизнес
+                      </div>
+
+                    {% else %}
+
+                      <div class="card-header text-secondary">
+                        Личный бизнес
+                      </div>
+
+                    {% endif %}
+
+                  <!-- Business information -->
+                  <div class="card-body">
+
+                    <div class="card-title h4 mb-4">
+                      {{ player_business.business.business.name }}
+                    </div>
+                    
+                    <!-- Business payments -->
+                    <div class="row justify-content-center">
+                      <div class="col mx-2">
+
+                      {% for business_payment in player_business.business_payments %}
+
+                          {% if business_payment.count < 0 %}
+
+                              <div class="text-start text-danger"> 
+                                  {{ business_payment.player_level }} круг: рентабельность
+                                  {{ business_payment.rentability }}% 
+                                  {{ business_payment.count }}.
+                              </div>
+
+                          {% else %}
+
+                              <div class="text-start"> 
+                                  {{ business_payment.player_level }} круг: рентабельность
+                                  {{ business_payment.rentability }}% 
+                                  {{ business_payment.count }}.
+                              </div>
+
+                          {% endif %}                      
+                        
+                      {% endfor %}
+
+                      </div>
+                    </div>
+                    
+                    <!-- Button trigger modal -->
+                    <button 
+                      type="button" 
+                      class="btn btn-outline-secondary mt-3" 
+                      data-bs-toggle="modal" 
+                      data-bs-target="#AreUsure"
+                    >
+                      Продать за {{ player_business.business.business.cost }}
+                    </button>
+
+                    <!-- Business sell confirmation -->
+                    <div 
+                      class="modal fade" 
+                      id="AreUsure" 
+                      tabindex="-1" 
+                      aria-labelledby="AreUsure" 
+                      aria-hidden="true"
+                    >
+                      <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+
+                          <!-- M -->
+                          <div class="modal-header">
+
+                              <h1 class="modal-title fs-5" id="AreUsure">
+                                Продажа бизнеса
+                              </h1>
+
+                              <button 
+                                type="button" 
+                                class="btn-close" 
+                                data-bs-dismiss="modal" 
+                                aria-label="Close"
+                              >
+                              </button>
+
+                          </div>
+
+                          <div class="modal-body h5">
+                            Вы уверенны что хотите продать 
+                            {{ player_business.business.business.name }} за 
+                            {{ player_business.business.business.cost }}?
+                          </div>
+
+                          <div class="modal-footer">
+                            <button 
+                              type="button" 
+                              class="btn btn-outline-secondary" 
+                              data-bs-dismiss="modal"
+                            >
+                              Отмена
+                            </button>
+                            <a 
+                              href="/sell_business_{{player_business.business.id}}/" 
+                              class="btn btn-danger"
+                              id="sell_business_btn"
+                            >
+                              Продать
+                            </a>                            
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+
+
+                  </div>
+                </div>
+                {% endfor %}
+                <!-- END BUSINESS CARD -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Business Button Modal -->
+    <div 
+      class="modal fade" 
+      id="BusinessModal" 
+      tabindex="-1" 
+      aria-labelledby="BusinessModal" 
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+
+            <h1 class="modal-title fs-5" id="BusinessModal">
+                Список бизнесов
+            </h1>
+
+            <button 
+              type="button" 
+              class="btn-close" 
+              data-bs-dismiss="modal" 
+              aria-label="Close"
+            >
+            </button>
+
+          </div>
+
+            
+            <form method="POST">
+            {% csrf_token %}
+
+                <div class="modal-body"> 
+
+                  <div class="mb-3">
+
+                    <input 
+                      type="hidden" 
+                      id="player_id" 
+                      name="player_id" 
+                      value="{{player.id}}"
+                    />
+
+                    <select class="form-select" name="player_business" id="player_business_select">
+
+                      {% for business in businesses %}
+                              {% if business.cost > player_balance %}
+
+                                  <option value="{{ business.id }}" disabled>
+                                      {{ business.name }} - {{ business.cost }}
+                                  </option>
+
+                              {% else %}
+
+                                  <option value="{{ business.id }}">
+                                      {{ business.name }} - {{ business.cost }}
+                                  </option>
+
+                              {% endif %}
+                      {% endfor %}
+
+                    </select>
+
+                    <select class="form-select" name="player_business" id="command_business_select" hidden>
+
+                      {% for business in businesses %}
+                              {% if business.cost > command_bank %}
+
+                                  <option value="{{ business.id }}" disabled>
+                                      {{ business.name }} - {{ business.cost }}
+                                  </option>
+
+                              {% else %}
+
+                                  <option value="{{ business.id }}">
+                                      {{ business.name }} - {{ business.cost }}
+                                  </option>
+
+                              {% endif %}
+                      {% endfor %}
+
+                    </select>
+
+                    <div class="mt-2">
+    
+                      {% if command_share == 0 %}
+
+                          <input 
+                            type="checkbox" 
+                            class="form-check-input" 
+                            id="is_command" 
+                            name="is_command"
+                            disabled
+                          />
+                      
+                      {% else %} 
+
+                          <input 
+                            type="checkbox" 
+                            class="form-check-input" 
+                            id="is_command" 
+                            name="is_command"
+                          />                          
+
+                      {% endif %}
+
+                      <label 
+                        class="form-check-label" 
+                        for="is_command" 
+                        name="is_command"
+                      >
+                          Коммандный бизнес
+                      </label>
+
+                    </div>
+                  </div>            
+                </div>
+
+                <div class="modal-footer">
+
+                    <button 
+                      type="button" 
+                      class="btn btn-secondary" 
+                      data-bs-dismiss="modal">
+                      Закрыть
+                    </button>
+                    
+                      <button 
+                      class="btn btn-primary" 
+                      type="submit">
+                      Купить
+                    </button>
+
+                </div>
+
+            </form>
+
+          </div>
+      </div>
+    </div>
+
+    <!-- CommandModal -->
+    <div 
+      class="modal fade" 
+      id="CommandBusinessModal" 
+      tabindex="-1" 
+      aria-labelledby="CommandBusinessModal" 
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+          <div class="modal-header">
+
+            <h1 
+              class="modal-title fs-5" 
+              id="CommandBusinessModal"
+            >
+              Какую сумму вы хотите вложить в коммандный бизнес?
+            </h1>
+
+            <button 
+              type="button" 
+              class="btn-close" 
+              data-bs-dismiss="modal" 
+              aria-label="Close"
+            >
+            </button>
+
+          </div>
+
+          <form method="POST">
+          {% csrf_token %}
+
+              <div class="modal-body">              
+                <div class="mb-3">
+
+                  <input 
+                    type="hidden" 
+                    id="player_id" 
+                    name="player_id" 
+                    value="{{ player.id }}"
+                  >
+
+                  <input 
+                    class="form-control" 
+                    name="player_command_payment" 
+                    type="number" 
+                    id="command_invest"
+                    min="0"
+                    max="{{ player_balance |cut:',' }}"
+                  >
+
+                </div>
+                <div class="mt-2">
+
+                  <input 
+                    type="checkbox" 
+                    class="form-check-input" 
+                    id="invest_all" 
+                    name="invest_all"
+                  >
+
+                  <label 
+                    class="form-check-label" 
+                    for="invest_all" 
+                    name="invest_all"
+                  >
+                    Вложить все
+                  </label>
+
+                </div>         
+              </div>
+
+              <div class="modal-footer">
+
+                <button 
+                  type="button" 
+                  class="btn btn-secondary" 
+                  data-bs-dismiss="modal"
+                >
+                  Закрыть
+                </button>
+
+                <button 
+                  class="btn btn-primary" 
+                  type="submit"
+                >
+                  Добавить
+                </button>
+
+              </div>
+
+          </form>            
+
+        </div>
+      </div>
+    </div>
+    
+    <script
+      src="https://code.jquery.com/jquery-3.6.1.js"
+      integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI="
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- Set all to command business fixer and OTHER -->
+    <script>
+        const preloader = document.getElementById("preloader")
+        document.getElementById("new_level_btn").onclick = function(){
+            preloader.hidden = false;
+        }
+        document.getElementById("surprisebtn").onclick = function(){
+            preloader.hidden = false;
+        }
+
+        $("#invest_all").change(function() {
+            if(this.checked) {
+              document.getElementById("command_invest").value = "{{ player_balance }}".replaceAll('.', ''); ;
+            } else {
+              document.getElementById("command_invest").value = '' ;
+            }
+        });
+
+        document.getElementById('is_command').onchange = function(){
+          if( document.getElementById('is_command').checked ) {
+
+              document.getElementById('player_business_select').hidden = true
+              document.getElementById('command_business_select').hidden = false
+
+          } else {
+
+              document.getElementById('player_business_select').hidden = false
+              document.getElementById('command_business_select').hidden = true
+
+          }
+        }
+
+    </script>
+
+    {% if modal.type == "surprise" %}     
+
+      <div 
+        class="modal fade" 
+        id="surpriseModal" 
+        tabindex="-1" 
+        aria-labelledby="surpriseModal" 
+        aria-hidden="true"
+      >
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+              <div class="modal-header">
+
+                    <h1 class="modal-title fs-5 lead" id="surpriseModal">
+                      {{ modal.title }}
+                    </h1>
+
+                    <button 
+                      type="button" 
+                      class="btn-close" 
+                      data-bs-dismiss="modal" 
+                      aria-label="Close"
+                    >
+                    </button>
+
+              </div>
+
+              <div class="modal-body text-center">
+
+                    <div class="h4">
+                      {{ modal.surprise.name }}
+                    </div>
+
+                    {% if modal.surprise.count < 0 %}
+                      <div class="h2 text-danger">
+                        {{ modal.surprise.count }}
+                      </div>
+                    {% elif modal.surprise.count > 0 %}
+                      <div class="h2">
+                        {{ modal.surprise.count }}
+                      </div>
+                    {% endif %}
+
+              </div>
+
+              <div class="modal-footer">
+
+                <button 
+                  type="button" 
+                  class="btn btn-danger" 
+                  data-bs-dismiss="modal"
+                >
+                  Спасибо
+                </button>
+
+              </div>
+
+            </div>
+          </div>
+
+      </div>
+
+      <script>
+        $(document).ready(function(){
+            $("#surpriseModal").modal('show');
+            window.history.pushState("", "", '/player_control_{{ player.id }}/');
+        });
+      </script>
+
+      
+
+    {% elif modal.type == "new_level" %}
+
+        <div 
+          class="modal fade" 
+          id="newLevelModal" 
+          tabindex="-1" 
+          aria-labelledby="newLevelModal" 
+          aria-hidden="true"
+        >
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+
+                <div class="modal-header">
+
+                      <h1 class="modal-title fs-5 lead" id="newLevelModal">
+                        {{ modal.title }}
+                      </h1>
+
+                      <button 
+                        type="button" 
+                        class="btn-close" 
+                        data-bs-dismiss="modal" 
+                        aria-label="Close"
+                      >
+                      </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    {% for action in modal.actions %}
+
+                      {% if action.count < 0 %}
+
+                        <div class="text-danger">
+                            <b>{{ action.player }}</b>: {{ action.name }}
+                        </div>
+                      
+                      {% else %}
+
+                        <div class="">
+                          <b>{{ action.player }}</b>: {{ action.name }}
+                        </div>
+
+                      {% endif %}
+
+                    {% endfor %}
+
+                </div>
+
+                <div class="modal-footer">
+
+                  <button 
+                    type="button" 
+                    class="btn btn-danger" 
+                    data-bs-dismiss="modal"
+                  >
+                    Спасибо
+                  </button>
+
+                </div>
+
+              </div>
+            </div>
+
+        </div>
+
+        <script>
+          $(document).ready(function(){
+              $("#newLevelModal").modal('show');
+              window.history.pushState("", "", '/player_control_{{ player.id }}/');
+          });
+        </script>
+
+
+    {% endif %}
+
+{% endblock %}

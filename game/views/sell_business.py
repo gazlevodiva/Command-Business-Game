@@ -1,0 +1,39 @@
+from django.shortcuts import redirect
+
+from game.models.Actions import Actions
+from game.models.PlayersBusiness import PlayersBusiness
+from game.models.CommandPayments import CommandPayments
+
+
+def sell_business(request, player_business_id):
+    
+    player_business = PlayersBusiness.objects.get( pk=player_business_id )
+
+    if player_business.is_command:
+        name = f'''
+            Коммандный бизнес {player_business.business.name} продан.
+        '''  
+        Actions(
+            count  = 0,
+            player = player_business.player,
+            name   = name
+        ).save()
+
+        CommandPayments(
+            count  = player_business.business.cost
+        ).save()
+
+    if not player_business.is_command:
+        name = f'''
+            Личный бизнес {player_business.business.name} продан.
+        '''
+        Actions(
+            count  = player_business.business.cost,
+            player = player_business.player,
+            name   = name
+        ).save()
+
+    player_business.status = 'sold'
+    player_business.save()
+
+    return redirect(f"/player_control_{player_business.player.id}/")

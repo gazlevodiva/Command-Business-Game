@@ -1,0 +1,64 @@
+{% block new_level_modal %}
+
+    <div 
+    class="modal fade" 
+    id="newLevelModal" 
+    tabindex="-1" 
+    aria-labelledby="newLevelModal" 
+    aria-hidden="true"
+    >
+
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h1 class="modal-title fs-5 lead" id="newLevelModal">
+                        {{ modal.title }}
+                    </h1>
+
+                    <button 
+                    type="button" 
+                    class="btn-close" 
+                    data-bs-dismiss="modal" 
+                    aria-label="Close"
+                    >
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    {% for action in modal.actions %}
+                        <div>
+                            {{ action }}
+                        </div>
+                    {% endfor %}
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button 
+                    type="button" 
+                    class="btn btn-danger" 
+                    data-bs-dismiss="modal"
+                    >
+                    Спасибо
+                    </button>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            $("#newLevelModal").modal('show');
+            window.history.pushState("", "", '/player_control_{{ player.id }}/');
+        });
+    </script>
+
+{% endblock %}
