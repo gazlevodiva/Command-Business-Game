@@ -14,9 +14,10 @@ def sell_business(request, player_business_id):
             Коммандный бизнес {player_business.business.name} продан.
         '''  
         Actions(
-            count  = 0,
-            player = player_business.player,
-            name   = name
+            count    = 0,
+            player   = player_business.player,
+            name     = name,
+            category = 'CMND'
         ).save()
 
         CommandPayments(
@@ -28,12 +29,13 @@ def sell_business(request, player_business_id):
             Личный бизнес {player_business.business.name} продан.
         '''
         Actions(
-            count  = player_business.business.cost,
-            player = player_business.player,
-            name   = name
+            count    = player_business.business.cost,
+            player   = player_business.player,
+            name     = name,
+            category = 'BSNS',
         ).save()
 
-    player_business.status = 'sold'
+    player_business.status = 'SOLD'
     player_business.save()
 
     return redirect(f"/player_control_{player_business.player.id}/")

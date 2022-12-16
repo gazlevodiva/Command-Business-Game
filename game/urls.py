@@ -35,7 +35,7 @@ urlpatterns = [
         name='rules_view',
     ),
     path(
-        route='get_surprise_<int:player_id>/', 
+        route='get_surprise_<int:player_id><str:surprise_type>/', 
         view=surprise.surprise, 
         name='surprise_view',
     ),

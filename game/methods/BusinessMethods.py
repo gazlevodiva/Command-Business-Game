@@ -29,9 +29,10 @@ def setDefoult( player_business ):
         '''
 
         defoult_action = Actions.objects.create(
-            player = player,
-            name   = name,
-            count  = 0
+            player     = player,
+            name       = name,
+            count      = 0,
+            category   = 'BSNS',
         )
 
     if not player_business.is_command:
@@ -42,13 +43,14 @@ def setDefoult( player_business ):
         '''
 
         defoult_action = Actions.objects.create(
-            player = player,
-            name   = name,
-            count  = business_sale_price
+            player   = player,
+            name     = name,
+            count    = business_sale_price,
+            category = 'CMND',
         )
                 
     # Set business defoult
-    player_business.status = 'defoult'
+    player_business.status = 'DEFOULT'
     player_business.save()
 
     return defoult_action
@@ -95,9 +97,10 @@ def setPersonalBusinessIncome( player_business ):
         рентабельность {rentability}%;
     '''
     payment_action = Actions.objects.create(
-        player = player_business.player,
-        name   = name,
-        count  = profit
+        player   = player_business.player,
+        name     = name,
+        count    = profit,
+        category = 'BSNS',
     )
 
     actions = [ payment_action ]
@@ -110,7 +113,7 @@ def setPersonalBusinessIncome( player_business ):
 def setCommandBusinessIncome( player_business ):
 
     defoult, rentability, profit, defoult_action = getBusinessProfit( player_business )
-    command_business_players     = getCommandPlayers()
+    command_business_players = getCommandPlayers()
 
     # 20% after add to admin
     players_bank = int( profit * 0.8 )
@@ -135,9 +138,10 @@ def setCommandBusinessIncome( player_business ):
                 рентабельность {rentability}%. Коммандный бизнес.
             '''
             payment_action = Actions.objects.create(
-                player = command_player['player'],
-                name   = name,
-                count  = count
+                player   = command_player['player'],
+                name     = name,
+                count    = count,
+                category = 'CMND',
             )
             payment_actions.append( payment_action )
 
@@ -147,9 +151,10 @@ def setCommandBusinessIncome( player_business ):
                 рентабельность {rentability}%. Коммандный бизнес.
         '''
         payment_action = Actions.objects.create(
-            player = player_business.player,
-            name   = name,
-            count  = profit
+            player   = player_business.player,
+            name     = name,
+            count    = profit,
+            category = 'CMND',
         )
         payment_actions.append( payment_action )
 
@@ -215,9 +220,10 @@ def sellCommandShare( player ):
     '''
 
     Actions(
-        player = player,
-        name   = name,
-        count  = count
+        player   = player,
+        name     = name,
+        count    = count,
+        category = 'CMND',
     ).save()
 
     CommandPayments(

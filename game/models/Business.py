@@ -3,7 +3,15 @@ from django.db import models
 
 class Business(models.Model):
     
-    name     = models.CharField( max_length=200 )
+    BUSINESS_CATEGORY = (
+        ('HORECA', 'horeca'),
+        ('REALTY', 'realty'),
+        ('SCIENCE', 'science'),
+        ('IT', 'IT')
+    )
+
+    name     = models.CharField( max_length=200 )    
+    category = models.CharField( max_length=10, choices=BUSINESS_CATEGORY )
     cost     = models.IntegerField()
     min_rent = models.IntegerField()
     max_rent = models.IntegerField()

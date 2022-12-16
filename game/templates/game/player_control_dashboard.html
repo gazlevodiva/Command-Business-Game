@@ -1,0 +1,66 @@
+{% load static %}
+
+<div class="container mt-5">
+
+    <div class="row justify-content-md-center">
+
+        <div 
+          class="card border-0 col-md-5 mb-5" 
+          style="min-height: 100vh;"
+        >
+
+            <img 
+            src="{% static 'game/img/logo2.svg' %}" 
+            alt="abp-logo" 
+            class="card-img-top mt-3 mb-3"            
+            style="height: 8vh;"
+            />
+
+            <div class="card-body">
+
+                <!-- PLAYER INFO -->
+                <div class="d-grid gap-2 col-md-8 mx-auto text-center">
+
+                        <div class="display-6">
+                            <b>{{player.name}}</b>
+                        </div>
+
+                        <div>
+                            <b>Круг:</b> {{player.level}}
+                        </div>                        
+
+                        {% if player_balance < 0 %}
+
+                            <div class="display-6 text-danger" >
+                                <b>{{player_balance}}</b>
+                            </div>
+
+                        {% else %}
+
+                            <div class="display-6">
+                                <b>{{player_balance}}</b>
+                            </div>
+
+                        {% endif %}
+                        
+                        <div>
+                            <b>Доля КБ:</b> {{command_count}} - {{command_share}}% 
+                        </div>
+
+                </div>
+                <!-- END PLAYER INFO -->
+
+                <!-- BUTTONS -->
+                {% include 'game/player_control_keyboard.html' %}
+                <!-- END BUTTONS -->
+
+            </div>
+            
+        </div>
+
+    </div>
+
+</div>
+
+<!-- for js -->
+<input id="player_balance" value="{{ player_balance|cut:',' }}" disabled hidden>

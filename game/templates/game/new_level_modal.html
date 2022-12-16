@@ -1,11 +1,10 @@
-{% block new_level_modal %}
 
     <div 
-    class="modal fade" 
-    id="newLevelModal" 
-    tabindex="-1" 
-    aria-labelledby="newLevelModal" 
-    aria-hidden="true"
+        class="modal fade" 
+        id="newLevelModal" 
+        tabindex="-1" 
+        aria-labelledby="newLevelModal" 
+        aria-hidden="true"
     >
 
         <div class="modal-dialog modal-dialog-centered">
@@ -30,9 +29,17 @@
                 <div class="modal-body">
 
                     {% for action in modal.actions %}
-                        <div>
-                            {{ action }}
-                        </div>
+
+                        {% if action.count < 0 %}
+                            <div class="p text-danger">
+                            <b>{{ action.player }}</b> {{ action.name }} 
+                            </div>
+                        {% else %}
+                            <div class="p">
+                            <b>{{ action.player }}</b> {{ action.name }} 
+                            </div>
+                        {% endif %}
+
                     {% endfor %}
 
                 </div>
@@ -61,4 +68,3 @@
         });
     </script>
 
-{% endblock %}

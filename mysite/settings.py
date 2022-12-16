@@ -129,4 +129,4 @@ USE_THOUSAND_SEPARATOR = True
 # also make sure that:
 USE_L10N = True
 
-APPEND_SLASH = False
+APPEND_SLASH = True

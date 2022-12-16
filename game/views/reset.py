@@ -29,17 +29,19 @@ def reset(request):
 
     name = f'''Начал игру - {player_X_balance}'''
     Actions(
-        player = player_X,
-        name   = name,
-        count  = player_X_balance
+        player   = player_X,
+        name     = name,
+        count    = player_X_balance,
+        category = 'OTHER',
     ).save()
 
     name = f'''Вложил в командный бизнес - {player_X_balance}'''
     
     Actions(
-        player = player_X,
-        name   = name,
-        count  = -player_X_balance
+        player   = player_X,
+        name     = name,
+        count    = -player_X_balance,
+        category = 'CMND',
     ).save()
 
     return redirect("/")

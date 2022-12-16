@@ -17,6 +17,8 @@ from game.methods.PlayerMethods import getInflation
 from game.methods.PlayerMethods import getBalance
 from game.methods.PlayerMethods import getBusinesses
 from game.methods.PlayerMethods import getCommandBusinesses
+from game.methods.PlayerMethods import getPlayerCategoties
+
 
 from game.methods.NotificationModal import Modal
 
@@ -26,21 +28,10 @@ from game.views.player_control import player_control
 
 
 def test( request ):
-    player = Player.objects.get( pk=59 )
+    player = Player.objects.get( pk=80 )
 
     # Create Bootstrap Modal window
-    modal = Modal("Удачно прошел круг!", player)
-    modal.type = "new_level"
-
-    inflation_action = getInflation( player )
-    salary_action    = getSalary( player )
-
-    modal.add_action( inflation_action )
-    modal.add_action( salary_action )
+    print( getPlayerCategoties( player ) )
     
 
-    return player_control( 
-        request   = request, 
-        player_id = player.id, 
-        modal     = modal 
-    )
+    return HttpResponse( getPlayerCategoties( player ) )

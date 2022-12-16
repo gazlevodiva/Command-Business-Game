@@ -60,18 +60,20 @@ def getInflation( player ):
         name = f'Инфляция! Потеря средств {count}.'
 
         return Actions.objects.create(
-            player = player,
-            name   = name,
-            count  = count
+            player   = player,
+            name     = name,
+            count    = count,
+            category = 'INFL',
         )
 
     
     name = 'Инфляции нет.'
 
     return Actions.objects.create(
-        player = player,
-        name   = name,
-        count  = 0
+        player   = player,
+        name     = name,
+        count    = 0,
+        category = 'OTHER',
     )
     
 
@@ -84,9 +86,10 @@ def getSalary( player ):
     name = f'Зарплата {salary}, круг {player.level+1}.'
 
     return Actions.objects.create(
-        player = player,
-        name   = name,
-        count  = salary
+        player   = player,
+        name     = name,
+        count    = salary,
+        category = 'SLR',
     )
 
 
@@ -94,8 +97,8 @@ def getBusinesses( player ):
     return (
         PlayersBusiness.objects
         .filter( 
-            player=player, 
-            status='active' 
+            player = player, 
+            status = 'ACTIVE' 
         )
     )
 
@@ -127,19 +130,20 @@ def newBusiness( player, business, is_command ):
             Стал администратором {business.name} в коммандном бизнесе.
         '''
         Actions(
-            player=player,
-            name=name,
-            count= 0
+            player   = player,
+            name     = name,
+            count    = 0,
+            category = 'CMND',
         ).save()
 
         CommandPayments(
-            count= -business.cost
+            count = -business.cost
         ).save()
 
         PlayersBusiness(
-            player=player, 
-            business=business,
-            is_command=is_command,
+            player     = player, 
+            business   = business,
+            is_command = is_command,
         ).save()
 
     if not is_command:
@@ -147,15 +151,16 @@ def newBusiness( player, business, is_command ):
             Купил личный бизнес {business.name}.
         '''
         Actions(
-            player=player,
-            name=name,
-            count= -business.cost
+            player   = player,
+            name     = name,
+            count    = -business.cost,
+            category = 'BSNS',
         ).save()
 
         PlayersBusiness(
-            player=player, 
-            business=business,
-            is_command=is_command,
+            player     = player, 
+            business   = business,
+            is_command = is_command,
         ).save()
 
 
@@ -163,18 +168,31 @@ def PlayerXReinvest():
     player_X = Player.objects.get( name='X' )
     player_x_balance = getBalance( player_X )
 
-    name = f'''Вложил в командный бизнес {player_x_balance}.'''
+    name = f'Вложил в командный бизнес {player_x_balance}.'
+    
     Actions(
-        player=player_X,
-        name=name,
-        count= -player_x_balance
+        player   = player_X,
+        name     = name,
+        count    = -player_x_balance,
+        category = 'CMND',
     ).save()
 
     CommandPayments(
-        player=player_X, 
-        count=player_x_balance
+        player = player_X, 
+        count  = player_x_balance
     ).save()
 
 
 def getActions():
     return Actions.objects.all()
+
+
+def getPlayerCategoties( player ):
+    player_businesses = getBusinesses( player ) 
+
+    categories = ['PERSONAL']
+    for player_business in player_businesses:
+        if player_business.business.category not in categories:
+            categories.append( player_business.business.category )
+
+    return categories

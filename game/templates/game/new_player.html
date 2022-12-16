@@ -11,13 +11,31 @@
               <!-- FORM new player -->
               <form method="POST">
                 {% csrf_token %}
+
                 <div class="form-floating mb-3">
-                  <input type="text" name="new_player_name" class="form-control" id="floatingInput" placeholder="Новый игрок">
-                  <label for="floatingInput">Имя Игрока</label>
+
+                  <input 
+                  type="text" 
+                  name="new_player_name" 
+                  class="form-control" 
+                  id="floatingInput" 
+                  placeholder="Например: Толик"
+                  required
+                  >
+                  <label for="floatingInput">Например: Толик</label>
+
                 </div>
+
                 <div class="d-grid">
-                  <button class="btn btn-primary btn-login text-uppercase fw-bold" type="submit">Продолжить</button>
+
+                  <button 
+                    class="btn btn-primary btn-login text-uppercase fw-bold" 
+                    type="submit">
+                    Продолжить
+                  </button>
+
                 </div>
+
               </form>
 
             </div>

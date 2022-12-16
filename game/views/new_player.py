@@ -20,9 +20,10 @@ def new_player( request ):
         count = 60000
         name = f'''Начал игру - {count}'''
         Actions(
-            player = new_player,
-            name   = name,
-            count  = count
+            player   = new_player,
+            category = 'OTHER',
+            name     = name,
+            count    = count
         ).save()
 
         return redirect( f"/player_control_{new_player.id}/" )

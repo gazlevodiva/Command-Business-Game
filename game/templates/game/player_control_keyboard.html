@@ -1,0 +1,456 @@
+
+    <!-- BUTTONS -->
+    <div class="d-grid gap-2 col-md-8 mx-auto mt-4 mb-5">
+
+        <a 
+          class="btn btn-outline-secondary " 
+          href="/new_level_{{player.id}}/" 
+          type="button"
+          id="new_level_btn"
+        >
+          Новый круг
+        </a>
+
+        <a 
+          class="btn btn-warning" 
+          href="/get_surprise_{{player.id}}surp/" 
+          type="button" 
+          id="surprisebtn"
+        >
+          Сюрпрайз
+        </a>
+
+        <a 
+          class="btn btn-outline-secondary " 
+          href="/get_surprise_{{player.id}}memo/" 
+          type="button" 
+          id="memorybtn"
+        >
+          Мемори
+        </a>
+
+        <button 
+          class="btn btn-success " 
+          type="button" 
+          data-bs-toggle="modal" 
+          data-bs-target="#BusinessModal"
+        >
+          Бизнес
+        </button>
+
+        <button 
+          class="btn btn-outline-secondary " 
+          type="button" 
+          data-bs-toggle="modal" 
+          data-bs-target="#CommandBusinessModal"
+        >
+          Командный бизнес
+        </button>
+
+        <a 
+          class="btn btn-outline-secondary mb-4" 
+          href="/rules/" 
+          type="button"
+        >
+          Правила
+        </a>
+
+        <!-- START BUSINESS CARDS -->
+        {% for player_business in player_businesses%}
+            <div class="card text-center">
+
+                {% if player_business.business.is_command %}
+                    <div class="card-header text-secondary">
+                      Коммандный бизнес
+                    </div>
+                {% else %}
+                    <div class="card-header text-secondary">
+                      Личный бизнес
+                    </div>
+                {% endif %}
+
+                <!-- BUSINESS INFO -->
+                <div class="card-body">
+
+                            <div class="card-title h4 mb-4">
+                                {{ player_business.business.business.name }}
+                            </div>
+                        
+                            <div class="card-body row justify-content-center">
+
+                                <div class="col mx-2">
+
+                                    {% for business_payment in player_business.business_payments %}
+
+                                            {% if business_payment.count < 0 %}
+
+                                                <div class="text-start text-danger"> 
+
+                                                    {{ business_payment.player_level }} круг: рентабельность
+                                                    {{ business_payment.rentability }}% 
+                                                    {{ business_payment.count }}.
+
+                                                </div>
+
+                                            {% else %}
+
+                                                <div class="text-start"> 
+
+                                                    {{ business_payment.player_level }} круг: рентабельность
+                                                    {{ business_payment.rentability }}% 
+                                                    {{ business_payment.count }}.
+
+                                                </div>
+
+                                            {% endif %}
+                                        
+                                    {% endfor %}
+
+                                </div>
+
+                            </div>
+
+                            <div class="text-center">
+                        
+                                <button 
+                                    type="button" 
+                                    class="btn btn-outline-secondary mt-3" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#AreUsure{{ player_business.business.id }}"
+                                >
+                                    Продать за {{ player_business.business.business.cost }}
+                                </button>
+
+                            </div>
+
+                    <!-- SELL CONFIRMATION -->
+                    <div 
+                      class="modal fade" 
+                      id="AreUsure{{player_business.business.id}}" 
+                      tabindex="-1" 
+                      aria-labelledby="AreUsure{{player_business.business.id}}" 
+                      aria-hidden="true"
+                    >
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+
+                                    <h1 
+                                      class="modal-title fs-5" 
+                                    >
+                                      Продажа бизнеса
+                                    </h1>
+
+                                    <button 
+                                      type="button" 
+                                      class="btn-close" 
+                                      data-bs-dismiss="modal" 
+                                      aria-label="Close"
+                                    ></button>
+
+                                </div>
+
+                                <div class="modal-body h5">
+                                  Вы уверенны что хотите продать 
+                                  {{ player_business.business.business.name }} за 
+                                  {{ player_business.business.business.cost }}?
+                                </div>
+
+                                <div class="modal-footer">
+
+                                    <button 
+                                      type="button" 
+                                      class="btn btn-outline-secondary" 
+                                      data-bs-dismiss="modal"
+                                    >
+                                      Отмена
+                                    </button>
+
+                                    <a 
+                                      href="/sell_business_{{player_business.business.id}}/" 
+                                      class="btn btn-danger"
+                                      id="sell_business_btn"
+                                    >
+                                      Продать
+                                    </a> 
+
+                                </div>
+
+                            </div>
+                        </div>        
+                    </div>
+                    <!-- END SELL CONFIRMATION -->
+
+                </div>
+                <!-- END BUSINESS INFO -->
+
+            </div>
+        {% endfor %}
+        <!-- END BUSINESS CARDS -->
+
+    </div>
+    <!-- END BUTTONS -->
+
+    <!-- BUSINESS BUTTON MODAL -->
+    <div 
+      class="modal fade" 
+      id="BusinessModal" 
+      tabindex="-1" 
+      aria-labelledby="BusinessModal" 
+      aria-hidden="true"
+    >
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <div class="modal-header">
+    
+                <h1 class="modal-title fs-5" id="BusinessModal">
+                    Список бизнесов
+                </h1>
+    
+                <button 
+                    type="button" 
+                    class="btn-close" 
+                    data-bs-dismiss="modal" 
+                    aria-label="Close"
+                >
+                </button>
+    
+                </div>
+    
+                <form method="POST">
+                {% csrf_token %}
+    
+                    <div class="modal-body">
+                        {% if player_businesses|length >= 10 %}
+    
+                            <div class="h3 text-danger text-center">
+                              Максимум 10 бизнесов
+                            </div>
+    
+                        {% else %}
+    
+                        <div class="mb-3">
+    
+                            <input 
+                            type="hidden" 
+                            id="player_id" 
+                            name="player_id" 
+                            value="{{ player.id }}"
+                            />
+                                
+                            <!-- PERSONAL SELECTOR -->
+                            <select
+                            class="form-select" 
+                            name="player_business" 
+                            id="player_business_select"
+                            >
+                                {% for business in businesses %}
+                                    {% if business.cost > player_balance %}
+                                        <option value="{{ business.id }}" disabled>
+                                        {{ business.name }} - {{ business.cost }}
+                                        </option>
+                                    {% else %}
+                                        <option value="{{ business.id }}">
+                                        {{ business.name }} - {{ business.cost }}
+                                        </option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+        
+                            <!-- COMMAND SELECTOR -->
+                            <select  
+                            class="form-select" 
+                            name="player_business" 
+                            id="command_business_select" 
+                            hidden 
+                            disabled
+                            >
+                                {% for business in businesses %}
+                                    {% if business.cost > command_bank %}
+                                        <option value="{{ business.id }}" disabled>
+                                        {{ business.name }} - {{ business.cost }}
+                                        </option>
+                                    {% else %}
+                                        <option value="{{ business.id }}">
+                                        {{ business.name }} - {{ business.cost }}
+                                        </option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+        
+                            <div class="mt-2">
+            
+                                {% if command_share == 0 %}
+                                    <input 
+                                    type="checkbox" 
+                                    class="form-check-input" 
+                                    id="is_command" 
+                                    name="is_command"
+                                    disabled
+                                    />                            
+                                {% else %}     
+                                    <input 
+                                    type="checkbox" 
+                                    class="form-check-input" 
+                                    id="is_command" 
+                                    name="is_command"
+                                    />
+                                {% endif %}
+        
+                                <label 
+                                class="form-check-label" 
+                                for="is_command" 
+                                name="is_command"
+                                >
+                                Коммандный бизнес
+                                </label>
+        
+                            </div>
+
+                        </div>
+    
+                        {% endif %}    
+                    </div>
+    
+                    <div class="modal-footer">
+    
+                        <button 
+                          type="button" 
+                          class="btn btn-secondary" 
+                          data-bs-dismiss="modal"
+                        >
+                          Закрыть
+                        </button>
+                        
+                        <button 
+                          class="btn btn-primary" 
+                          type="submit"
+                        >
+                          Купить
+                        </button>
+    
+                    </div>
+    
+                </form>
+  
+            </div>
+        </div>
+    </div>
+    <!-- END BUSINESS BUTTON MODAL -->
+
+    <!-- COMMAND BUTTON MODAL -->
+    <div 
+      class="modal fade" 
+      id="CommandBusinessModal" 
+      tabindex="-1" 
+      aria-labelledby="CommandBusinessModal" 
+      aria-hidden="true"
+    >
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+    
+                <div class="modal-header">
+    
+                    <h1 
+                    class="modal-title fs-5" 
+                    id="CommandBusinessModal"
+                    >
+                    Какую сумму вы хотите вложить в коммандный бизнес?
+                    </h1>
+        
+                    <button 
+                    type="button" 
+                    class="btn-close" 
+                    data-bs-dismiss="modal" 
+                    aria-label="Close"
+                    ></button>
+    
+                </div>
+    
+                <form method="POST">
+                {% csrf_token %}
+    
+                    <div class="modal-body">   
+
+                        <div class="mb-3">
+        
+                            <input 
+                            type="hidden" 
+                            id="player_id" 
+                            name="player_id" 
+                            value="{{ player.id }}"
+                            >
+        
+                            <input 
+                            class="form-control" 
+                            name="player_command_payment" 
+                            type="number" 
+                            id="command_invest"
+                            min="0"
+                            max="{{ player_balance |cut:',' }}"
+                            required
+                            >
+        
+                        </div>
+
+                        <div class="mt-2">
+        
+                            <input 
+                            type="checkbox" 
+                            class="form-check-input" 
+                            id="invest_all" 
+                            name="invest_all"
+                            >
+        
+                            <label 
+                            class="form-check-label" 
+                            for="invest_all" 
+                            name="invest_all"
+                            >
+                            Вложить все
+                            </label>
+        
+                        </div>
+                        
+                        <hr>
+
+                        <div class="mt-3">
+                            <a 
+                            class="btn btn-block btn-outline-danger" 
+                            href="/sell_share_{{player.id}}/" 
+                            type="button"
+                            id="sell_share_btn"
+                            >
+                            Продать долю {{command_share}}% за {{command_count}}
+                            </a>
+                        </div>
+    
+                    </div>
+    
+                    <div class="modal-footer">
+    
+                        <button 
+                        type="button" 
+                        class="btn btn-secondary" 
+                        data-bs-dismiss="modal"
+                        >
+                            Закрыть
+                        </button>
+        
+                        <button 
+                        class="btn btn-primary" 
+                        type="submit"
+                        >
+                        Добавить
+                        </button>
+    
+                    </div>
+    
+                </form>            
+    
+            </div>
+        </div>
+    </div>
+    <!-- END COMMAND BUTTON MODAL -->

@@ -57,6 +57,8 @@ def player_control( request, player_id, modal=False ):
 
         if 'player_business' in request.POST:
 
+            print( request.POST )
+
             # get Business
             business_id = request.POST['player_business']
             business = Business.objects.get( pk=business_id )
@@ -85,9 +87,10 @@ def player_control( request, player_id, modal=False ):
             name = f'''Вложил в командный бизнес - {command_payment}.'''
 
             Actions(
-                player = player,
-                name   = name,
-                count  = -command_payment
+                player   = player,
+                category = 'CMND',
+                name     = name,
+                count    = -command_payment
             ).save()
 
 
