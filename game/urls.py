@@ -73,6 +73,5 @@ urlpatterns = [
         route = 'new_level_<int:player_id>/', 
         view  = new_level.new_level, 
         name  = 'new_level_view',
-    )
+    ),
 ]
-
