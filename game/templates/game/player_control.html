@@ -2,24 +2,22 @@
 {% load static %}
 {% block content %}
 
-
-    <!-- Preloader to block UI when loading -->
-    {% include 'game/preloader.html' %}
-
-
     <!-- Player information and Controll Buttons -->
     {% include 'game/player_control_dashboard.html' %}
 
 
     <!-- After load check notification modal -->
-    {% if modal.type == "surprise" %}     
+    {% if modal.type == "surp" %}     
         {% include 'game/surprise_modal.html' %}   
 
     {% elif modal.type == "new_level" %}
         {% include 'game/new_level_modal.html' %}
 
-    {% elif modal.type == "memory" %}
+    {% elif modal.type == "memo" %}
         {% include 'game/memory_modal.html' %}
+
+    {% elif modal.type == "cmnd" %}
+        {% include 'game/cmndsurprise_modal.html' %}
 
     {% endif %}
 

@@ -4,12 +4,14 @@ from game.models.Player import Player
 from game.models.Actions import Actions
 from game.models.Business import Business
 from game.models.Surprises import Surprises
+from game.models.GameSessions import GameSessions
 from game.models.PlayersBusiness import PlayersBusiness
 from game.models.CommandPayments import CommandPayments
 from game.models.BusinessPayments import BusinessPayments
 
 
 admin.site.register( CommandPayments )
+admin.site.register( GameSessions )
 
 
 class PlayerAdmin( admin.ModelAdmin ):

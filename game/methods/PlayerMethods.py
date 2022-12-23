@@ -57,7 +57,7 @@ def getInflation( player ):
         if player_balance > 0:
             count = -int( player_balance / 2 )
 
-        name = f'Инфляция! Потеря средств {count}.'
+        name = f"📉 Инфляция! Потеря средств {count}."
 
         return Actions.objects.create(
             player   = player,
@@ -104,18 +104,12 @@ def getBusinesses( player ):
 
 
 def getCommandBusinesses( player=None ):
-    if player:
-        return PlayersBusiness.objects.filter( 
-            player=player, 
-            status='active',
-            is_command=True
-        )
+     return PlayersBusiness.objects.filter( 
+        player     = player, 
+        status     = 'ACTIVE',
+        is_command = True
+    )
 
-    if not player:
-        return PlayersBusiness.objects.filter( 
-            status='active',
-            is_command=True
-        )
 
 
 def setNewLevel( player ):

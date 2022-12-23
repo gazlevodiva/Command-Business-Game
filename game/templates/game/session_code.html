@@ -6,7 +6,7 @@
         <div class="col-sm-9 col-md-7 col-lg-5 mx-auto mt-5">
           <div class="card border-0 shadow rounded-3 my-5">
             <div class="card-body p-4 p-sm-5">
-              <h4 class="card-title text-center mb-3 fs-5">Введите имя нового игрока</h4>
+              <h4 class="card-title text-center mb-3 fs-5">Введите пароль</h4>
 
               <!-- FORM new player -->
               <form method="POST">
@@ -15,21 +15,20 @@
                 <div class="form-floating mb-3">
 
                   <input 
-                  type="text" 
-                  name="new_player_name" 
+                  type="int" 
+                  name="session_code" 
                   class="form-control" 
-                  id="floatingInput" 
-                  placeholder="Например: Толик"
+                  id="floatingInput"
                   required
                   >
-                  <label for="floatingInput">Имя игрока</label>
+                  <label for="floatingInput">Его можно увидеть на игровом поле</label>
 
                 </div>
 
                 <div class="d-grid">
 
                   <button 
-                    class="btn btn-primary btn-login text-uppercase fw-bold" 
+                    class="btn btn-outline-secondary " 
                     type="submit">
                     Продолжить
                   </button>

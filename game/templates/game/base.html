@@ -29,14 +29,31 @@
       crossorigin="anonymous"
     ></script>
 
+    <style rel="stylesheet" href="{% static 'game/css/style.css' %}" ></style>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+
+      body{
+          font-family: 'Montserrat', sans-serif;
+      }
+
+      footer {
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        text-align: center;
+      }
+    </style>
+
   </head>
 
   <body>
+    <!-- Preloader to block UI when loading -->
+    {% include 'game/preloader.html' %}
+    
     {% block content %}
     {% endblock %}
   </body>
-
-  
 
 
 

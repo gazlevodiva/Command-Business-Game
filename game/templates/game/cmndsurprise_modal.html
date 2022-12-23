@@ -1,0 +1,73 @@
+
+    <div 
+    class="modal fade" 
+    id="cmndsurpiseModal" 
+    tabindex="-1" 
+    aria-labelledby="cmndsurpiseModal" 
+    aria-hidden="true"
+  >
+
+      <div class="modal-dialog modal-dialog-centered">
+
+          <div class="modal-content">
+
+              <div class="modal-header">
+
+                  <h1 class="modal-title fs-5 lead" id="cmndsurpiseModal">
+                    {{ modal.title }}
+                  </h1>
+
+                  <button 
+                    type="button" 
+                    class="btn-close" 
+                    data-bs-dismiss="modal" 
+                    aria-label="Close"
+                  >
+                  </button>
+
+              </div>
+
+              <div class="modal-body text-center">
+
+                    <div class="h4">
+                        {{ modal.surprise.name }}
+                    </div>
+    
+                    {% if modal.surprise.count < 0 %}
+                        <div class="h2 text-danger">
+                            {{ modal.surprise.count }}
+                        </div>
+                    {% elif modal.surprise.count > 0 %}
+                        <div class="h2 text-success">
+                            {{ modal.surprise.count }}
+                        </div>
+                    {% endif %}
+          
+              </div>
+
+
+              <div class="modal-footer">
+
+                  <button 
+                    type="button" 
+                    class="btn btn-danger" 
+                    data-bs-dismiss="modal"
+                  >
+                    Спасибо
+                  </button>
+
+              </div>
+
+          </div>
+
+      </div>
+
+  </div>
+
+  <script>
+      $(document).ready(function(){
+          $("#cmndsurpiseModal").modal('show');
+          window.history.pushState("", "", '/player_control_{{ player.id }}/');
+      });
+  </script>
+

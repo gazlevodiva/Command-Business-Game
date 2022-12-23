@@ -24,7 +24,7 @@ def setDefoult( player_business ):
         ).save()
 
         name = f'''
-            {business.name} - Дефолт! 
+            🔥 {business.name} - Дефолт!
             Возврат стоимости {business_sale_price}. Коммандный бизнес.
         '''
 
@@ -38,7 +38,7 @@ def setDefoult( player_business ):
     if not player_business.is_command:
 
         name = f'''
-            {business.name} - Дефолт! 
+            🔥 {business.name} - Дефолт! 
             Возврат стоимости {business_sale_price}.
         '''
 
@@ -211,13 +211,18 @@ def getCommandShare( player ):
     return ( 0, 0 )
 
 
-def sellCommandShare( player ):
+def sellCommandShare( player, sell_count=None):
     share, count = getCommandShare( player )
 
     name = f'''
-        Продал свою долю {share}% коммандного бизнеса за
-        {count}.
+        Продал свою долю {share}% коммандного бизнеса за {count}.
     '''
+
+    if sell_count:        
+        count = sell_count
+        name = f''' Продал {count} из своей командной доли. '''
+
+    
 
     Actions(
         player   = player,

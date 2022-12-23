@@ -28,10 +28,12 @@ from game.views.player_control import player_control
 
 
 def test( request ):
-    player = Player.objects.get( pk=80 )
+    if request.user.is_authenticated:
 
-    # Create Bootstrap Modal window
-    print( getPlayerCategoties( player ) )
-    
+        player = Player.objects.get( pk=80 )
 
-    return HttpResponse( getPlayerCategoties( player ) )
+        # Create Bootstrap Modal window
+        print( getPlayerCategoties( player ) )
+        
+
+        return HttpResponse( getPlayerCategoties( player ) )

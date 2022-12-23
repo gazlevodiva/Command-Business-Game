@@ -4,7 +4,10 @@ from game.models.Actions import Actions
 from game.models.PlayersBusiness import PlayersBusiness
 from game.models.CommandPayments import CommandPayments
 
+from game.decorators import check_user_session_hash
 
+
+@check_user_session_hash
 def sell_business(request, player_business_id):
     
     player_business = PlayersBusiness.objects.get( pk=player_business_id )

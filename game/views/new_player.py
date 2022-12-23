@@ -4,7 +4,10 @@ from django.shortcuts import redirect
 from game.models.Player import Player
 from game.models.Actions import Actions
 
+from game.decorators import check_user_session_hash
 
+
+@check_user_session_hash
 def new_player( request ):
 
     if request.method == 'POST':
@@ -13,8 +16,7 @@ def new_player( request ):
         player_name = request.POST['new_player_name'] 
 
         # Create new player
-        new_player = Player( name=player_name )        
-        new_player.save()
+        new_player = Player.objects.create( name=player_name )        
 
         # Add default balance 60 000
         count = 60000
@@ -26,6 +28,9 @@ def new_player( request ):
             count    = count
         ).save()
 
-        return redirect( f"/player_control_{new_player.id}/" )
+        request_template = redirect( f"/player_control_{new_player.id}/" )
+        request_template.set_cookie( 'game_session_controller', new_player.id )
+
+        return request_template
 
     return render( request, 'game/new_player.html' )

@@ -7,7 +7,7 @@
         aria-hidden="true"
     >
 
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
 
                 <div class="modal-header">
@@ -27,7 +27,20 @@
                 </div>
 
                 <div class="modal-body">
+                    
+                    {% if modal.profit > 0 %}
+                        <div class="fs-3">
+                            Итоговый доход: {{ modal.profit }}
+                        </div>
+                    {% else %}
+                        <div class="fs-3 text-danger">
+                            Итоговый доход: {{ modal.profit }}
+                        </div>
+                    {% endif %}
 
+                    <hr>
+
+                    <div class="card-body">
                     {% for action in modal.actions %}
 
                         {% if action.count < 0 %}
@@ -41,6 +54,7 @@
                         {% endif %}
 
                     {% endfor %}
+                    </div>
 
                 </div>
 

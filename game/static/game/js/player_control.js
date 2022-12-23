@@ -1,48 +1,22 @@
 
-const preloader = document.getElementById("preloader")
-
-document.getElementById("new_level_btn").onclick = function(){
-
-    preloader.hidden = false
-
+function Preloader(){
+  document.getElementById("preloader").hidden = false;
 }
 
-document.getElementById("surprisebtn").onclick = function(){
+const playerBalance = document.getElementById("player_balance");
+const investAllCheckbox = document.getElementById("invest_all");
+const isCommandCheckbox = document.getElementById("is_command");
+const commandInvestInput = document.getElementById("command_invest");
+const playerBusinessSelect = document.getElementById("player_business_select");
+const commandBusinessSelect = document.getElementById("command_business_select");
 
-    preloader.hidden = false
-
-}
-
-$("#invest_all").change(function() {
-
-    if(this.checked) {
-
-        document.getElementById("command_invest").value = document.getElementById('player_balance').value
-
-    } else {
-
-        document.getElementById("command_invest").value = ''
-
-    }
+investAllCheckbox.addEventListener("change", function() {
+  commandInvestInput.value = this.checked ? playerBalance.value : "";
 });
 
-document.getElementById('is_command').onchange = function(){
-    
-    if( document.getElementById('is_command').checked ) {
-
-        document.getElementById('player_business_select').hidden = true
-        document.getElementById('command_business_select').hidden = false
-
-        document.getElementById('player_business_select').disabled = true
-        document.getElementById('command_business_select').disabled = false
-
-    } else {
-
-        document.getElementById('player_business_select').hidden = false
-        document.getElementById('command_business_select').hidden = true
-
-        document.getElementById('player_business_select').disabled = false
-        document.getElementById('command_business_select').disabled = true  
-
-    }
-}
+isCommandCheckbox.addEventListener("change", function(){
+  playerBusinessSelect.hidden = this.checked ? true : false;
+  commandBusinessSelect.hidden = this.checked ? false : true;
+  playerBusinessSelect.disabled = this.checked;
+  commandBusinessSelect.disabled = !this.checked;
+});

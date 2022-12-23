@@ -55,6 +55,7 @@
         <thead>
           <tr>
             <th scope="col">Бизнес</th>
+            <th scope="col">Категория</th>
             <th scope="col">Стоимость</th>
             <th scope="col">Рентабельность</th>
           </tr>
@@ -63,6 +64,7 @@
             {% for business in businesses %}
             <tr>
                 <th scope="row">{{business.name}}</th>
+                <th scope="row">{{business.category}}</th>
                 <td>{{ business.cost | floatformat:"g" }}</td>
                 <td>От {{business.min_rent}}% до +{{business.max_rent}}%</td>
             </tr>

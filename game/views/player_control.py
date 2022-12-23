@@ -14,8 +14,10 @@ from game.methods.BusinessMethods import getCommandBank
 from game.methods.BusinessMethods import getCommandShare
 from game.methods.BusinessMethods import getBusinessPayments
 
+from game.decorators import check_user_session_hash
 
 # Player controller
+@check_user_session_hash
 def player_control( request, player_id, modal=False ):
 
     # Get all businesses to use in form
@@ -36,7 +38,7 @@ def player_control( request, player_id, modal=False ):
         business_payments_info.append(
             {
                 "business":          player_business,                
-                "business_payments": business_payments[::-1]
+                "business_payments": business_payments[::-1][:7]
             }
         )
 

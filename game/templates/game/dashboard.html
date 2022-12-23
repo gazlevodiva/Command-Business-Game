@@ -4,19 +4,21 @@
     <meta http-equiv="refresh" content="3">
 
     <div class="container mt-5">
-      <div class="row">
+      <div class="row justify-content-center">
 
         {% for player in players %}
-        <div class="col-xl-2 col-md-5 mb-4">
+        <div class="col-xl col-md-5 mb-4">
           <div class="card border-0 shadow">
-            <!-- <img src="https://source.unsplash.com/TMgQMXoglsM/500x350" class="card-img-top" alt="..."> -->
             <div class="card-body text-center">
 
-              <a class="card-title text-dark h3 text-decoration-none" href="/player_control_{{player.player.id}}/">
-                  {{ player.player.name }}
+              <a 
+                class="card-title text-dark fs-3 text-decoration-none" 
+                href="/player_control_{{player.player.id}}/"
+              >
+                {{ player.player.name }}
               </a>
               
-              <div class="">
+              <div>
                 <b>Круг:</b> {{ player.player.level }}
               </div>
 
@@ -32,26 +34,37 @@
                     {{ player.balance }}
                   </div>
 
-              {% endif %}              
+              {% endif %}
 
-              <ul class="list-group list-group-flush">
 
-                  {% for player_business in player.businesses %}
 
-                    {% if player_business.is_command %}
-                        <li class="list-group-item">
-                          {{ player_business.business.name }} 🏛
-                        </li>
-                    {% else %}
-                        <li class="list-group-item">
-                          {{ player_business.business.name }} 
-                        </li>
-                    {% endif %}
+              <hr>
+              <div class="row g-2 row-cols-2">
+                {% for player_business in player.businesses %}
 
-                  {% endfor %}
+                        
+                        {% if player_business.is_command %}
+                        <div class="col">
+                            <div class="card" >
+                              <div class="card-body p-2">
+                                💰{{ player_business.business.name | truncatechars:5 }}
+                              </div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="col">
+                            <div class="card" >
+                              <div class="card-body p-2">
+                                {{ player_business.business.name | truncatechars:7 }}
+                              </div>
+                            </div>
+                        </div>
+                        {% endif %}
 
-              </ul>
-              
+                {% endfor %}
+
+              </div>
+
             </div>
           </div>
         </div>
@@ -59,73 +72,110 @@
 
 
       <!-- /.row -->
-      <div class="row">
-        <!-- Command Business -->
-          <div class="card border-0 shadow">
-            <div class="card-body">
-              <h3 class="card-title text-center mb-5">Командный бизнес</h3>
 
-              <div class="row">
+      <div class="row mt-5">
 
-                <div class="col-8">
-                  <table class="table">
-                    <thead>
-                      <tr>
-                        <th scope="col">Игроки</th>
-                        <th scope="col">Доля</th>
-                        <th scope="col">Стоимость доли</th>
-                        <th scope="col">Администратор</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {% for command_player in command_players %}
-                          <tr>
-                                <th scope="row">{{ command_player.command_player.player.name }}</th>
+                <div class="col-md-7">
 
-                                <td>{{ command_player.command_player.share }}%</td>
+                    <div class="card-title text-center fs-2 mb-5">
+                      💰 Командный бизнес 💵
+                    </div>
 
-                                <td>{{ command_player.command_player.count }}</td>
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th scope="col">Игроки</th>
+                          <th scope="col">Доля</th>
+                          <th scope="col">Стоимость доли</th>
+                          <th scope="col">Администратор</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for command_player in command_players %}
 
-                                <td>
-                                      {% for command_business in command_player.command_businesses %}
-                                          {{ command_business.business.name }}
-                                      {% endfor %}
-                                </td>
-                          </tr>
-                      {% endfor %}
-                    </tbody>
-                  </table>
+                            {% if command_player.command_player.share > 0 %}
+                            <tr>
+                                  <th scope="row">{{ command_player.command_player.player.name }}</th>
+
+                                  <td>{{ command_player.command_player.share }}%</td>
+
+                                  <td>{{ command_player.command_player.count }}</td>
+
+                                  <td>
+                                    {% for command_businesses in command_player.command_businesses %}
+                                    🏭
+                                    {% endfor %}
+                                  </td>
+                            </tr>
+                            {% endif %}
+
+
+                        {% endfor %}
+                      </tbody>
+                    </table>
+
                 </div>
 
-                <div class="col-4">
-                  <h1 class="">{{ command_bank }}</h1>
-                  <p>Баланс</p>
+                <div class="col-md-5">
+                  <div class="display-5 text-center">
+                    {{ command_bank }}
+                  </div>                    
+                  <div class="h4 mb-2 mt-3 text-center">История игры</div>
                   {% for action in actions %}
 
                     {% if action.player.name != 'X' %}
                   
                       {% if action.count < 0 %}
-                          <div class="p text-danger">
+                      
+                          <div class="text-danger fw-normal">
                             <b>{{ action.player }}</b> {{ action.name }} 
                           </div>
+
                       {% else %}
-                          <div class="p text-muted">
+
+                          <div class="fw-normal">
                             <b>{{ action.player }}</b> {{ action.name }} 
                           </div>
+
                       {% endif %}
 
                     {% endif %}
 
                   {% endfor %}
-                  ...
                 </div>
 
-              </div>
-
-            </div>
-          </div>
-
       </div>
+
     </div>
+
+    <div class="container footer">
+      <footer class="py-3 my-4">
+        <p class="text-center fs-3 fw-lighter mb-1"> Пароль: {{ session_code | cut:',' }}</p>
+        <div class="text-center">
+          <input 
+            type  = "text" 
+            id    = "session_link"
+            value = "{{ session_link }}"
+            disabled
+            hidden
+          /> 
+          <button  
+            class   = "btn fs-5 text-muted" 
+            type    = "button"
+            onclick = "copyToClipboard()"
+          >
+            👆🏻Нажми чтобы поделиться игрой👆🏻
+          </button > 
+        </div>        
+      </footer>
+    </div>
+
+    <script>
+      function copyToClipboard(){
+          session_link_element = document.getElementById("session_link")
+          navigator.clipboard.writeText(session_link_element.value);
+      }
+    </script>
+
 
 {% endblock %}
