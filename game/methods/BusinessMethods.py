@@ -33,6 +33,7 @@ def setDefoult( player_business ):
             name       = name,
             count      = 0,
             category   = 'BSNS',
+            is_command = True
         )
 
     if not player_business.is_command:
@@ -120,12 +121,11 @@ def setCommandBusinessIncome( player_business ):
     admin_share  = profit - players_bank
     admin_player = player_business.player
     
-    payment_actions = [ ]
+    payment_actions = []
     if defoult_action:
         payment_actions.append( defoult_action )
 
-
-    if profit >= 0:
+    if profit > 0:
         for command_player in command_business_players:
             count = int( players_bank * command_player['share'] / 100 )
 
@@ -142,10 +142,11 @@ def setCommandBusinessIncome( player_business ):
                 name     = name,
                 count    = count,
                 category = 'CMND',
+                is_command = True
             )
             payment_actions.append( payment_action )
 
-    if profit < 0:
+    if profit <= 0:
         name = f''' 
                 {player_business.business.name} доход {profit}, 
                 рентабельность {rentability}%. Коммандный бизнес.
@@ -155,6 +156,7 @@ def setCommandBusinessIncome( player_business ):
             name     = name,
             count    = profit,
             category = 'CMND',
+            is_command = True
         )
         payment_actions.append( payment_action )
 
@@ -168,16 +170,24 @@ def getCommandBank():
     )['count__sum']
 
 
+def getBusinessPayments( player_business ):
+    return BusinessPayments.objects.filter( player_business=player_business )
+
+
 def getCommandPlayers():
     bank = (
         CommandPayments.objects
-        .filter( player__isnull=False )
+        .filter( 
+            player__isnull=False 
+        )
         .aggregate( Sum( 'count' ) )
     )['count__sum']
 
     player_payments = (
         CommandPayments.objects
-        .filter( player__isnull=False )
+        .filter( 
+            player__isnull=False 
+        )
         .values( 'player' )
         .annotate( 
             share = Sum( 'count' ) * 100 / bank,
@@ -194,19 +204,12 @@ def getCommandPlayers():
     return player_payments
 
 
-def getBusinessPayments( player_business ):
-    return BusinessPayments.objects.filter( player_business=player_business )
-
-
 def getCommandShare( player ):
     command_players = getCommandPlayers()
-    for command_player in command_players:
 
+    for command_player in command_players:
         if command_player['player'] == player:
-            return ( 
-                command_player['share'], 
-                command_player['count'] 
-            )
+            return ( command_player['share'], command_player['count'] )
 
     return ( 0, 0 )
 
@@ -222,16 +225,16 @@ def sellCommandShare( player, sell_count=None):
         count = sell_count
         name = f''' Продал {count} из своей командной доли. '''
 
-    
-
     Actions(
         player   = player,
         name     = name,
         count    = count,
         category = 'CMND',
+        is_command = True
     ).save()
 
     CommandPayments(
-            player = player,
-            count  = -count
-        ).save()
+        player = player,
+        count  = -count
+    ).save()
+    

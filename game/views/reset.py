@@ -44,6 +44,7 @@ def reset(request):
             name     = name,
             count    = -player_X_balance,
             category = 'CMND',
+            is_command = True
         ).save()
 
     return redirect("/")

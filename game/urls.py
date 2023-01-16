@@ -8,6 +8,7 @@ from game.views import sell_business
 from game.views import new_level
 from game.views import sell_share
 from game.views import surprise
+from game.views import finish
 from game.views import index
 from game.views import rules
 from game.views import test
@@ -73,5 +74,10 @@ urlpatterns = [
         route = 'new_level_<int:player_id>/', 
         view  = new_level.new_level, 
         name  = 'new_level_view',
+    ),
+    path(
+        route = 'finish/', 
+        view  = finish.finish, 
+        name  = 'finish_view',
     ),
 ]

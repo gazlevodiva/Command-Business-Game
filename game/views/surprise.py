@@ -62,17 +62,20 @@ def surprise( request, player_id, surprise_type ):
     modal.type = surprise_type
     
     # If surprise personal
-    action_count = surprise.count
+    action_count = int( surprise.count )
+    is_command = False
 
     # If suprise Command
     if surprise_type == "cmnd":
 
         # Becouse action is personal counter
         action_count = 0
+        is_command = True
 
         if surprise.count == 0:
             command_bank = getCommandBank()
             count = -int( command_bank / 2 )
+            action_name = f"{surprise.name} {count}"
         else:
             count = surprise.count
         
@@ -87,6 +90,7 @@ def surprise( request, player_id, surprise_type ):
         name     = action_name,
         count    = action_count,
         category = 'SURP',
+        is_command = is_command
     ).save()
 
     return player_control( 

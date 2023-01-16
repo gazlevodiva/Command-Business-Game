@@ -92,7 +92,8 @@ def player_control( request, player_id, modal=False ):
                 player   = player,
                 category = 'CMND',
                 name     = name,
-                count    = -command_payment
+                count    = -command_payment,
+                is_command = True
             ).save()
 
 

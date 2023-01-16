@@ -20,7 +20,8 @@ def sell_business(request, player_business_id):
             count    = 0,
             player   = player_business.player,
             name     = name,
-            category = 'CMND'
+            category = 'CMND',
+            is_command = True
         ).save()
 
         CommandPayments(

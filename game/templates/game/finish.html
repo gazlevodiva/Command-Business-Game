@@ -1,0 +1,51 @@
+{% extends 'game/base.html' %}
+{% load static %}
+{% block content %}
+
+    <div class="container mt-5">
+      <div class="row justify-content-center">
+
+        {% for player_info in players_info %}
+        <div class="col-xl col-md-5 mb-4">
+          <div class="card border-0 shadow">
+            <div class="card-body text-center">
+
+              <div class="card-title fs-3">
+                {{ player_info.player.name }}
+              </div>
+
+              <div class="card-text">
+
+                {% if player_info.profit > 0 %}
+                <div class="fs-1 text-success">
+                  +{{ player_info.profit }}%
+                </div>
+                {% else %}
+                <div class="fs-1 text-danger">
+                  {{ player_info.profit }}%
+                </div>
+                {% endif %}
+                за {{ player_info.player.level }} кругов
+
+
+                {% for achieve in player_info.achievements %}
+                <div class="mt-4">
+                  <div class="h4">
+                    {{ achieve.title }}
+                  </div>
+                  <p>{{ achieve.text }}</p>
+                </div>
+                {% endfor %}
+
+              </div>
+
+                
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+
+      </div>
+    </div>
+
+{% endblock %}

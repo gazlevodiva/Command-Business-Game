@@ -10,8 +10,15 @@ from game.models.CommandPayments import CommandPayments
 from game.models.BusinessPayments import BusinessPayments
 
 
-admin.site.register( CommandPayments )
+
 admin.site.register( GameSessions )
+
+
+class CommandPaymentsAdmin( admin.ModelAdmin ):
+    list_display = ( 'player', 'count' )
+    list_filter = ( 'player', )
+
+admin.site.register( CommandPayments, CommandPaymentsAdmin )
 
 
 class PlayerAdmin( admin.ModelAdmin ):
@@ -21,8 +28,8 @@ admin.site.register( Player, PlayerAdmin )
 
 
 class ActionsAdmin( admin.ModelAdmin ):
-    list_display = ( 'player', 'name', 'count' )
-    list_filter = ( 'category', 'player' )
+    list_display = ( 'player', 'name', 'count', 'is_command' )
+    list_filter = ( 'category', 'player', 'is_command' )
 
 admin.site.register( Actions, ActionsAdmin )
 

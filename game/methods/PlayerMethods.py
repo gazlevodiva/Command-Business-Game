@@ -111,7 +111,6 @@ def getCommandBusinesses( player=None ):
     )
 
 
-
 def setNewLevel( player ):
     player.level += 1 
     return player.save()
@@ -128,6 +127,7 @@ def newBusiness( player, business, is_command ):
             name     = name,
             count    = 0,
             category = 'CMND',
+            is_command = is_command
         ).save()
 
         CommandPayments(
@@ -169,6 +169,7 @@ def PlayerXReinvest():
         name     = name,
         count    = -player_x_balance,
         category = 'CMND',
+        is_command = True
     ).save()
 
     CommandPayments(
@@ -190,3 +191,16 @@ def getPlayerCategoties( player ):
             categories.append( player_business.business.category )
 
     return categories
+
+
+def getPlayerSurprises( player ):
+    return Actions.objects.filter( player=player, category='SURP' )
+
+
+def getBusinessesCost( player):
+    return (
+        PlayersBusiness.objects
+        .filter(player=player, status='ACTIVE')
+        .aggregate(Sum('business__cost'))['business__cost__sum']
+    )
+    

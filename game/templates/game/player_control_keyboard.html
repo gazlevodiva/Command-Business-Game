@@ -3,20 +3,19 @@
     <div class="d-grid gap-2 col-md-8 mx-auto mt-4 mb-5">
 
         <a 
-          class="btn btn-outline-secondary " 
-          href="/new_level_{{player.id}}/" 
+          class="btn btn-outline-secondary "            
           type="button"
-          onclick="Preloader()"
+          data-bs-toggle="modal" 
+          data-bs-target="#AreUsureNewLevel{{player.id}}"
         >
           Новый круг
         </a>
 
         <a 
           class="btn btn-outline-secondary" 
-          href="/get_surprise_{{player.id}}surp/" 
           type="button" 
-          onclick="Preloader()"
-          
+          data-bs-toggle="modal" 
+          data-bs-target="#AreUsureSurprise{{player.id}}"
         >
           <div class="row">
               <div class="col text-start">🟠</div>
@@ -27,9 +26,9 @@
 
         <a 
           class="btn btn-outline-secondary " 
-          href="/get_surprise_{{player.id}}memo/" 
           type="button" 
-          onclick="Preloader()"
+          data-bs-toggle="modal" 
+          data-bs-target="#AreUsureMemory{{player.id}}"
         >
           <div class="row">
               <div class="col text-start">🟣</div>
@@ -511,3 +510,169 @@
         </div>
     </div>
     <!-- END COMMAND BUTTON MODAL -->
+
+
+    <!-- NEW LEVEL AREUSURE -->
+    <div 
+      class="modal fade" 
+      id="AreUsureNewLevel{{player.id}}" 
+      tabindex="-1" 
+      aria-labelledby="#AreUsureNewLevel{{player.id}}" 
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+          <div class="modal-header">
+
+              <h1 class="modal-title fs-5">
+                Подтверждение нового уровня
+              </h1>
+
+              <button 
+                type="button" 
+                class="btn-close" 
+                data-bs-dismiss="modal" 
+                aria-label="Close"
+              ></button>
+
+          </div>
+
+          <div class="modal-body h5">
+            Вы готовы перейти на новый круг? 🔝
+          </div>
+
+          <div class="modal-footer">
+
+            <button 
+              type="button" 
+              class="btn btn-outline-secondary" 
+              data-bs-dismiss="modal"
+            >
+              Отмена
+            </button>
+
+            <a 
+            href="/new_level_{{player.id}}/" 
+              class="btn btn-danger"
+              onclick="Preloader()"
+            >
+              Все верно
+            </a> 
+
+          </div>
+
+        </div>
+      </div>        
+    </div>
+    <!-- END AREURESURE -->
+
+    
+    <!-- SURPRISE AREUSURE -->
+    <div 
+      class="modal fade" 
+      id="AreUsureSurprise{{player.id}}" 
+      tabindex="-1" 
+      aria-labelledby="#AreUsureSurprise{{player.id}}" 
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+          <div class="modal-header">
+
+              <h1 class="modal-title fs-5">
+                🟠 Подтверждение Сюрпрайз 🟠
+              </h1>
+
+              <button 
+                type="button" 
+                class="btn-close" 
+                data-bs-dismiss="modal" 
+                aria-label="Close"
+              ></button>
+
+          </div>
+
+          <div class="modal-body h5">
+            Вы хотите вытащить карточку Сюрпрайз?
+          </div>
+
+          <div class="modal-footer">
+
+            <button 
+              type="button" 
+              class="btn btn-outline-secondary" 
+              data-bs-dismiss="modal"
+            >
+              Отмена
+            </button>
+
+            <a 
+              href="/get_surprise_{{player.id}}surp/" 
+              class="btn btn-danger"
+              onclick="Preloader()"
+            >
+              Все верно
+            </a> 
+
+          </div>
+
+        </div>
+      </div>        
+    </div>
+
+    <!-- MEMORY AREUSURE -->
+    <div 
+      class="modal fade" 
+      id="AreUsureMemory{{player.id}}" 
+      tabindex="-1" 
+      aria-labelledby="AreUsureMemory{{player.id}}" 
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+          <div class="modal-header">
+
+              <h1 class="modal-title fs-5">
+                🟣 Подтверждение Мемори 🟣
+              </h1>
+
+              <button 
+                type="button" 
+                class="btn-close" 
+                data-bs-dismiss="modal" 
+                aria-label="Close"
+              ></button>
+
+          </div>
+
+          <div class="modal-body h5">
+            Вы хотите вытащить карточку Мемори?
+          </div>
+
+          <div class="modal-footer">
+
+            <button 
+              type="button" 
+              class="btn btn-outline-secondary" 
+              data-bs-dismiss="modal"
+            >
+              Отмена
+            </button>
+
+            <a 
+              href="/get_surprise_{{player.id}}memo/" 
+              class="btn btn-danger"
+              onclick="Preloader()"
+            >
+              Все верно
+            </a> 
+
+          </div>
+
+        </div>
+      </div>        
+    </div>
+    <!-- END AREUSURE -->

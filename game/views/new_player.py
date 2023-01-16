@@ -25,7 +25,7 @@ def new_player( request ):
             player   = new_player,
             category = 'OTHER',
             name     = name,
-            count    = count
+            count    = count,
         ).save()
 
         request_template = redirect( f"/player_control_{new_player.id}/" )
