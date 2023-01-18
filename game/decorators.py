@@ -10,7 +10,10 @@ def check_user_session_hash( view ):
     def wrapped( request, *args, **kwargs ):
 
         if request.user.is_authenticated:
+            print('check_user_session_hash: User authorised!')
             return view( request, *args, **kwargs )
+
+        print('check_user_session_hash: User is not authorised!')
 
         try:
             print('check_user_session_hash: Try get session_hash') 
