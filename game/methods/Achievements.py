@@ -91,8 +91,10 @@ def getAchievements( players ):
             visible = True 
         )
         .annotate(
-            total_commandpayments = Sum('commandpayments__count'),
-            filter = Q( commandpayments__lt=0 ) 
+            total_commandpayments = Sum(
+                'commandpayments__count', 
+                filter = Q( commandpayments__lt=0 ) 
+            ),            
         )
         .order_by('-total_commandpayments')
         .first()
