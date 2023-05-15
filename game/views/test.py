@@ -3,6 +3,7 @@ from django.http import HttpResponseBadRequest, JsonResponse
 
 from game.models.Player import Player
 from game.models.Actions import Actions
+from game.models.GameSessions import GameSessions
 from game.models.Business import Business
 from game.models.PlayersBusiness import PlayersBusiness
 from game.models.CommandPayments import CommandPayments
@@ -20,20 +21,20 @@ from game.methods.PlayerMethods import getCommandBusinesses
 from game.methods.PlayerMethods import getPlayerCategoties
 
 
-from game.methods.NotificationModal import Modal
 
-from django.core import serializers
-
-from game.views.player_control import player_control
+from django.db.models import Min
+from django.db.models.functions import TruncSecond
 
 
 def test( request ):
-    if request.user.is_authenticated:
 
-        player = Player.objects.get( pk=80 )
+    session = GameSessions.objects.get( pk=19 )
 
-        # Create Bootstrap Modal window
-        print( getPlayerCategoties( player ) )
-        
+    actions = Actions.objects.filter(game_session=session).exclude(player__name="X")
+    grouped_actions = actions.annotate(truncated_time=TruncSecond('created_date')).values('truncated_time', 'player_id')
 
-        return HttpResponse( getPlayerCategoties( player ) )
+
+    for x in grouped_actions:
+        print(x)
+
+    return HttpResponse( actions )

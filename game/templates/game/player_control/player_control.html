@@ -3,8 +3,7 @@
 {% block content %}
 
     <!-- Player information and Controll Buttons -->
-    {% include 'game/player_control_dashboard.html' %}
-
+    {% include 'game/player_control/player_control_dashboard.html' %}
 
     <!-- After load check notification modal -->
     {% if modal.type == "surp" %}     
@@ -21,9 +20,9 @@
 
     {% endif %}
 
+    <script src="{% static 'game/js/player_control.js' %}"></script>
 
-    <script 
-      src="{% static 'game/js/player_control.js' %}"
-    ></script>
+    <!-- Autoupdate player data every 2sec-->
+    <script> setInterval(updatePlayerControlData, 2000); </script>
 
 {% endblock %}

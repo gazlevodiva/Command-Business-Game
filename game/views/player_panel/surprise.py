@@ -1,14 +1,14 @@
 
 from random import choice
-from random import randint
 
+from game.models.Moves import Moves
 from game.models.Player import Player
 from game.models.Actions import Actions
 from game.models.Surprises import Surprises
 from game.models.CommandPayments import CommandPayments
 from game.methods.NotificationModal import Modal
 
-from game.views.player_control import player_control
+from game.views.player_panel import player_controller
 
 from game.methods.PlayerMethods import getPlayerCategoties
 from game.methods.BusinessMethods import getCommandBank
@@ -17,10 +17,12 @@ from game.decorators import check_user_session_hash
 
 
 @check_user_session_hash
-def surprise( request, player_id, surprise_type ):
+def surprise( request, session, player_id, surprise_type ):
 
     player = Player.objects.get( pk=player_id )
 
+    # Create move
+    move = Moves.objects.create( player=player )
 
     # Get categories by surprise type
     all_categories = {
@@ -73,27 +75,28 @@ def surprise( request, player_id, surprise_type ):
         is_command = True
 
         if surprise.count == 0:
-            command_bank = getCommandBank()
+            command_bank = getCommandBank( player.game_session )
             count = -int( command_bank / 2 )
             action_name = f"{surprise.name} {count}"
         else:
             count = surprise.count
-        
+
         # Make command Payment with no player
         CommandPayments.objects.create(
-            count = count
+            move     = move,
+            category = "SURP",
+            count    = count
         )
-                    
 
-    Actions(
-        player   = player,
+    Actions.objects.create(
+        move     = move,
         name     = action_name,
         count    = action_count,
         category = 'SURP',
         is_command = is_command
-    ).save()
+    )
 
-    return player_control( 
+    return player_controller.player_control( 
         request   = request, 
         player_id = player_id, 
         modal     = modal 

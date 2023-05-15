@@ -1,30 +1,32 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import  redirect
 
 from django.http import HttpResponseRedirect
 
+from game.models.Player import Player
 from game.models.GameSessions import GameSessions
-
-from game.views.page404 import error_404
-from game.views.new_player import new_player
 
 
 def index( request, session_hash=False ):
 
-    last_game_session = GameSessions.objects.latest( 'created_date' )
+    try:
+        session = GameSessions.objects.get( session_hash=session_hash )
+    except GameSessions.DoesNotExist:
+        session = None
 
-    if last_game_session.session_hash == session_hash:
-        render_template = render(request, 'game/session_code.html')        
-        
-        if request.POST:            
-            session_code = int( request.POST['session_code'] )
-            last_game_session = GameSessions.objects.latest( 'created_date' )
+    if session:
 
-            if last_game_session.session_code == session_code:                
-                render_template = HttpResponseRedirect( '/new_player/' )       
-                render_template.set_cookie( 'game_session_hash', session_hash )
-                return render_template
-        
+        try:
+            game_session_controller = request.COOKIES['game_session_controller']
+            player = Player.objects.get( pk=game_session_controller )
+        except:
+            player = None
+
+
+        if player is not None:
+            return redirect( f"/player_control_{game_session_controller}/" )
+
+        render_template = HttpResponseRedirect( '/new_player/' )       
+        render_template.set_cookie( 'game_session_hash', session_hash )
         return render_template
 
-    return error_404( request )
-
+    return HttpResponseRedirect( '/login/' )  

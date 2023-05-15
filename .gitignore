@@ -7,7 +7,7 @@ db.sqlite3
 media
 
 # settings
-mysite/settings.py
+.mysite/settings.py
 
 # Backup files # 
 *.bak 

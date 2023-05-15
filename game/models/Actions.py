@@ -1,8 +1,7 @@
 from django.db import models
 from django.utils import timezone
 
-from game.models.Player import Player
-
+from game.models.Moves import Moves
 
 class Actions(models.Model):
 
@@ -10,17 +9,24 @@ class Actions(models.Model):
         ('SLR', 'salary'),
         ('CMND', 'command'),
         ('BSNS', 'business'),
+        ('BUY_BIS', 'buy_business'),
+        ('SELL_BIS', 'sell_business'),
+        ('DEF_BIS', 'defoult_business'),
         ('SURP', 'surprise'),
         ('INFL', 'inflation'),
-        ('OTHER', 'other')
+        ('NLWL', 'new_level'),
+        ('OTHER', 'other'),
     )
     
-    player       = models.ForeignKey( Player, on_delete=models.CASCADE )
+    move         = models.ForeignKey( Moves, null=True, on_delete=models.CASCADE )
     name         = models.CharField( max_length=200 )
     count        = models.IntegerField( default=0 )
-    category     = models.CharField( max_length=6, choices=ACTIONS_CATEGORY, default='OTHER' )
+    category     = models.CharField( max_length=9, choices=ACTIONS_CATEGORY, default='OTHER' )
     is_command   = models.BooleanField( default=False )
     created_date = models.DateTimeField( default=timezone.now )
 
     def __str__(self):
-        return f'''{self.player.name}: {self.name}'''
+        if not self.move:
+            return f'''{self.name}'''
+        return f'''{self.move.player.name}: {self.name}'''
+

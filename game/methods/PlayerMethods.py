@@ -1,12 +1,14 @@
 from random import randint
 
-from django.db.models import Sum
+from django.db.models import Sum, Subquery, OuterRef
 
+from game.models.Moves import Moves
 from game.models.Player import Player
 from game.models.Actions import Actions
 
 from game.models.PlayersBusiness import PlayersBusiness
 from game.models.CommandPayments import CommandPayments
+from game.models.PlayersBusinessStatus import PlayersBusinessStatus
 
 
 SALARY = {
@@ -39,17 +41,18 @@ def getPlayer( player_id ):
 
 def getBalance( player ):
     return (
-        Actions.objects
-        .filter( player=player )
+        Actions.objects.filter( 
+            move__player = player, 
+        )
         .aggregate( Sum('count') )['count__sum']
     )
 
 
-def getInflation( player ):
+def getInflation( move ):
     inflation = randint( 1,10 )
     if inflation == 1:
 
-        player_balance = getBalance(player)
+        player_balance = getBalance( move.player )
 
         if player_balance <= 0:
             count = 0
@@ -60,7 +63,7 @@ def getInflation( player ):
         name = f"📉 Инфляция! Потеря средств {count}."
 
         return Actions.objects.create(
-            player   = player,
+            move     = move,
             name     = name,
             count    = count,
             category = 'INFL',
@@ -70,23 +73,23 @@ def getInflation( player ):
     name = 'Инфляции нет.'
 
     return Actions.objects.create(
-        player   = player,
+        move     = move,
         name     = name,
         count    = 0,
         category = 'OTHER',
     )
     
 
-def getSalary( player ):
+def getSalary( move ):
     try:
-        salary = SALARY[ player.level ]
+        salary = SALARY[ move.player.level ]
     except:
         salary = 0
 
-    name = f'Зарплата {salary}, круг {player.level+1}.'
+    name = f'Зарплата {salary}, круг { move.player.level+1 }.'
 
     return Actions.objects.create(
-        player   = player,
+        move     = move,
         name     = name,
         count    = salary,
         category = 'SLR',
@@ -94,21 +97,17 @@ def getSalary( player ):
 
 
 def getBusinesses( player ):
-    return (
-        PlayersBusiness.objects
-        .filter( 
-            player = player, 
-            status = 'ACTIVE' 
+    res = PlayersBusiness.objects.annotate(
+        latest_status=Subquery(
+            PlayersBusinessStatus.objects.filter(players_business=OuterRef("pk")).order_by("-move").values("status")[:1]
         )
-    )
+    ).filter(player=player, latest_status="ACTIVE")
+
+    return res
 
 
 def getCommandBusinesses( player=None ):
-     return PlayersBusiness.objects.filter( 
-        player     = player, 
-        status     = 'ACTIVE',
-        is_command = True
-    )
+    return getBusinesses( player ).filter( is_command=True )
 
 
 def setNewLevel( player ):
@@ -116,70 +115,86 @@ def setNewLevel( player ):
     return player.save()
 
 
-def newBusiness( player, business, is_command ):
+def newBusiness( move, business, is_command ):
 
     if is_command:
         name = f'''
             Стал администратором {business.name} в коммандном бизнесе.
         '''
-        Actions(
-            player   = player,
+        Actions.objects.create(
+            move     = move,
             name     = name,
             count    = 0,
-            category = 'CMND',
+            category = 'BUY_BIS',
             is_command = is_command
-        ).save()
+        )
 
-        CommandPayments(
-            count = -business.cost
-        ).save()
+        CommandPayments.objects.create(
+            move     = move,
+            category = "BUY_BIS",
+            count    = -business.cost
+        )
 
-        PlayersBusiness(
-            player     = player, 
+        players_business = PlayersBusiness.objects.create(
+            player     = move.player, 
             business   = business,
             is_command = is_command,
-        ).save()
+        )
 
     if not is_command:
         name = f'''
             Купил личный бизнес {business.name}.
         '''
-        Actions(
-            player   = player,
+        Actions.objects.create(
+            move     = move,
             name     = name,
             count    = -business.cost,
-            category = 'BSNS',
-        ).save()
+            category = 'BUY_BIS',
+        )
 
-        PlayersBusiness(
-            player     = player, 
+        players_business = PlayersBusiness.objects.create(
+            player     = move.player, 
             business   = business,
             is_command = is_command,
-        ).save()
+        )
+
+    PlayersBusinessStatus.objects.create(
+        players_business = players_business,
+        move   = move,
+        status = "ACTIVE"
+    )
+
+    
 
 
-def PlayerXReinvest():
-    player_X = Player.objects.get( name='X' )
-    player_x_balance = getBalance( player_X )
+def PlayerXReinvest( move ):
+    player_x = Player.objects.get( name='X', game_session=move.player.game_session )
+    player_x_balance = getBalance( player_x )
+
+    if player_x_balance == 0:
+        return
 
     name = f'Вложил в командный бизнес {player_x_balance}.'
+
+    new_move = Moves.objects.create( player=player_x, number=move.number )
     
-    Actions(
-        player   = player_X,
+    Actions.objects.create(
+        move     = new_move,
         name     = name,
         count    = -player_x_balance,
         category = 'CMND',
         is_command = True
-    ).save()
+    )
 
-    CommandPayments(
-        player = player_X, 
-        count  = player_x_balance
-    ).save()
+    CommandPayments.objects.create(
+        move     = new_move, 
+        category = "DEPOSITE",
+        count    = player_x_balance
+    )
 
 
-def getActions():
-    return Actions.objects.all()
+def getActions( session ):
+    return Actions.objects.filter( move__player__game_session=session ).order_by( 'created_date' )
 
 
 def getPlayerCategoties( player ):
@@ -193,14 +208,21 @@ def getPlayerCategoties( player ):
     return categories
 
 
-def getPlayerSurprises( player ):
-    return Actions.objects.filter( player=player, category='SURP' )
+def getPlayerSurprises( move ):
+    return Actions.objects.filter( 
+            move     = move, 
+            category = 'SURP',
+        )
 
 
 def getBusinessesCost( player):
     return (
         PlayersBusiness.objects
-        .filter(player=player, status='ACTIVE')
+        .filter(
+            player       = player, 
+            status       = 'ACTIVE',
+            game_session = player.game_session
+        )
         .aggregate(Sum('business__cost'))['business__cost__sum']
     )
     

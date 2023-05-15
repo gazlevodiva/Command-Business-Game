@@ -11,19 +11,16 @@
             <div class="modal-content">
 
                 <div class="modal-header">
-
                     <h1 class="modal-title fs-5 lead" id="newLevelModal">
                         {{ modal.title }}
                     </h1>
-
                     <button 
-                    type="button" 
-                    class="btn-close" 
-                    data-bs-dismiss="modal" 
-                    aria-label="Close"
-                    >
+                        type="button" 
+                        class="btn-close" 
+                        data-bs-dismiss="modal" 
+                        aria-label="Close"
+                        >
                     </button>
-
                 </div>
 
                 <div class="modal-body">
@@ -43,14 +40,18 @@
                     <div class="card-body">
                     {% for action in modal.actions %}
 
-                        {% if action.count < 0 %}
-                            <div class="p text-danger">
-                            <b>{{ action.player }}</b> {{ action.name }} 
-                            </div>
-                        {% else %}
-                            <div class="p">
-                            <b>{{ action.player }}</b> {{ action.name }} 
-                            </div>
+                        {% if action.move.player == player %}
+
+                            {% if action.count < 0 %}
+                                <div class="p text-danger">
+                                {{ action.name }} 
+                                    </div>
+                            {% else %}
+                                <div class="p">
+                                    {{ action.name }} 
+                                </div>
+                            {% endif %}
+                        
                         {% endif %}
 
                     {% endfor %}
@@ -59,15 +60,13 @@
                 </div>
 
                 <div class="modal-footer">
-
                     <button 
-                    type="button" 
-                    class="btn btn-danger" 
-                    data-bs-dismiss="modal"
-                    >
-                    Спасибо
+                        type="button" 
+                        class="btn btn-danger" 
+                        data-bs-dismiss="modal"
+                        >
+                        Спасибо
                     </button>
-
                 </div>
 
             </div>

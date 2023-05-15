@@ -1,0 +1,73 @@
+{% extends 'game/base.html' %}
+{% block content %}
+
+<!-- <meta http-equiv="refresh" content="3"> -->
+
+<div class="container"  hx-get="{% url 'session_panel_view' %}" hx-trigger="every 3s">
+    <div class="row align-items-center">
+        <div class="col-10 col-md-8 col-lg-6 mx-auto">
+            <div class="my-5">
+                <div class="p-4 p-sm-5">
+                    <h4 class="text-center">⚙️ Настройка сессии ⚙️</h4>                    
+                    <div class="d-flex justify-content-center align-items-center mb-3">
+                        <div class="qr-code-placeholder">
+                            <img src="data:image/png;base64,{{ qr_code_base64 }}" alt="QR-code-placeholder" class="img-fluid">                            
+                            <p class="text-center">http://{{ request.get_host }}/s/{{ session.session_hash }}</p>
+                        </div>
+                    </div>
+
+                    <div class="d-grid mb-3 col-sm-12 col-lg-8 mx-auto">
+                        <a
+                            class="btn btn-lg btn-danger text-uppercase"
+                            type="button"
+                            href="/dashboard/"
+                            >
+                            Играть
+                        </a>
+
+                    </div>
+
+                    <!-- <h5 class="col-8 mx-auto mb-3 mt-4">Игроки:</h5> -->
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-8 mx-auto mb-2">
+                            <hr>
+                            <p>Игроки:</p>
+                            {% for player in players %}
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="text-start text-muted mx-3">
+                                            <i class="bi bi-person-fill"></i>
+                                        </div>
+                                        <div class="text-center">
+                                            <span class="h5">{{ player.name }}</span>
+                                        </div>
+                                        <div class="text-end">
+                                            <a 
+                                                type="button" 
+                                                class="btn text-danger m-0 p-0 mx-3" 
+                                                href="{% url 'delete_player' player.id %}"
+                                                onclick="Preloader()"
+                                                >
+                                                <i class="bi bi-trash-fill"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p class="text-center text-muted mt-2">Сессия: {{ session.session_name }}</p>
+
+</div>
+
+
+{% endblock %}

@@ -1,16 +1,18 @@
 from django.urls import path
 
-from game.views import reset
-from game.views import dashboard
+from game.views.player_panel import player_controller
+from game.views.player_panel import sell_business
+from game.views.player_panel import sell_share
+from game.views.player_panel import new_level
+from game.views.player_panel import surprise
+from game.views.player_panel import rules
+
+from game.views import session_controller
 from game.views import new_player
-from game.views import player_control
-from game.views import sell_business
-from game.views import new_level
-from game.views import sell_share
-from game.views import surprise
+from game.views import dashboard
 from game.views import finish
+from game.views import login
 from game.views import index
-from game.views import rules
 from game.views import test
 
 
@@ -29,11 +31,6 @@ urlpatterns = [
         route = 'test/', 
         view  = test.test, 
         name  = 'test_view',
-    ),
-    path(
-        route = 'reset/', 
-        view  = reset.reset, 
-        name  = 'reset_view',
     ),
     path(
         route = 'rules/', 
@@ -57,8 +54,23 @@ urlpatterns = [
     ),
     path(
         route = 'player_control_<int:player_id>/', 
-        view  = player_control.player_control, 
+        view  = player_controller.player_control, 
         name  = 'player_control_view',
+    ),
+    path(
+        route = 'get_player_control_data_<int:player_id>/', 
+        view  = player_controller.player_control_data, 
+        name  = 'player_control_data_ajax',
+    ),
+    path(
+        route = 'get_player_control_business_data_<int:player_id>_<str:business_category>/', 
+        view  = player_controller.player_control_business_data, 
+        name  = 'player_control_business_data_ajax',
+    ),
+    path(
+        route = 'buy_<str:is_command>_business_<int:player_id>_<int:business_id>/', 
+        view  = player_controller.player_control_buy_business, 
+        name  = 'player_control_buy_business_view',
     ),
     path(
         route = 'sell_business_<int:player_business_id>/', 
@@ -66,7 +78,7 @@ urlpatterns = [
         name  = 'sell_business_view',
     ),
     path(
-        route = 'sell_share_<int:player_id>/', 
+        route = 'sell_share_<int:player_id>_<int:count>/', 
         view  = sell_share.sell_share, 
         name  = 'sell_share_view',
     ),
@@ -79,5 +91,25 @@ urlpatterns = [
         route = 'finish/', 
         view  = finish.finish, 
         name  = 'finish_view',
+    ),
+    path(
+        route = 'game_settings/', 
+        view  = session_controller.session_panel, 
+        name  = 'session_panel_view',
+    ),
+    path(
+        route = 'reset_last_move/', 
+        view  = session_controller.reset_last_move, 
+        name  = 'reset_last_move_view',
+    ),
+    path(
+        route = 'delete_player/<int:player_id>/', 
+        view  = session_controller.delete_player, 
+        name  = 'delete_player'
+    ),
+    path(
+        route = 'login/', 
+        view  = login.login, 
+        name  = 'login_view',
     ),
 ]

@@ -16,10 +16,10 @@ from game.methods.PlayerMethods import getBusinessesCost
 from game.methods.PlayerMethods import getBalance
 
 @check_user_session_hash
-def finish( request ):
+def finish( request, session ):
 
     # PLayers list
-    players = Player.objects.filter( visible=True )
+    players = Player.objects.filter( visible=True, game_session=session )
 
     # Get achievements for all players
     achievements = getAchievements( players )
@@ -38,7 +38,7 @@ def finish( request ):
         if not command_cost:
             command_cost = 0
 
-        profit     = int( (balance+command_cost+business_cost) * 100 / 60000 )
+        profit = int( (balance+command_cost+business_cost) * 100 / 60000 )
         
         players_info.append(
             {

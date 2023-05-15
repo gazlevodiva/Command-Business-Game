@@ -12,11 +12,17 @@ from game.methods.PlayerMethods import getBusinesses
 from game.methods.PlayerMethods import getCommandBusinesses
 
 from game.decorators import check_user_session_hash
+from django.contrib.auth.decorators import login_required
 
+
+@login_required( login_url='/login/' )
 @check_user_session_hash
-def dashboard( request ):
+def dashboard( request=None, session=None ):
 
-    players = Player.objects.filter( visible=True )
+    players = Player.objects.filter( 
+        visible      = True, 
+        game_session = session 
+    )
 
     # Info about players business
     players_info = []
@@ -34,14 +40,14 @@ def dashboard( request ):
         )
 
     # Command player info
-    command_players = getCommandPlayers()   
+    command_players = getCommandPlayers( session )   
 
     # Info about command businesses
     command_player_info = [] 
 
     for command_player in command_players:
         
-        command_businesses = getCommandBusinesses( command_player['player'] )
+        command_businesses = getCommandBusinesses( command_player['move__player'] )
 
         command_player_info.append(
             {
@@ -51,22 +57,20 @@ def dashboard( request ):
         )
 
     # Game actions
-    actions = getActions()
+    actions = getActions( session )
 
     # Total command balance
-    bank = getCommandBank()
-
-    session_info = GameSessions.objects.latest( 'created_date' )
-    session_link = f'{request.get_host()}/s/{session_info.session_hash}'
-    session_code = session_info.session_code
+    bank = getCommandBank( session )
 
     context = {
         'players':         players_info,
         'command_players': command_player_info,
         'command_bank':    bank,
-        'actions':         actions[::-1][:9],
-        'session_code':    session_code,
-        'session_link':    session_link,
-        
+        'actions':         actions[::-1][:12],
+        'session':         session,        
     }
+
+    if request is None:
+        return context
+
     return render( request, 'game/dashboard.html', context)

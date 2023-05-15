@@ -1,0 +1,41 @@
+{% load static %}
+
+<div class="container" >
+    <div class="row justify-content-md-center">
+        <div 
+          class="card border-0 col-md-5 mb-5" 
+          style="min-height: 100vh;"
+        >
+
+            <img 
+            src="{% static 'game/img/logo2.svg' %}" 
+            alt="abp-logo" 
+            class="card-img-top mt-5 mb-3"            
+            style="height: 8vh;"
+            />
+
+            <div class="card-body">
+                <div class="d-grid gap-2 col-md-8 mx-auto text-center" >
+                    <div class="display-6">
+                        <b>{{player.name}}</b>
+                    </div>
+                    <div id="player_id" value="{{ player.id }}" hidden>{{ player.id }}</div>
+                    <div id="player_level">
+                        <b>Круг:</b> {{player.level}}
+                    </div>
+                    <div class="display-6" id="player_balance" value="{{ player_balance }}">
+                        <b>{{ player_balance }}</b>
+                    </div>                        
+                    <div id="player_command_share">
+                        <b>Доля КБ:</b> {{command_count}} - {{command_share}}% 
+                    </div>
+                </div>
+                <!-- Keyboard -->
+                {% include 'game/player_control/player_control_keyboard.html' %}
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<p class="text-muted small text-center">{{ game_session.session_name }}</p>

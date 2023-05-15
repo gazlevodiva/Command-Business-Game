@@ -1,15 +1,15 @@
 {% extends 'game/base.html' %}
 {% block content %}
 
-    <!-- <meta http-equiv="refresh" content="3"> -->
+    <!--  hx-get="{% url 'dashboard_view' %}" hx-trigger="every 3s" -->
 
-    <div class="container mt-5">
+    <div class="container" hx-get="{% url 'dashboard_view' %}" hx-trigger="every 3s">
       <div class="row justify-content-center">
 
         {% for player in players %}
-        <div class="col-xl col-md-5 mb-4">
-          <div class="card border-0 shadow">
-            <div class="card-body text-center">
+        <div class="col-xl-2 col-md-2 mb-3 mt-5">
+          <div class="card border-0 shadow" style="width: 200px; height: 205px;">
+            <div class="card-body text-justify">
 
               <a 
                 class="card-title text-dark fs-3 text-decoration-none" 
@@ -22,6 +22,12 @@
                 <b>Круг:</b> {{ player.player.level }}
               </div>
 
+              <div class="">
+                <b>Бизнесов:</b> {{ player.businesses|length }}
+              </div>
+
+              <hr>
+
               {% if player.balance < 0 %}
 
                   <div class="text-danger mt-2 h3">
@@ -30,57 +36,23 @@
 
               {% else %}
 
-                  <div class="mt-2 h3">
+                  <div class="mt-2 h2">
                     {{ player.balance }}
                   </div>
 
               {% endif %}
-
-
-
-              <hr>
-              <div class="row g-2 row-cols-2">
-                {% for player_business in player.businesses %}
-
-                        
-                        {% if player_business.is_command %}
-                        <div class="col">
-                            <div class="card" >
-                              <div class="card-body p-2">
-                                💰{{ player_business.business.name | truncatechars:5 }}
-                              </div>
-                            </div>
-                        </div>
-                        {% else %}
-                        <div class="col">
-                            <div class="card" >
-                              <div class="card-body p-2">
-                                {{ player_business.business.name | truncatechars:7 }}
-                              </div>
-                            </div>
-                        </div>
-                        {% endif %}
-
-                {% endfor %}
-
-              </div>
 
             </div>
           </div>
         </div>
         {% endfor %}
 
-
-      <!-- /.row -->
-
-      <div class="row mt-5">
+      <div class="row mt-5" style="height:500px">
 
                 <div class="col-md-7">
-
                     <div class="card-title text-center fs-2 mb-5">
                       💰 Командный бизнес 💵
                     </div>
-
                     <table class="table">
                       <thead>
                         <tr>
@@ -95,7 +67,7 @@
 
                             {% if command_player.command_player.share > 0 %}
                             <tr>
-                                  <th scope="row">{{ command_player.command_player.player.name }}</th>
+                                  <th scope="row">{{ command_player.command_player.move__player.name }}</th>
 
                                   <td>{{ command_player.command_player.share }}%</td>
 
@@ -113,71 +85,47 @@
                         {% endfor %}
                       </tbody>
                     </table>
-
                 </div>
 
                 <div class="col-md-5">
-                  <div class="display-5 text-center">
-                    {{ command_bank }}
-                  </div>                    
+                  <div class="display-5 text-center">{{ command_bank }}</div>                    
                   <div class="h4 mb-2 mt-3 text-center">История игры</div>
                   {% for action in actions %}
 
-                    {% if action.player.name != 'X' %}
+                    {% if action.move.player.name != 'X' %}
                   
                       {% if action.count < 0 %}
-                      
                           <div class="text-danger fw-normal">
-                            <b>{{ action.player }}</b> {{ action.name }} 
+                            <b>{{ action.move.player.name }}</b> {{ action.name }} 
                           </div>
-
                       {% else %}
-
                           <div class="fw-normal">
-                            <b>{{ action.player }}</b> {{ action.name }} 
+                            <b>{{ action.move.player.name }}</b> {{ action.name }} 
                           </div>
-
                       {% endif %}
 
                     {% endif %}
 
                   {% endfor %}
+                  <div>
+                    <button class="btn text-muted mt-3" onclick="resetLastMove()">🔙 Отменить последний ход</button>
+                  </div>
                 </div>
+                
 
       </div>
 
     </div>
 
     <div class="container footer" >
-      <footer class="my-4">
-        <p class="text-center fs-3 fw-lighter mb-1"> Пароль: {{ session_code | cut:',' }}</p>
+      <footer class="my-4 mt-3">
         <div class="text-center">
-          <input 
-            type  = "text" 
-            id    = "session_link"
-            value = "{{ session_link }}"
-            disabled
-            hidden
-          /> 
-          <button  
-            class   = "btn fs-5 text-muted" 
-            type    = "button"
-            onclick = "copyToClipboard()"
-          >
-          🔗{{ session_link }}🔗
-          </button > 
-
+          <a class="btn text-muted" type="btn" href="/game_settings/">
+            ⚙️ Настройка игры ⚙️
+          </a>
         </div>        
       </footer>
     </div>
-
-    <script>
-      function copyToClipboard(){
-          session_link_element = document.getElementById("session_link")
-          navigator.clipboard.writeText(session_link_element.value);
-          console.log( session_link_element.value );
-      }
-    </script>
 
 
 {% endblock %}
