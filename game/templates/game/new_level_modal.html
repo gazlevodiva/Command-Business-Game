@@ -1,83 +1,32 @@
-
-    <div 
-        class="modal fade" 
-        id="newLevelModal" 
-        tabindex="-1" 
-        aria-labelledby="newLevelModal" 
-        aria-hidden="true"
-    >
-
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5 lead" id="newLevelModal">
-                        {{ modal.title }}
-                    </h1>
-                    <button 
-                        type="button" 
-                        class="btn-close" 
-                        data-bs-dismiss="modal" 
-                        aria-label="Close"
-                        >
-                    </button>
-                </div>
-
-                <div class="modal-body">
-                    
-                    {% if modal.profit > 0 %}
-                        <div class="fs-3">
-                            Итоговый доход: {{ modal.profit }}
-                        </div>
-                    {% else %}
-                        <div class="fs-3 text-danger">
-                            Итоговый доход: {{ modal.profit }}
-                        </div>
-                    {% endif %}
-
-                    <hr>
-
-                    <div class="card-body">
-                    {% for action in modal.actions %}
-
-                        {% if action.move.player == player %}
-
-                            {% if action.count < 0 %}
-                                <div class="p text-danger">
-                                {{ action.name }} 
-                                    </div>
-                            {% else %}
-                                <div class="p">
-                                    {{ action.name }} 
-                                </div>
-                            {% endif %}
-                        
-                        {% endif %}
-
-                    {% endfor %}
-                    </div>
-
-                </div>
-
-                <div class="modal-footer">
-                    <button 
-                        type="button" 
-                        class="btn btn-danger" 
-                        data-bs-dismiss="modal"
-                        >
-                        Спасибо
-                    </button>
-                </div>
-
-            </div>
-        </div>
-
+<div
+  class="modal fade"
+  id="newLevelModal"
+  tabindex="-1"
+  aria-labelledby="newLevelModal"
+  aria-hidden="true"
+  data-bs-backdrop="static"
+>
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 lead" id="newLevelModal">
+          Новый уровень 🎉
+        </h1>
+      </div>
+      <div class="modal-body">
+        <div class="fs-3" id="new_level_income"></div>
+        <div class="card-body" id="new_level_actions"></div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-danger"
+          data-bs-dismiss="modal"
+          id="new_level_accept"
+        >
+          Спасибо
+        </button>
+      </div>
     </div>
-
-    <script>
-        $(document).ready(function(){
-            $("#newLevelModal").modal('show');
-            window.history.pushState("", "", '/player_control_{{ player.id }}/');
-        });
-    </script>
-
+  </div>
+</div>

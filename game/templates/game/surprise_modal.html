@@ -1,71 +1,30 @@
-
-    <div 
-    class="modal fade" 
-    id="surpriseModal" 
-    tabindex="-1" 
-    aria-labelledby="surpriseModal" 
-    aria-hidden="true"
-    >
-
-        <div class="modal-dialog modal-dialog-centered">
-
-            <div class="modal-content">
-
-                <div class="modal-header">
-
-                    <h1 class="modal-title fs-5 lead" id="surpriseModal">
-                        {{ modal.title }}
-                    </h1>
-
-                    <button 
-                    type="button" 
-                    class="btn-close" 
-                    data-bs-dismiss="modal" 
-                    aria-label="Close"
-                    >
-                    </button>
-
-                </div>
-
-                <div class="modal-body text-center">
-
-                    <div class="h4">
-                        {{ modal.surprise.name }}
-                    </div>
-    
-                    {% if modal.surprise.count < 0 %}
-                        <div class="h2 text-danger">
-                            {{ modal.surprise.count }}
-                        </div>
-                    {% elif modal.surprise.count > 0 %}
-                        <div class="h2 text-success">
-                            {{ modal.surprise.count }}
-                        </div>
-                    {% endif %}
-    
-                </div>
-
-                <div class="modal-footer">
-
-                    <button 
-                    type="button" 
-                    class="btn btn-danger" 
-                    data-bs-dismiss="modal"
-                    >
-                    Спасибо
-                    </button>
-
-                </div>
-
-            </div>
-            
-        </div>
-
+<div
+  class="modal fade"
+  id="surpriseModal"
+  tabindex="-1"
+  aria-labelledby="surpriseModal"
+  aria-hidden="true"
+  data-bs-backdrop="static"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 lead" id="surpriseModal">Сюрприз</h1>
+      </div>
+      <div class="modal-body text-center">
+        <div class="h4" id="surprise_name_modal"></div>
+        <div class="h2" id="surprise_count_modal"></div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-danger"
+          data-bs-dismiss="modal"
+          id="surprise_close_btn"
+        >
+          Спасибо
+        </button>
+      </div>
     </div>
-
-    <script>
-        $(document).ready(function(){
-            $("#surpriseModal").modal('show');
-            window.history.pushState("", "", '/player_control_{{ player.id }}/');
-        });
-    </script>
+  </div>
+</div>

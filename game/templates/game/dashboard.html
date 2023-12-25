@@ -1,131 +1,105 @@
-{% extends 'game/base.html' %}
-{% block content %}
+{% extends 'game/base.html' %} {% block content %}
 
-    <!--  hx-get="{% url 'dashboard_view' %}" hx-trigger="every 3s" -->
+<div class="container">
+  <div class="row justify-content-center">
+    {% for player in players %}
+    <div class="col-xl-2 col-md-2 mb-3 mt-5">
+      <div class="card border-0 shadow" style="width: 200px; height: 205px">
+        <div class="card-body text-justify">
+          <a
+            class="card-title text-dark fs-3 text-decoration-none"
+            href="/player_control_{{player.player.id}}/"
+          >
+            {{ player.player.name }}
+          </a>
 
-    <div class="container" hx-get="{% url 'dashboard_view' %}" hx-trigger="every 3s">
-      <div class="row justify-content-center">
+          <div><b>Круг:</b> {{ player.player.level }}</div>
 
-        {% for player in players %}
-        <div class="col-xl-2 col-md-2 mb-3 mt-5">
-          <div class="card border-0 shadow" style="width: 200px; height: 205px;">
-            <div class="card-body text-justify">
+          <div class=""><b>Бизнесов:</b> {{ player.businesses|length }}</div>
 
-              <a 
-                class="card-title text-dark fs-3 text-decoration-none" 
-                href="/player_control_{{player.player.id}}/"
-              >
-                {{ player.player.name }}
-              </a>
-              
-              <div>
-                <b>Круг:</b> {{ player.player.level }}
-              </div>
+          <hr />
 
-              <div class="">
-                <b>Бизнесов:</b> {{ player.businesses|length }}
-              </div>
+          {% if player.balance < 0 %}
 
-              <hr>
+          <div class="text-danger mt-2 h3">{{ player.balance }}</div>
 
-              {% if player.balance < 0 %}
+          {% else %}
 
-                  <div class="text-danger mt-2 h3">
-                    {{ player.balance }}
-                  </div>
+          <div class="mt-2 h2">{{ player.balance }}</div>
 
-              {% else %}
-
-                  <div class="mt-2 h2">
-                    {{ player.balance }}
-                  </div>
-
-              {% endif %}
-
-            </div>
-          </div>
+          {% endif %}
         </div>
-        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
 
-      <div class="row mt-5" style="height:500px">
+    <div class="row mt-5" style="height: 500px">
+      <div class="col-md-7">
+        <div class="card-title text-center fs-2 mb-5">
+          💰 Командный бизнес 💵
+        </div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Игроки</th>
+              <th scope="col">Доля</th>
+              <th scope="col">Стоимость доли</th>
+              <th scope="col">Администратор</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for command_player in command_players %} {% if
+            command_player.command_player.share > 0 %}
+            <tr>
+              <th scope="row">
+                {{ command_player.command_player.move__player.name }}
+              </th>
 
-                <div class="col-md-7">
-                    <div class="card-title text-center fs-2 mb-5">
-                      💰 Командный бизнес 💵
-                    </div>
-                    <table class="table">
-                      <thead>
-                        <tr>
-                          <th scope="col">Игроки</th>
-                          <th scope="col">Доля</th>
-                          <th scope="col">Стоимость доли</th>
-                          <th scope="col">Администратор</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {% for command_player in command_players %}
+              <td>{{ command_player.command_player.share }}%</td>
 
-                            {% if command_player.command_player.share > 0 %}
-                            <tr>
-                                  <th scope="row">{{ command_player.command_player.move__player.name }}</th>
+              <td>{{ command_player.command_player.count }}</td>
 
-                                  <td>{{ command_player.command_player.share }}%</td>
-
-                                  <td>{{ command_player.command_player.count }}</td>
-
-                                  <td>
-                                    {% for command_businesses in command_player.command_businesses %}
-                                    🏭
-                                    {% endfor %}
-                                  </td>
-                            </tr>
-                            {% endif %}
-
-
-                        {% endfor %}
-                      </tbody>
-                    </table>
-                </div>
-
-                <div class="col-md-5">
-                  <div class="display-5 text-center">{{ command_bank }}</div>                    
-                  <div class="h4 mb-2 mt-3 text-center">История игры</div>
-                  {% for action in actions %}
-
-                    {% if action.move.player.name != 'X' %}
-                  
-                      {% if action.count < 0 %}
-                          <div class="text-danger fw-normal">
-                            <b>{{ action.move.player.name }}</b> {{ action.name }} 
-                          </div>
-                      {% else %}
-                          <div class="fw-normal">
-                            <b>{{ action.move.player.name }}</b> {{ action.name }} 
-                          </div>
-                      {% endif %}
-
-                    {% endif %}
-
-                  {% endfor %}
-                  <div>
-                    <button class="btn text-muted mt-3" onclick="resetLastMove()">🔙 Отменить последний ход</button>
-                  </div>
-                </div>
-                
-
+              <td>
+                {% for command_businesses in command_player.command_businesses
+                %} 🏭 {% endfor %}
+              </td>
+            </tr>
+            {% endif %} {% endfor %}
+          </tbody>
+        </table>
       </div>
 
+      <div class="col-md-5">
+        <div class="display-5 text-center">{{ command_bank }}</div>
+        <div class="h4 mb-2 mt-3 text-center">История игры</div>
+        {% for action in actions %} {% if action.move.player.name != 'X' and
+        action.visible %} {% if action.count < 0 %}
+        <div class="text-danger fw-normal">
+          <b>{{ action.move.player.name }}</b> {{ action.name }}
+        </div>
+        {% else %}
+        <div class="fw-normal">
+          <b>{{ action.move.player.name }}</b> {{ action.name }}
+        </div>
+        {% endif %} {% endif %} {% endfor %}
+        <div>
+          <button class="btn text-muted mt-3" onclick="resetLastMove()">
+            🔙 Отменить последний ход
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <div class="container footer" >
-      <footer class="my-4 mt-3">
-        <div class="text-center">
-          <a class="btn text-muted" type="btn" href="/game_settings/">
-            ⚙️ Настройка игры ⚙️
-          </a>
-        </div>        
-      </footer>
-    </div>
+  <div class="container footer">
+    <footer class="my-4 mt-3">
+      <div class="text-center">
+        <a class="btn text-muted" type="btn" href="/game_settings/">
+          ⚙️ Настройка игры ⚙️
+        </a>
+      </div>
+    </footer>
+  </div>
 
-
-{% endblock %}
+  {% endblock %}
+</div>

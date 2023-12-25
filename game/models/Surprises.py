@@ -1,9 +1,5 @@
 from django.db import models
 
-from game.models.Player import Player
-from game.models.Business import Business
-
-
 class Surprises( models.Model ):
 
     SURPRISE_CATEGORY = (
@@ -17,6 +13,7 @@ class Surprises( models.Model ):
     )
 
     category   = models.CharField( max_length=10, choices=SURPRISE_CATEGORY, default='PERSONAL' )
+    session_id = models.IntegerField( default=0 )
     name       = models.CharField( max_length=200 )
     count      = models.IntegerField( default=0 )
     is_command = models.BooleanField( default=False )

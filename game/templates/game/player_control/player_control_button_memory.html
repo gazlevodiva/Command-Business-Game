@@ -1,11 +1,10 @@
-
 <!-- Button -->
-<a 
-  class="btn btn-outline-secondary "            
+<a
+  class="btn btn-outline-secondary"
   type="button"
-  data-bs-toggle="modal" 
+  data-bs-toggle="modal"
   data-bs-target="#AreUsureMemory{{ player.id }}"
-  >
+>
   <div class="row">
     <div class="col text-start">🟣</div>
     <div class="col-8">Мемори</div>
@@ -14,55 +13,45 @@
 </a>
 
 <!-- Modal -->
-<div 
-  class="modal fade" 
-  id="AreUsureMemory{{ player.id }}" 
-  tabindex="-1" 
-  aria-labelledby="AreUsureMemory{{ player.id }}" 
+<div
+  class="modal fade"
+  id="AreUsureMemory{{ player.id }}"
+  tabindex="-1"
+  aria-labelledby="AreUsureMemory{{ player.id }}"
   aria-hidden="true"
 >
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-
       <div class="modal-header">
+        <h1 class="modal-title fs-5">🟣 Карточка Мемори 🟣</h1>
 
-          <h1 class="modal-title fs-5">
-            🟣 Карточка Мемори 🟣
-          </h1>
-
-          <button 
-            type="button" 
-            class="btn-close" 
-            data-bs-dismiss="modal" 
-            aria-label="Close"
-          ></button>
-
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
       </div>
 
-      <div class="modal-body h5">
-        Вы хотите вытащить карточку Мемори?
-      </div>
+      <div class="modal-body h5">Вы хотите вытащить карточку Мемори?</div>
 
       <div class="modal-footer">
-
-        <button 
-          type="button" 
-          class="btn btn-outline-secondary" 
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
           data-bs-dismiss="modal"
         >
           Отмена
         </button>
 
-        <a 
-          href="/get_surprise_{{player.id}}memo/" 
+        <a
+          href="/local/get_surprise_{{player.id}}memo/"
           class="btn btn-danger"
           onclick="Preloader()"
         >
           Все верно
-        </a> 
-
+        </a>
       </div>
-
     </div>
-  </div>        
+  </div>
 </div>

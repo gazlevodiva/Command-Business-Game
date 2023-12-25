@@ -1,104 +1,80 @@
-
-<!-- Button -->
-<button 
-    class="btn btn-outline-secondary " 
-        type="button" 
-        data-bs-toggle="modal" 
-        data-bs-target="#BusinessModal{{ player.id }}2"
-    >
-    <div class="row">
-        <div class="col text-start">🟢</div>
-        <div class="col-8">Покупка бизнеса</div>
-        <div class="col text-end">🟢</div>
-    </div>
+<button
+  class="btn btn-outline-secondary"
+  type="button"
+  data-bs-toggle="modal"
+  data-bs-target="#BusinessModal"
+  id="buy-business-modal-button"
+  hidden
+>
+  <div class="row">
+    <div class="col text-start">🟢</div>
+    <div class="col-8">Покупка бизнеса</div>
+    <div class="col text-end">🟢</div>
+  </div>
 </button>
 
-
-<!-- Modal -->
-<div 
-class="modal fade" 
-id="BusinessModal{{ player.id }}2" 
-tabindex="-1" 
-aria-labelledby="BusinessModal{{ player.id }}2" 
-aria-hidden="true"
+<div
+  class="modal fade"
+  id="BusinessModal"
+  tabindex="-1"
+  aria-labelledby="BusinessModal"
+  aria-hidden="true"
+  data-bs-backdrop="static"
 >
   <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-
-          <div class="modal-header">
-
-          <h1 class="modal-title fs-5" id="BusinessModal{{ player.id }}2">
-              Покупка бизнеса
-          </h1>
-
-          <button 
-              type="button" 
-              class="btn-close" 
-              data-bs-dismiss="modal" 
-              aria-label="Close"
-          >
-          </button>
-
-          </div>
-
-          <form method="POST" id="buy_business_form" onsubmit="Preloader()">
-          {% csrf_token %}
-
-              <div class="modal-body">
-                  {% if player_businesses|length >= 10 %}
-
-                      <div class="h3 text-danger text-center">
-                        Максимум 10 бизнесов
-                      </div>
-
-                  {% else %}
-
-                  <div class="mb-3">
-
-                    <input 
-                      type="hidden" 
-                      id="player_id" 
-                      name="player_id" 
-                      value="{{ player_id }}"
-                      />
-                      
-                      <div class="container">
-                        <label class="form-label">Выберите категорию бизнеса:</label>
-
-                        <select class="form-select mb-4" aria-label="-" id="player_business_select_category">
-                          <option selected>Выберите категорию</option>
-                          <option value="ALL">All</option>
-                          <option value="HORECA">HoReCa</option>
-                          <option value="REALTY">Realty</option>
-                          <option value="SCIENCE">Science</option>
-                          <option value="IT">IT</option>
-                        </select>
-
-                        <div id="business_cards">
-                        </div>
-
-                        <p class="">При покупке <b>бизнеса как личный</b> вам придется заплатить полную цену, но и прибыль полностью ваша. </p>
-                        <p class="">Покупая <b>командный бизнес</b> вы не платите личными деньгами. Вы будете получать 20% + ваш процент в командном бизнесе от прибыли.</p>
-                      </div>
-
-
-                  </div>
-
-                  {% endif %}    
-              </div>
-
-              <div class="modal-footer">
-                  <button 
-                    type="button" 
-                    class="btn btn-outline-secondary" 
-                    data-bs-dismiss="modal"
-                  >
-                    Закрыть
-                  </button>
-              </div>
-
-          </form>
-
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="BusinessModal">Покупка бизнеса</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+          id="cls_bsns_btn_1"
+        ></button>
       </div>
+      <div class="modal-body" id="buy_business_modal_body">
+        {% if player_businesses|length >= 10 %}
+        <div class="h3 text-danger text-center">Максимум 10 бизнесов</div>
+        {% else %}
+        <input
+          type="hidden"
+          id="player_id"
+          name="player_id"
+          alue="{{ player_id }}"
+        />
+        <div class="container mb-3">
+          <label class="form-label">Выберите категорию бизнеса:</label>
+          <select class="form-select mb-4" id="player_business_select_category">
+            <option selected>Выберите категорию</option>
+            <option value="ALL">All</option>
+            <option value="HORECA">HoReCa</option>
+            <option value="REALTY">Realty</option>
+            <option value="SCIENCE">Science</option>
+            <option value="IT">IT</option>
+          </select>
+          <div id="business_cards"></div>
+          <p>
+            При покупке <b>бизнеса как личный</b> вам придется заплатить полную
+            цену, но и прибыль полностью ваша.
+          </p>
+          <p>
+            Покупая <b>командный бизнес</b> вы не платите личными деньгами. Вы
+            будете получать 20% + ваш процент в командном бизнесе от прибыли.
+          </p>
+        </div>
+        {% endif %}
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          data-bs-dismiss="modal"
+          id="cls_bsns_btn_2"
+        >
+          Закрыть
+        </button>
+      </div>
+    </div>
   </div>
 </div>

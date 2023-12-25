@@ -10,10 +10,9 @@ from game.decorators import check_user_session_hash
 
 @check_user_session_hash
 def sell_share(request, session, player_id, count):
+    player = Player.objects.get(pk=player_id)
+    last_move = Moves.objects.filter(player=player).last()
+    new_move = Moves.objects.create(player=player, position=last_move.position)
 
-    player = Player.objects.get( pk=player_id )
-    move = Moves.objects.create( player=player )
-
-    sellCommandShare( move, count )
-
+    sellCommandShare(new_move, count)
     return redirect(f"/player_control_{ player.id }/")

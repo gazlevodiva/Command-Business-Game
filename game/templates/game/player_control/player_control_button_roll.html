@@ -1,0 +1,48 @@
+<a
+  class="btn btn-outline-secondary"
+  type="button"
+  id="rollButton"
+  onclick="rollTheDice()"
+>
+  Бросить кубики 🎲
+</a>
+
+<div
+  class="modal fade"
+  id="RollTheDice"
+  tabindex="-1"
+  aria-labelledby="RollTheDice"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5">Подтверждение</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body h5">Вы готовы сделать ход? 🎲</div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          data-bs-dismiss="modal"
+        >
+          Отмена
+        </button>
+        <button
+          class="btn btn-danger"
+          id="rollButton"
+          data-bs-dismiss="modal"
+          onclick="rollTheDice()"
+        >
+          Все верно
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

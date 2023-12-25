@@ -1,7 +1,7 @@
-
 class Modal:
-    def __init__(self, title, player):
+    def __init__(self, title, player, surprise_id=0):
         self._player = player
+        self._id = surprise_id
         self._title = title
         self._type = ""
         self._actions = []
@@ -59,9 +59,9 @@ class Modal:
         return self._profit
 
     def _update_financials(self, action):
-        if action.count < 0 and action.category != 'COMMAND':
+        if action.count < 0 and action.category != "COMMAND":
             self._outcome += action.count
-        if action.count > 0 and action.category != 'COMMAND':
+        if action.count > 0 and action.category != "COMMAND":
             self._income += action.count
         self._profit += action.count
 

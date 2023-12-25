@@ -1,0 +1,90 @@
+{% extends 'game/base.html' %} 
+{% load static %} 
+{% block content %} 
+{% include 'game/preloader.html' %} 
+{% include 'game/player_control/player_move_preloader.html' %}
+
+<!-- Player information and Controll Buttons -->
+<div class="container">
+  <div class="row justify-content-md-center">
+    <div class="card border-0 col-md-5 mb-5" style="min-height: 100vh">
+      <img
+        src="{% static 'game/img/logo2.svg' %}"
+        alt="abp-logo"
+        class="card-img-top mt-5 mb-3"
+        style="height: 8vh"
+      />
+
+      <div class="card-body">
+        <div class="d-grid gap-2 col-md-8 mx-auto text-center">
+          <div id="player_id" hidden>{{ player.id }}</div>
+          <div class="text-center display-3">{{ player.icon }}</div>
+          <div class="h5" id="player_level">{{player.level}} круг</div>
+          <div class="display-6">{{player.name}}</div>
+          <div
+            class="display-6"
+            id="player_balance"
+            value="{{ player_balance }}"
+          >
+            {% if player_balance < 0 %}
+            <b class="text-danger">{{ player_balance }}</b>
+            {% else %}
+            <b>{{ player_balance }}</b>
+            {% endif %}
+          </div>
+          <div class="h5" id="player_command_share">
+            {% if command_count > 0 %} {% if command_share == 0 %} ~1%
+            ({{command_count}}) в КБ {% else %} {{command_share}}%
+            ({{command_count}}) в КБ {% endif %} {% endif %}
+          </div>
+        </div>
+
+        <!-- Keyboard -->
+        <div class="d-grid gap-2 col-md-8 mx-auto mt-4 mb-5">
+          <!-- Roll teh Dice -->
+          {% include 'game/player_control/player_control_button_roll.html' %}
+
+          <!-- Command Business -->
+          {% include 'game/player_control/player_control_button_command_business.html' %}
+
+          <!-- Rules -->
+          {% include 'game/player_control/player_control_button_rules.html' %}
+          {% include 'game/player_control/player_control_button_business.html' %}
+
+          <!-- Business cards -->
+          {% for player_business in player_businesses%} 
+            {% include 'game/player_control/player_control_card_business.html' %} 
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="text-muted small text-center">{{ game_session.session_name }}</p>
+
+{% include 'game/vote_modal.html' %} 
+{% include 'game/rules_modal.html' %} 
+{% include 'game/go_to_start_modal.html' %} 
+{% include 'game/back_to_start_modal.html' %} 
+{% include 'game/random_move_modal.html' %}
+{% include 'game/skip_move_modal.html' %} 
+{% include 'game/surprise_modal.html '%} 
+{% include 'game/memory_modal.html' %} 
+{% include 'game/cmndsurprise_modal.html' %} 
+{% include 'game/new_level_modal.html' %} 
+{% include 'game/first_invest_modal.html' %}
+
+<!-- <script src="{% static 'game/js/player_control.js' %}"></script> -->
+
+<!-- <script src="{% static 'game/js/player_control/update_player.js' %}"></script> -->
+
+<script src="{% static 'game/js/player_control/dice.js' %}"></script>
+<script src="{% static 'game/js/player_control/utils.js' %}"></script>
+<script src="{% static 'game/js/player_control/votion.js' %}"></script>
+<script src="{% static 'game/js/player_control/main.js' %}"></script>
+
+<script src="{% static 'game/js/player_control/modals.js' %}"></script>
+<script src="{% static 'game/js/player_control/listeners.js' %}"></script>
+
+{% endblock %}

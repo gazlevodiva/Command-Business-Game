@@ -1,63 +1,38 @@
+<div
+  class="modal fade"
+  id="memoryModal"
+  tabindex="-1"
+  aria-labelledby="memoryModal"
+  aria-hidden="true"
+  data-bs-backdrop="static"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 lead" id="memoryModal">Мемори</h1>
+      </div>
 
-    <div 
-      class="modal fade" 
-      id="memoryModal" 
-      tabindex="-1" 
-      aria-labelledby="memoryModal" 
-      aria-hidden="true"
-    >
-
-        <div class="modal-dialog modal-dialog-centered">
-
-            <div class="modal-content">
-
-                <div class="modal-header">
-
-                    <h1 class="modal-title fs-5 lead" id="memoryModal">
-                      {{ modal.title }}
-                    </h1>
-
-                    <button 
-                      type="button" 
-                      class="btn-close" 
-                      data-bs-dismiss="modal" 
-                      aria-label="Close"
-                    >
-                    </button>
-
-                </div>
-
-                <div class="modal-body text-center">
-
-                    <div class="h4">
-                      {{ modal.surprise.name }}
-                    </div>
-        
-                </div>
-
-
-                <div class="modal-footer">
-
-                    <button 
-                      type="button" 
-                      class="btn btn-danger" 
-                      data-bs-dismiss="modal"
-                    >
-                      Я ответил
-                    </button>
-
-                </div>
-
-            </div>
-
+      <form class="needs-validation" method="POST" id="memory_answer_form">
+        {% csrf_token %}
+        <div class="modal-body text-center">
+          <div class="h4" id="memory_name_modal"></div>
+          <input type="number" name="memory_id" class="form-control" hidden />
+          <input type="number" name="move_id" class="form-control" hidden />
+          <div class="form-floating mt-3 mb-2">
+            <textarea
+              class="form-control"
+              name="memory_answer"
+              placeholder="Leave a comment here"
+              id="floatingTextarea"
+              required
+            ></textarea>
+            <label for="floatingTextarea"> Введите свой ответ </label>
+          </div>
         </div>
-
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger">Записать ответ</button>
+        </div>
+      </form>
     </div>
-
-    <script>
-        $(document).ready(function(){
-            $("#memoryModal").modal('show');
-            window.history.pushState("", "", '/player_control_{{ player.id }}/');
-        });
-    </script>
-
+  </div>
+</div>

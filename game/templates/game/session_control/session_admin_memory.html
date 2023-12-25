@@ -1,0 +1,98 @@
+{% extends 'game/base.html' %} 
+{% block content %} 
+{% load static %}
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-sm-12 col-md-8 m-5">
+      <div class="h1 text-center mb-4">Ваши Memory 🧠</div>
+      <form id="memoriesForm" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="fileInput" class="form-label text-muted"
+            >⬇️ Загрузите свою таблицу с Memory. Все memory ниже будут
+            обновлены. Или просто редактируйте.</label
+          >
+          <input
+            class="form-control"
+            type="file"
+            id="fileInput"
+            name="file"
+            accept=".xlsx, .xls"
+          />
+        </div>
+        <hr />
+        <div id="memories_list">
+          {% for memory in memories %}
+          <div class="mb-3 mt-3 d-flex">
+            <textarea
+              class="form-control"
+              name="memory-{{ forloop.counter0 }}"
+              style="background-color: rgb(244, 244, 244)"
+              rows="1"
+            >{{ memory.name }}</textarea
+            >
+            <button class="btn btn-outline-danger ms-2 deleteMemory">❌</button>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="d-grid mt-5 mb-2">
+          <button class="btn btn-outline-secondary" id="addMemory">
+            Добавить Memory
+          </button>
+        </div>
+        <div class="d-grid mb-2">
+          <button type="submit" class="btn btn-danger" onclick="Preloader()">
+            Сохранить изменения
+          </button>
+        </div>
+        <div class="d-grid mb-2">
+          <a class="btn btn-secondary" href="/game_settings/"
+            >Вернуться к игре</a
+          >
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="errorFileModal"
+  tabindex="-1"
+  aria-labelledby="errorFileModal"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="errorFileModal">
+          ⚠️ Файл не может быть обработан
+        </h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        Ваш файл содержит данные которые мы не можем обработать.
+        <a
+          href="{% static 'game/memory-demo.xlsx' %}"
+          download="memory-demo.xlsx"
+          >Скачать шаблон</a
+        >
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+          Спасибо
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{% static 'game/js/session/memory.js' %}"></script>
+
+{% endblock %}

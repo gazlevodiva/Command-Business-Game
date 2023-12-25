@@ -1,0 +1,71 @@
+<div
+  class="modal fade"
+  id="firstInvestModal"
+  tabindex="-1"
+  aria-labelledby="firstInvestModal"
+  aria-hidden="true"
+  data-bs-backdrop="static"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="firstInvestModal">
+          Возможность инвестиции 💎
+        </h1>
+      </div>
+
+      <div class="modal-body mt-2 mb-2">
+        <form method="POST" id="command_payment_form" onsubmit="Preloader()">
+          {% csrf_token %}
+          <label for="command_invest" class="form-label">
+            Вам выпал шанс для вложения в командный бизнес. Сколько вы хотите
+            вложить?
+          </label>
+          <div class="input-group mb-3">
+            <input
+              type="hidden"
+              id="player_id"
+              name="player_id"
+              value="{{ player.id }}"
+            />
+            <input
+              type="hidden"
+              id="form_type"
+              name="form_type"
+              value="first_invest"
+            />
+            <input
+              type="number"
+              class="form-control"
+              name="player_command_payment"
+              placeholder="0"
+              id="command_invest2"
+              min="1"
+              max="{{ player_balance | cut:',' }}"
+              required
+            />
+            <button
+              class="btn btn-outline-secondary"
+              type="button"
+              id="invest_all2"
+            >
+              Вся сумма
+            </button>
+          </div>
+
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              data-bs-dismiss="modal"
+              id="first_invest_close"
+            >
+              Отмена
+            </button>
+            <button class="btn btn-danger" type="submit">Вложить</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

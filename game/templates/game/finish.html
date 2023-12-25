@@ -1,51 +1,85 @@
-{% extends 'game/base.html' %}
-{% load static %}
-{% block content %}
+{% extends 'game/base.html' %} {% load static %} {% block content %}
 
-    <div class="container mt-5">
-      <div class="row justify-content-center">
+<div class="mt-5">
+  <div class="row justify-content-center m-5">
+    {% for player_info in players_info %}
+    <div class="col-2 mb-4" style="width: 300px">
+      <div class="card border-0 shadow">
+        <div class="card-body text-center">
+          <div class="text-center display-3 mb-4">
+            {{ player_info.player.icon }}
+          </div>
 
-        {% for player_info in players_info %}
-        <div class="col-xl col-md-5 mb-4">
-          <div class="card border-0 shadow">
-            <div class="card-body text-center">
+          <div class="card-title fs-3">{{ player_info.player.name }}</div>
 
-              <div class="card-title fs-3">
-                {{ player_info.player.name }}
+          <div class="card-text">
+            {% if player_info.profit > 0 %}
+              <div class="fs-1 text-success">+{{ player_info.profit }}%</div>
+            {% else %}
+              <div class="fs-1 text-danger">{{ player_info.profit }}%</div>
+            {% endif %} 
+              за {{ player_info.player.level }} кругов 
+              
+            {% for achieve in player_info.achievements %}
+              <div class="mt-4">
+                <div class="h4">{{ achieve.title }}</div>
+                <p class="text-start">{{ achieve.text }}</p>
               </div>
+            {% endfor %}
 
-              <div class="card-text">
-
-                {% if player_info.profit > 0 %}
-                <div class="fs-1 text-success">
-                  +{{ player_info.profit }}%
-                </div>
-                {% else %}
-                <div class="fs-1 text-danger">
-                  {{ player_info.profit }}%
-                </div>
-                {% endif %}
-                за {{ player_info.player.level }} кругов
-
-
-                {% for achieve in player_info.achievements %}
-                <div class="mt-4">
-                  <div class="h4">
-                    {{ achieve.title }}
+            <button
+              type="button"
+              class="btn btn-outline-primary mt-3 p-2"
+              data-bs-toggle="modal"
+              data-bs-target="#MemoryAnswers{{player_info.player.id}}"
+            >
+              Ответы Мемори
+            </button>
+            <div
+              class="modal fade"
+              id="MemoryAnswers{{player_info.player.id}}"
+              tabindex="-1"
+              aria-labelledby="MemoryAnswers{{player_info.player.id}}"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1
+                      class="modal-title fs-5"
+                      id="MemoryAnswers{{player_info.player.id}}"
+                    >
+                      Ответы мемори {{player_info.player.name}}
+                    </h1>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
                   </div>
-                  <p>{{ achieve.text }}</p>
+                  <div class="modal-body">
+                    {% for answer in player_info.memory_answers %}
+                    <div class="m-2">
+                      <h4 class="card-title text-start">
+                        {{answer.question.name}}
+                      </h4>
+                      <h5 class="card-text text-muted text-end">
+                        {{answer.answer}}
+                      </h5>
+                      <hr />
+                    </div>
+                    {% endfor %}
+                  </div>
                 </div>
-                {% endfor %}
-
               </div>
-
-                
             </div>
           </div>
         </div>
-        {% endfor %}
-
       </div>
     </div>
+    {% endfor %}
+  </div>
+</div>
 
 {% endblock %}

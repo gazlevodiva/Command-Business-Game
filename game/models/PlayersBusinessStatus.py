@@ -10,8 +10,10 @@ class PlayersBusinessStatus( models.Model ):
 
     BUSINESS_STATUS = (
         ('ACTIVE', 'Active'),
+        ('VOTING','Voting'),
+        ('UNVOTE','Voting failed' ),
         ('SOLD', 'Sold'),
-        ('DEFOULT', 'Defoult')
+        ('DEFOULT', 'Defoult'),
     )
  
     players_business = models.ForeignKey( PlayersBusiness, on_delete=models.CASCADE )

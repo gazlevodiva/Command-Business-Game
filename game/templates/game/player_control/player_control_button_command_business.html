@@ -1,148 +1,147 @@
-
 <!-- Button -->
-<button 
-    class="btn btn-outline-secondary " 
-    type="button" 
-    data-bs-toggle="modal" 
-    data-bs-target="#CommandBusinessModal{{ player.id }}"
-    >
-    Вложить в КБ
+<button
+  class="btn btn-outline-secondary"
+  type="button"
+  data-bs-toggle="modal"
+  data-bs-target="#CommandBusinessModal{{ player.id }}"
+  id="command_business_button"
+  hidden
+>
+  Командный бизнес
 </button>
 
 <!-- Modal -->
-<div 
-    class="modal fade" 
-    id="CommandBusinessModal{{ player.id }}" 
-    tabindex="-1" 
-    aria-labelledby="CommandBusinessModal{{ player.id }}" 
-    aria-hidden="true"
-    >
+<div
+  class="modal fade"
+  id="CommandBusinessModal{{ player.id }}"
+  tabindex="-1"
+  aria-labelledby="CommandBusinessModal{{ player.id }}"
+  aria-hidden="true"
+>
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-
-        <div class="modal-header">
-            <h1 
-              class="modal-title fs-5" 
-              id="CommandBusinessModal{{ player.id }}"
-              >
-              Вложить в командный бизнес
-            </h1>
-            <button 
-              type="button" 
-              class="btn-close" 
-              data-bs-dismiss="modal" 
-              aria-label="Close"
-              >
-            </button>
-        </div>
-          
-        <form method="POST" id="command_payment_form" onsubmit="Preloader()">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="CommandBusinessModal{{ player.id }}">
+          Вложить в командный бизнес
+        </h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <form method="POST" id="command_payment_form" onsubmit="Preloader()">
         {% csrf_token %}
-
-          <div class="modal-body"> 
-
-            <label for="basic-url" class="form-label">Сколько вы хотите вложить в командный бизнес?</label>
-            <div class="input-group mb-3">
-                    <input 
-                      type="hidden" 
-                      id="player_id" 
-                      name="player_id" 
-                      value="{{ player.id }}"
-                    >
-                    <input 
-                      type="number" 
-                      class="form-control" 
-                      name="player_command_payment" 
-                      placeholder="Сумма" 
-                      id="command_invest"
-                      min="1"
-                      max="{{ player_balance | cut:',' }}"
-                      required
-                    >
-                    <button class="btn btn-outline-secondary" type="button" id="invest_all">Вся сумма</button>
-            </div> 
-
-            <label for="basic-url" class="form-label mt-3">Вы также можете вывести свои средства.</label>
-            <div class="row d-flex justify-content-between gap-2 mx-2">
-                    {% if command_count >= 50000 and command_count >= 50000 %}
-                    <a 
-                      class   = "col btn btn-block btn-outline-secondary" 
-                      href    = "/sell_share_{{player.id}}_50000/" 
-                      type    = "button"
-                      onclick = "Preloader()"
-                    >
-                      50,000
-                    </a>
-                    {% else %}
-                    <a 
-                      class   = "col btn btn-block btn-outline-secondary disabled"
-                      href    = "#" 
-                      type    = "button"
-                      onclick = "Preloader()"
-                    >
-                      50,000
-                    </a>
-                    {% endif %}
-                    {% if command_count >= 100000 and command_count >= 100000 %}
-                    <a 
-                      class   = "col btn btn-block btn-outline-secondary" 
-                      href    = "/sell_share_{{player.id}}_100000/" 
-                      type    = "button"
-                      onclick = "Preloader()"
-                    >
-                      100,000
-                    </a>
-                    {% else %}
-                    <a 
-                      class   = "col btn btn-block btn-outline-secondary disabled" 
-                      href    = "#" 
-                      type    = "button"
-                      onclick = "Preloader()"
-                    >
-                      100,000
-                    </a>
-                    {% endif %}
-                    {% if command_count >= 200000 and command_count >= 200000 %}
-                    <a 
-                      class   = "col btn btn-block btn-outline-secondary" 
-                      href    = "/sell_share_{{player.id}}_200000/" 
-                      type    = "button"
-                      onclick = "Preloader()"
-                    >
-                      200,000
-                    </a>
-                    {% else %}
-                    <a 
-                      class   = "col btn btn-block btn-outline-secondary disabled" 
-                      href    = "#" 
-                      type    = "button"
-                      onclick = "Preloader()"
-                    >
-                      200,000
-                    </a>
-                    {% endif %}
-            </div>
-
+        <div class="modal-body">
+          <label for="command_invest" class="form-label">
+            Сколько вы хотите вложить в командный бизнес?
+          </label>
+          <div class="input-group mb-3">
+            <input
+              type="hidden"
+              id="player_id"
+              name="player_id"
+              value="{{ player.id }}"
+            />
+            <input
+              type="hidden"
+              id="form_type"
+              name="form_type"
+              value="other_invest"
+            />
+            <input
+              type="number"
+              class="form-control"
+              name="player_command_payment"
+              placeholder="Сумма"
+              id="command_invest"
+              min="1"
+              max="{{ player_balance | cut:',' }}"
+              required
+            />
+            <button
+              class="btn btn-outline-secondary"
+              type="button"
+              id="invest_all"
+            >
+              Вся сумма
+            </button>
           </div>
-
-          <div class="modal-footer mt-3">
-                <button 
-                  type="button" 
-                  class="btn btn-outline-secondary" 
-                  data-bs-dismiss="modal"
-                  >
-                  Отмена
-                </button>
-                <button 
-                  class="btn btn-danger" 
-                  type="submit"
-                  >
-                  Вложить
-                </button>
+          <div class="form-label mt-3">
+            Вы также можете вывести свои средства.
           </div>
-
-        </form>
-
+          <div class="row d-flex justify-content-between gap-2 mx-2">
+            {% if command_count >= 50000 and command_count >= 50000 %}
+            <a
+              class="col btn btn-block btn-outline-secondary"
+              href="/sell_share_{{player.id}}_50000/"
+              type="button"
+              onclick="Preloader()"
+            >
+              50,000
+            </a>
+            {% else %}
+            <a
+              class="col btn btn-block btn-outline-secondary disabled"
+              href="#"
+              type="button"
+              onclick="Preloader()"
+            >
+              50,000
+            </a>
+            {% endif %} 
+            {% if command_count >= 100000 and command_count >= 100000 %}
+            <a
+              class="col btn btn-block btn-outline-secondary"
+              href="/sell_share_{{player.id}}_100000/"
+              type="button"
+              onclick="Preloader()"
+            >
+              100,000
+            </a>
+            {% else %}
+            <a
+              class="col btn btn-block btn-outline-secondary disabled"
+              href="#"
+              type="button"
+              onclick="Preloader()"
+            >
+              100,000
+            </a>
+            {% endif %} 
+            {% if command_count >= 200000 and command_count >= 200000 %}
+            <a
+              class="col btn btn-block btn-outline-secondary"
+              href="/sell_share_{{player.id}}_200000/"
+              type="button"
+              onclick="Preloader()"
+            >
+              200,000
+            </a>
+            {% else %}
+            <a
+              class="col btn btn-block btn-outline-secondary disabled"
+              href="#"
+              type="button"
+              onclick="Preloader()"
+            >
+              200,000
+            </a>
+            {% endif %}
+          </div>
+        </div>
+        <div class="modal-footer mt-3">
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            data-bs-dismiss="modal"
+          >
+            Отмена
+          </button>
+          <button class="btn btn-danger" type="submit">Вложить</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

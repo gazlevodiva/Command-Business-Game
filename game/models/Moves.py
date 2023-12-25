@@ -9,6 +9,7 @@ class Moves(models.Model):
     
     number       = models.IntegerField( blank=True )
     player       = models.ForeignKey( Player, default=None, on_delete=models.CASCADE )
+    position     = models.IntegerField( default=None )
     created_date = models.DateTimeField( default=timezone.now )
 
     def __str__(self):
@@ -17,6 +18,16 @@ class Moves(models.Model):
     def save(self, *args, **kwargs):
         if self.number is None and self.number != 0:
             self.number = self.get_next_move_number()
+
+        if not self.position:
+            current_position = Moves.objects.filter(player=self.player).last()
+
+            if not current_position:
+                self.position = 1
+
+            if current_position:
+                self.position = current_position.position
+
         super(Moves, self).save(*args, **kwargs)
 
     def get_next_move_number(self):

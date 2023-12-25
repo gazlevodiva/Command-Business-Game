@@ -1,76 +1,181 @@
 from django.shortcuts import render
 
+from game.models.CommandPayments import CommandPayments
 from game.models.Player import Player
-from game.models.GameSessions import GameSessions
+from game.models.Moves import Moves
 
 from game.methods.BusinessMethods import getCommandPlayers
 from game.methods.BusinessMethods import getCommandBank
 
 from game.methods.PlayerMethods import getBalance
-from game.methods.PlayerMethods import getActions
+from game.methods.PlayerMethods import playerTurn
+from game.methods.PlayerMethods import getActionsDashboard
 from game.methods.PlayerMethods import getBusinesses
 from game.methods.PlayerMethods import getCommandBusinesses
 
 from game.decorators import check_user_session_hash
 from django.contrib.auth.decorators import login_required
 
+from django.http import JsonResponse
 
-@login_required( login_url='/login/' )
+
+@login_required(login_url="/login/")
 @check_user_session_hash
-def dashboard( request=None, session=None ):
+def dashboard_online(request, session):
+    context = {
+        "players": [],
+    }
 
-    players = Player.objects.filter( 
-        visible      = True, 
-        game_session = session 
-    )
+    # Add session information
+    context["session_name"] = session.session_name
+    context["session_hash"] = session.session_hash
+    context["session_code"] = session.session_code
+
+    # Get actions for History
+    context["game_actions"] = []
+    for action in getActionsDashboard(session):
+        count = action.count
+
+        if action.category == "SURP" and action.is_command:
+            command_payment = CommandPayments.objects.get(move=action.move)
+            count = command_payment.count
+
+        context["game_actions"].append(
+            {   
+                "move_id": action.move.id,
+                "move_number": action.move.number,
+                "move_stage": action.move_stage,
+                "move_position": action.move.position,
+                "player_name": action.move.player.name,
+                "action_id": action.id,
+                "action_name": action.name,
+                "action_count": count,
+                "action_visible": action.visible,
+                "action_category": action.category,
+            }
+        )
+
+    # Total command balance
+    context["command_bank"] = getCommandBank(session)
+
+    # Take all players from session
+    players = Player.objects.filter(game_session=session).filter(visible=True)
+
+    player_turn_id = playerTurn(session)
+    for player in players:
+        player_info = {}  # lets add some info about
+
+        player_info["id"] = player.id
+        player_info["name"] = str(player.name)
+        player_info["icon"] = str(player.icon)
+        player_info["level"] = player.level
+
+        player_info["balance"] = getBalance(player)
+        player_info["businesses"] = []
+        for business in getBusinesses(player):
+            player_info["businesses"].append(
+                {
+                    "name": str(business.business.name),
+                    "cost": business.business.cost,
+                }
+            )
+
+        player_info["current_position"] = (
+            Moves.objects.filter(player=player).last().position
+        )
+        player_info["past_position"] = 0
+
+        if player_turn_id == player.id:
+            player_info["is_turn"] = True
+
+        if player_turn_id != player.id:
+            player_info["is_turn"] = False
+
+        context["players"].append(player_info)
+
+    # Command player info
+    context["command_players"] = []
+    for command_player in getCommandPlayers(session):
+        context["command_players"].append(
+            {
+                "name": str(command_player["move__player"].name),
+                "share": command_player["share"],
+                "count": command_player["count"],
+            }
+        )
+
+    return JsonResponse(context)
+
+
+@login_required(login_url="/login/")
+@check_user_session_hash
+def dashboard(request=None, session=None):
+    players = Player.objects.filter(visible=True, game_session=session)
+
+    # whos player Turn???
+    player_turn = playerTurn(session)
 
     # Info about players business
     players_info = []
-
     for player in players:
+        businesses = getBusinesses(player)
+        balance = getBalance(player)
 
-        businesses = getBusinesses( player ) 
-        balance    = getBalance( player )
+        if player == player_turn:
+            is_turn = True
+
+        if player != player_turn:
+            is_turn = False
+
+        # get last field position
+        position = Moves.objects.filter(player=player).last().position
+
         players_info.append(
             {
-                'player':     player,
-                'balance':    balance,
-                'businesses': businesses,
+                "player": player,
+                "balance": balance,
+                "position": position,
+                "businesses": businesses,
+                "is_turn": is_turn,
             }
         )
 
     # Command player info
-    command_players = getCommandPlayers( session )   
+    command_players = getCommandPlayers(session)
 
     # Info about command businesses
-    command_player_info = [] 
-
+    command_player_info = []
     for command_player in command_players:
-        
-        command_businesses = getCommandBusinesses( command_player['move__player'] )
-
+        player = command_player["move__player"]
+        command_businesses = getCommandBusinesses(player)
         command_player_info.append(
             {
-                'command_player':     command_player,
-                'command_businesses': command_businesses,
+                "command_player": command_player,
+                "command_businesses": command_businesses,
             }
         )
 
     # Game actions
-    actions = getActions( session )
+    actions = getActionsDashboard(session)
 
     # Total command balance
-    bank = getCommandBank( session )
+    bank = getCommandBank(session)
 
     context = {
-        'players':         players_info,
-        'command_players': command_player_info,
-        'command_bank':    bank,
-        'actions':         actions[::-1][:12],
-        'session':         session,        
+        "players": players_info,
+        "command_players": command_player_info,
+        "command_bank": bank,
+        "actions": actions[:15],
+        "session": session,
     }
 
     if request is None:
         return context
 
-    return render( request, 'game/dashboard.html', context)
+    # ONLINE
+    if session.online:
+        return render(request, "game/dashboard_online.html", context)
+
+    # LOCAL
+    if not session.online:
+        return render(request, "game/dashboard.html", context)
