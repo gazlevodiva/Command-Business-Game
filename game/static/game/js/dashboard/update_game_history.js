@@ -1,7 +1,6 @@
 const gameHistoryDiv = document.getElementById("game_history");
 
 async function updateGameHistory(gameActions) {
-  // if( parseInt(gameHistoryDiv.dataset.moveNumber) == last_action_move ){return}
   if (parseInt(gameHistoryDiv.dataset.actionId) == gameActions[0].action_id) {
     return;
   }
@@ -10,6 +9,7 @@ async function updateGameHistory(gameActions) {
   gameHistoryDiv.dataset.actionId = gameActions[0].action_id;
 
   let isFirstAction = true;
+  let firstActionId = 0;
   let visibleActionsCount = 0;
 
   gameActions.forEach((action) => {
@@ -21,17 +21,19 @@ async function updateGameHistory(gameActions) {
       actionDiv.classList.add("fw-normal", "m-2");
 
       if (isFirstAction) {
+        firstActionId = action.action_id;
         actionDiv.classList.add("h3", "mt-4", "mb-4");
-        actionDiv.classList.add("fade-in");
 
-        actionDiv.addEventListener(
-          "animationend",
-          function () {
-            actionDiv.classList.remove("fade-in");
-          },{ once: true } 
-        );
+          actionDiv.classList.add("fade-in");
+          actionDiv.addEventListener(
+            "animationend",
+            function () {
+              actionDiv.classList.remove("fade-in");
+              isFirstActionAnimated = true;
+            },{ once: true } 
+          );
 
-        isFirstAction = false; // Сбрасываем флаг после обработки первого действия
+        isFirstAction = false;
       }
 
       var playerName = document.createElement("b");
