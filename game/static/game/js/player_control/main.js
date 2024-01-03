@@ -121,15 +121,18 @@ window.onload = function () {
   // }, 5000);
 };
 
+
 async function handleCloseButtonClick() {
   showTurnPreloader(true);
   await finishTheMove();
 }
 
+
 function showTurnPreloader(show) {
   playerTurnPreloaderText.innerText = `Ваш ход окончен.`;
   playerTurnPreloader.hidden = !show;
 }
+
 
 async function updatePlayerControlData() {
   try {
@@ -170,6 +173,7 @@ async function updatePlayerControlData() {
     console.error("Error updating player control data:", error);
   }
 }
+
 
 async function whoisTurnPreloader() {
   try {

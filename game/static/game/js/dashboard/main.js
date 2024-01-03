@@ -3,7 +3,8 @@ window.onload = async function () {
   setInterval(updateOnlineDashboard, 3500);
 };
 
-let lastRollDiceActionId = 0
+var lastRollDiceActionId = 0;
+var fistPageUpdate = false;
 
 async function updateOnlineDashboard() {
   try {
@@ -12,7 +13,9 @@ async function updateOnlineDashboard() {
 
     const diceValueAction = data.game_actions.find(action => action.action_category === "DICE_VALUE");
 
-    if( diceValueAction && lastRollDiceActionId !== diceValueAction.action_id){
+    console.log( fistPageUpdate )
+
+    if( diceValueAction && lastRollDiceActionId !== diceValueAction.action_id && fistPageUpdate ){
       lastRollDiceActionId = diceValueAction.action_id;
       const parts = diceValueAction.action_name.split("-");
       const diceOne = parseInt(parts[0]);
@@ -25,6 +28,9 @@ async function updateOnlineDashboard() {
     await updateGameHistory(data["game_actions"]);
 
     await updateCommandBusiness(data["command_bank"], data["command_players"]);
+
+    fistPageUpdate = true;
+
   } catch (error) {
     console.error("Update Dashboard error:", error);
   }

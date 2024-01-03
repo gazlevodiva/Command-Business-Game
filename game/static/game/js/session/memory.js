@@ -36,9 +36,6 @@ fileInputMemories?.addEventListener("change", function () {
     const formData = new FormData();
     formData.append("file", file);
 
-    // Show preloader
-    Preloader();
-
     fetch("/upload_memory_file/", {
       method: "POST",
       headers: {
@@ -64,8 +61,6 @@ fileInputMemories?.addEventListener("change", function () {
           });
         }
 
-        // Hide preloader
-        Preloader();
       })
       .catch((error) => console.error("Ошибка:", error));
   }
