@@ -6,7 +6,7 @@ __pycache__
 db.sqlite3
 media
 migrations
-
+myvenv/
 
 # settings
 .mysite/settings.py
@@ -144,3 +144,5 @@ GitHub.sublime-settings
 !.vscode/launch.json 
 !.vscode/extensions.json 
 .history
+myvenv/pyvenv.cfg
+myvenv/pyvenv.cfg
