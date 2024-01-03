@@ -24,11 +24,13 @@ async function updateOnlineDashboard() {
       }    
     }    
 
-    await updatePlayersInfo(data["players"]);
+    await updatePlayersInfo(data.players);
 
-    await updateGameHistory(data["game_actions"]);
+    await updateGameHistory(data.game_actions);
 
-    updateCommandBusiness(data["command_bank"], data["command_players"]);
+    console.log( data )
+
+    await updateCommandBusiness(data.command_bank, data.command_players);
 
     fistPageUpdate = true;
 

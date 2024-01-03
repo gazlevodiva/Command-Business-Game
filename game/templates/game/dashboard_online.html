@@ -197,8 +197,11 @@
                   {{ command_player.command_player.move__player.name }}
                 </div>
                 <div class="col-2 h5">
-                  {% if command_player.command_player.share == 0 %} ~1% {% else
-                  %} {{ command_player.command_player.share }}% {% endif %}
+                  {% if command_player.command_player.share == 0 %} 
+                    ~1% 
+                  {% else %} 
+                    {{ command_player.command_player.share }}% 
+                  {% endif %}
                 </div>
                 {% endif %}
               </div>

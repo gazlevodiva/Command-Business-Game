@@ -1,6 +1,8 @@
-{% extends 'game/base.html' %} 
-{% load static %} 
+{% extends 'game/base.html' %}
+
 {% block content %} 
+{% load static %} 
+
 {% include 'game/preloader.html' %} 
 {% include 'game/player_control/player_move_preloader.html' %}
 
@@ -55,7 +57,7 @@
           {% for player_business in player_businesses%} 
             {% include 'game/player_control/player_control_card_business.html' %} 
           {% endfor %}
-          
+
         </div>
       </div>
     </div>
@@ -64,27 +66,22 @@
 
 <p class="text-muted small text-center">{{ game_session.session_name }}</p>
 
+{% include 'game/modals/surprise_modal.html' %}
 {% include 'game/modals/vote_modal.html' %} 
 {% include 'game/modals/rules_modal.html' %} 
 {% include 'game/modals/go_to_start_modal.html' %} 
 {% include 'game/modals/back_to_start_modal.html' %} 
 {% include 'game/modals/random_move_modal.html' %}
 {% include 'game/modals/skip_move_modal.html' %} 
-{% include 'game/modals/surprise_modal.html '%} 
 {% include 'game/modals/memory_modal.html' %} 
 {% include 'game/modals/cmndsurprise_modal.html' %} 
 {% include 'game/modals/new_level_modal.html' %} 
 {% include 'game/modals/first_invest_modal.html' %}
 
-<!-- <script src="{% static 'game/js/player_control.js' %}"></script> -->
-
-<!-- <script src="{% static 'game/js/player_control/update_player.js' %}"></script> -->
-
 <script src="{% static 'game/js/player_control/dice.js' %}"></script>
 <script src="{% static 'game/js/player_control/utils.js' %}"></script>
 <script src="{% static 'game/js/player_control/votion.js' %}"></script>
 <script src="{% static 'game/js/player_control/main.js' %}"></script>
-
 <script src="{% static 'game/js/player_control/modals.js' %}"></script>
 <script src="{% static 'game/js/player_control/listeners.js' %}"></script>
 

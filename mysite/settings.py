@@ -25,7 +25,13 @@ SECRET_KEY = 'django-insecure-d33^zqsvnrjxr7o$z7on(kgwa_b8hqqup7lld08q=79nyc(&st
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.50.5', '192.168.50.6', 'localhost', '127.0.0.1', '192.168.0.125']
+ALLOWED_HOSTS = [
+    '0.0.0.0',
+    'localhost',
+    'ekb.info',
+    '31.28.170.214',
+    '127.0.0.1',
+]
 
 
 # Application definition
@@ -55,7 +61,7 @@ ROOT_URLCONF = 'mysite.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [ 'player_control', 'session_control' ],
+        'DIRS': [ 'modals', 'player_control', 'session_control' ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -117,7 +123,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'static'
+STATIC_ROOT = 'static'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

@@ -1,4 +1,4 @@
-<!-- Keyboard -->
+
 <div class="d-grid gap-2 col-md-8 mx-auto mt-4 mb-5">
   <!-- New level -->
   {% include 'game/player_control/player_control_button_new_level.html' %}
@@ -14,19 +14,18 @@
 
   <!-- If player is command -->
   {% if command_share > 0 %}
-
-  <!-- Surprise for Command Business -->
-  {% include 'game/player_control/player_control_button_command_surprise.html'
-  %} {% endif %}
+    {% include 'game/player_control/player_control_button_command_surprise.html' %}
+  {% endif %}
 
   <!-- Command Business -->
-  {% include 'game/player_control/player_control_button_command_business.html'
-  %}
+  {% include 'game/player_control/player_control_button_command_business.html' %}
 
   <!-- Rules -->
   {% include 'game/player_control/player_control_button_rules.html' %}
 
   <!-- Business cards -->
-  {% for player_business in player_businesses%} {% include
-  'game/player_control/player_control_card_business.html' %} {% endfor %}
+  {% for player_business in player_businesses%} 
+    {% include 'game/player_control/player_control_card_business.html' %} 
+  {% endfor %}
+  
 </div>
