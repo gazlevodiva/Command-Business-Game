@@ -1,13 +1,17 @@
+
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <!-- <meta name="viewport" content="width=device-width, initial-scale=1" /> -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
 
     <title>Игра в командный бизнес</title>
+
+    <link rel="stylesheet" href="{% static 'game/css/dice.css' %}" />
+    <link rel="stylesheet" href="{% static 'game/css/style.css' %}" />
 
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
@@ -33,8 +37,7 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
     />
 
-    <link rel="stylesheet" href="{% static 'game/css/dice.css' %}" />
-    <link rel="stylesheet" href="{% static 'game/css/style.css' %}" />
+    
 
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
@@ -58,5 +61,6 @@
     {% include 'game/dice.html' %} 
     {% block content %} 
     {% endblock %}
+
   </body>
 </html>

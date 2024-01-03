@@ -45,16 +45,17 @@
           {% include 'game/player_control/player_control_button_roll.html' %}
 
           <!-- Command Business -->
+          {% include 'game/player_control/player_control_button_business.html' %}
           {% include 'game/player_control/player_control_button_command_business.html' %}
 
           <!-- Rules -->
           {% include 'game/player_control/player_control_button_rules.html' %}
-          {% include 'game/player_control/player_control_button_business.html' %}
 
           <!-- Business cards -->
           {% for player_business in player_businesses%} 
             {% include 'game/player_control/player_control_card_business.html' %} 
           {% endfor %}
+          
         </div>
       </div>
     </div>
@@ -63,17 +64,17 @@
 
 <p class="text-muted small text-center">{{ game_session.session_name }}</p>
 
-{% include 'game/vote_modal.html' %} 
-{% include 'game/rules_modal.html' %} 
-{% include 'game/go_to_start_modal.html' %} 
-{% include 'game/back_to_start_modal.html' %} 
-{% include 'game/random_move_modal.html' %}
-{% include 'game/skip_move_modal.html' %} 
-{% include 'game/surprise_modal.html '%} 
-{% include 'game/memory_modal.html' %} 
-{% include 'game/cmndsurprise_modal.html' %} 
-{% include 'game/new_level_modal.html' %} 
-{% include 'game/first_invest_modal.html' %}
+{% include 'game/modals/vote_modal.html' %} 
+{% include 'game/modals/rules_modal.html' %} 
+{% include 'game/modals/go_to_start_modal.html' %} 
+{% include 'game/modals/back_to_start_modal.html' %} 
+{% include 'game/modals/random_move_modal.html' %}
+{% include 'game/modals/skip_move_modal.html' %} 
+{% include 'game/modals/surprise_modal.html '%} 
+{% include 'game/modals/memory_modal.html' %} 
+{% include 'game/modals/cmndsurprise_modal.html' %} 
+{% include 'game/modals/new_level_modal.html' %} 
+{% include 'game/modals/first_invest_modal.html' %}
 
 <!-- <script src="{% static 'game/js/player_control.js' %}"></script> -->
 

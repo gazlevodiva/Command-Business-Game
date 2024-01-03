@@ -14,7 +14,7 @@ def set_vote(request, session, move_id, player_id, vote_category):
     move = Moves.objects.get(pk=move_id)
     player = Player.objects.get(pk=player_id)
     vote_res = setNewVote(move, player, vote_category)
-    context = {"vote_move_id": move_id, "vote_res": res}
+    context = {"vote_move_id": move_id, "vote_res": vote_res}
     return JsonResponse(context)
 
 
