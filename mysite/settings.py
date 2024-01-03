@@ -55,7 +55,7 @@ ROOT_URLCONF = 'mysite.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [ 'player_contol', 'session_control' ],
+        'DIRS': [ 'player_control', 'session_control' ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
