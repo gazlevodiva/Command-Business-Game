@@ -383,16 +383,25 @@ def setNewVote(move, player, category):
 
         # Change player_business status
         votion_move = Moves.objects.get(pk=votion["move_id"])
-        player_business_status = PlayersBusinessStatus.objects.get(move=votion_move)
+        player_business_status = PlayersBusinessStatus.objects.get(
+            move=votion_move
+        )
+        business = player_business_status.players_business.business
 
         if vote_for > vote_agn:
             Actions.objects.create(
                 move=votion_move,
                 move_stage="END",
-                name=f"Стал администратором в { player_business_status.players_business.business.name }",
+                name=f"Стал администратором в { business.name }",
                 is_command=True,
                 is_personal=True,
                 is_public=True,
+            )
+
+            CommandPayments.objects.create(
+                move=votion_move,
+                category="BUY_BIS",
+                count=-business.cost
             )
 
             player_business_status.status = "ACTIVE"
@@ -403,7 +412,7 @@ def setNewVote(move, player, category):
             Actions.objects.create(
                 move=votion_move,
                 move_stage="END",
-                name=f"Не стал администратором",
+                name="Не стал администратором",
                 is_command=True,
                 is_personal=True,
                 is_public=True,

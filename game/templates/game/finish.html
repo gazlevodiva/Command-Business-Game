@@ -1,4 +1,6 @@
-{% extends 'game/base.html' %} {% load static %} {% block content %}
+{% extends 'game/base.html' %} 
+{% load static %} 
+{% block content %}
 
 <div class="mt-5">
   <div class="row justify-content-center m-5">
@@ -79,6 +81,11 @@
       </div>
     </div>
     {% endfor %}
+  </div>
+  <div class="text-center">
+    <a class="btn btn-lg btn-danger mb-5" href="/dashboard/">
+      Вернуться к игре
+    </a>
   </div>
 </div>
 

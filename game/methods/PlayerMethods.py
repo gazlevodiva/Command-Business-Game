@@ -162,7 +162,9 @@ def newBusiness(move, business, is_command):
         )
 
     PlayersBusinessStatus.objects.create(
-        players_business=players_business, move=move, status="ACTIVE"
+        players_business=players_business,
+        move=move,
+        status="ACTIVE"
     )
 
 
