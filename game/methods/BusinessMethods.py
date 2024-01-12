@@ -302,8 +302,8 @@ def getVotion(move):
         .get(move__number=move.number)
     )
 
-    if players_business_status.status in ["ACTIVE", "UNVOTE"]:
-        return False
+    # if players_business_status.status in ["ACTIVE", "UNVOTE"]:
+    #     return False
 
     votes_actions = move_actions.filter(category__in=["VOTE_FOR", "VOTE_AGN"])
 
