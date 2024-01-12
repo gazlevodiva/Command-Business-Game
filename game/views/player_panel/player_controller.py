@@ -136,6 +136,9 @@ def player_move(request, session, player_id, dice_value):
     current_player_move = Moves.objects.filter(player=player).last()
     new_player_position = current_player_move.position + move_value
 
+    if is_rolled:
+        set_end_move(current_player_move)
+
     # For new level
     is_newlevel = False
     next_cell = False
@@ -144,11 +147,13 @@ def player_move(request, session, player_id, dice_value):
 
     # The player went around the circle and stood further from the start
     if new_player_position > 25:
-        is_newlevel = True
+
         next_cell = True
         next_move_value = new_player_position - 25
-        next_cell_name = GAME_FIELD[next_move_value + 1]
+
+        is_newlevel = True
         new_player_position = 1
+        next_cell_name = GAME_FIELD[next_move_value + 1]
 
     # If player go on start
     if new_player_position == 25:
@@ -161,18 +166,7 @@ def player_move(request, session, player_id, dice_value):
         set_dice_roll(move, dice_value)
     set_start_move(move)
 
-    context = {
-        "type": "player_move",
-        "player_id": player_id,
-        "player_name": player.name,
-        "move_id": move.id,
-        "move_stage": "START",
-        "cell_name": GAME_FIELD[new_player_position],
-        "cell_position": new_player_position,
-        "next_cell": next_cell,
-        "next_cell_name": next_cell_name,
-        "next_cell_move": next_move_value,
-    }
+    context = {}
 
     # For create a new level action with new move, not old
     if is_newlevel:
@@ -214,6 +208,19 @@ def player_move(request, session, player_id, dice_value):
     if GAME_FIELD[new_player_position] == "skip-move-cell":
         set_skip_move(move)
 
+
+    context['type'] = "player_move"
+    context['player_id'] = player.id
+    context['player_name'] = player.name
+    context['move_id'] = move.id
+    context['move_stage'] = "START"
+    context['move_number'] = move.number
+    context['cell_name'] = GAME_FIELD[new_player_position]
+    context['cell_position'] = new_player_position
+    context['next_cell'] = next_cell
+    context['next_cell_name'] = next_cell_name
+    context['next_cell_move'] = next_move_value
+
     response = JsonResponse(context)
     return response
 
@@ -221,7 +228,7 @@ def player_move(request, session, player_id, dice_value):
 @check_user_session_hash
 def whois_turn_data(request, session, player_id):
     # Who is turn
-    player_turn_id = playerTurn(session)
+    player_turn_id = playerTurn(session) 
     player_turn = Player.objects.get(pk=player_turn_id)
     player_turn_last_move = Moves.objects.filter(player=player_turn).last()
 

@@ -28,8 +28,6 @@ async function updateOnlineDashboard() {
 
     await updateGameHistory(data.game_actions);
 
-    console.log( data )
-
     await updateCommandBusiness(data.command_bank, data.command_players);
 
     fistPageUpdate = true;

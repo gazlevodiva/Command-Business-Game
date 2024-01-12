@@ -21,19 +21,21 @@ async function updateGameHistory(gameActions) {
       actionDiv.classList.add("fw-normal", "m-2");
 
       if (isFirstAction) {
-        firstActionId = action.action_id;
         actionDiv.classList.add("h3", "mt-4", "mb-4");
-
-          actionDiv.classList.add("fade-in");
-          actionDiv.addEventListener(
-            "animationend",
-            function () {
-              actionDiv.classList.remove("fade-in");
-              isFirstActionAnimated = true;
-            },{ once: true } 
-          );
-
         isFirstAction = false;
+
+          if (action.action_id !== firstActionId){
+            firstActionId = action.action_id;
+            // Add animation
+            actionDiv.classList.add("fade-in");
+            actionDiv.addEventListener(
+              "animationend",
+              function () {
+                actionDiv.classList.remove("fade-in");
+                isFirstActionAnimated = true;
+              },{ once: true } 
+            );
+          }        
       }
 
       var playerName = document.createElement("b");

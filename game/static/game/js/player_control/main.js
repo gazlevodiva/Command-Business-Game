@@ -95,10 +95,7 @@ backtostart_accept_btn?.addEventListener("click", async function () {
 });
 
 const randommove_accept_btn = document.getElementById("randommove_accept");
-randommove_accept_btn?.addEventListener("click", async function () {
-  await finishTheMove();
-  rollTheDice();
-});
+randommove_accept_btn?.addEventListener("click", rollTheDice);
 
 const selector_business_category = document.getElementById(
   "player_business_select_category"

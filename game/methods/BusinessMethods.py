@@ -279,22 +279,31 @@ def setVotion(move, business):
 
 
 def getVotion(move):
-    move_number = move.number
-
-    move_actions = Actions.objects.filter(
-        move__player__game_session=move.player.game_session
-    ).filter(move__number=move_number)
+    move_actions = (
+        Actions.objects
+        .filter(move__player__game_session=move.player.game_session)
+        .filter(move__number=move.number)
+    )
 
     votion_started_action = move_actions.filter(category="START_VOTE")
 
     if move_actions.filter(category="START_VOTE").exists():
-        votion_started_action = move_actions.filter(category="START_VOTE").first()
+        votion_started_action = (
+            move_actions
+            .filter(category="START_VOTE")
+            .first()
+        )
     else:
         return False
 
-    players_business_status = PlayersBusinessStatus.objects.filter(
-        move__player__game_session=move.player.game_session
-    ).get(move__number=move_number)
+    players_business_status = (
+        PlayersBusinessStatus.objects
+        .filter(move__player__game_session=move.player.game_session)
+        .get(move__number=move.number)
+    )
+
+    if players_business_status.status in ["ACTIVE", "UNVOTE"]:
+        return False
 
     votes_actions = move_actions.filter(category__in=["VOTE_FOR", "VOTE_AGN"])
 
@@ -322,12 +331,14 @@ def getVotion(move):
             }
         )
 
+    business = players_business_status.players_business.business
+
     return {
         "move_id": votion_started_action.move.id,
         "player_id": votion_started_action.move.player.id,
-        "business_id": players_business_status.players_business.business.id,
-        "business_name": players_business_status.players_business.business.name,
-        "business_cost": players_business_status.players_business.business.cost,
+        "business_id": business.id,
+        "business_name": business.name,
+        "business_cost": business.cost,
         "business_status": players_business_status.status,
         "votes": votes,
         "votes_for_count": vote_for,
@@ -343,7 +354,11 @@ def setNewVote(move, player, category):
     player_move = Moves.objects.filter(player=player).last()
 
     if player.id in voted_players:
-        return {"result": False, "desc": "Player already voted", "votion": votion}
+        return {
+            "result": False,
+            "desc": "Player already voted",
+            "votion": votion
+        }
 
     new_move = Moves.objects.create(
         number=move.number,
@@ -383,8 +398,9 @@ def setNewVote(move, player, category):
 
         # Change player_business status
         votion_move = Moves.objects.get(pk=votion["move_id"])
-        player_business_status = PlayersBusinessStatus.objects.get(
-            move=votion_move
+        player_business_status = (
+            PlayersBusinessStatus.objects
+            .get(move=votion_move)
         )
         business = player_business_status.players_business.business
 
@@ -392,7 +408,7 @@ def setNewVote(move, player, category):
             Actions.objects.create(
                 move=votion_move,
                 move_stage="END",
-                name=f"Стал администратором в { business.name }",
+                name=f"Стал администратором в {business.name}",
                 is_command=True,
                 is_personal=True,
                 is_public=True,
@@ -406,7 +422,11 @@ def setNewVote(move, player, category):
 
             player_business_status.status = "ACTIVE"
             player_business_status.save()
-            return {"result": True, "desc": "Player can buy business", "votion": votion}
+            return {
+                "result": True,
+                "desc": "Player bought business",
+                "votion": votion
+            }
 
         else:
             Actions.objects.create(
