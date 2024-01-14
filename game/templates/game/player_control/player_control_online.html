@@ -9,7 +9,7 @@
 <!-- Player information and Controll Buttons -->
 <div class="container">
   <div class="row justify-content-md-center">
-    <div class="card border-0 col-md-5 mb-5" style="min-height: 100vh">
+    <div class="card border-0 col-md-5 mb-5" style="min-height: 80vh">
       <img
         src="{% static 'game/img/logo2.svg' %}"
         alt="abp-logo"
@@ -18,6 +18,7 @@
       />
 
       <div class="card-body">
+
         <div class="d-grid gap-2 col-md-8 mx-auto text-center">
           <div id="player_id" hidden>{{ player.id }}</div>
           <div class="text-center display-3">{{ player.icon }}</div>
@@ -42,7 +43,7 @@
         </div>
 
         <!-- Keyboard -->
-        <div class="d-grid gap-2 col-md-8 mx-auto mt-4 mb-5">
+        <div class="d-grid gap-4 col-md-8 mx-auto mt-4 mb-5">
           <!-- Roll teh Dice -->
           {% include 'game/player_control/player_control_button_roll.html' %}
 
@@ -50,21 +51,33 @@
           {% include 'game/player_control/player_control_button_business.html' %}
           {% include 'game/player_control/player_control_button_command_business.html' %}
 
-          <!-- Rules -->
-          {% include 'game/player_control/player_control_button_rules.html' %}
-
           <!-- Business cards -->
           {% for player_business in player_businesses%} 
             {% include 'game/player_control/player_control_card_business.html' %} 
           {% endfor %}
 
         </div>
+
       </div>
+
+
     </div>
   </div>
 </div>
 
-<p class="text-muted small text-center">{{ game_session.session_name }}</p>
+<div class="text-center mb-3">
+  <a
+    class="btn fs-5 text-muted"
+    type="button"
+    data-bs-toggle="modal"
+    data-bs-target="#rulesModal"
+  >
+    Правила
+  </a>
+  <p class="text-muted small">{{ game_session.session_name }}</p>
+</div>
+
+
 
 {% include 'game/modals/surprise_modal.html' %}
 {% include 'game/modals/vote_modal.html' %} 

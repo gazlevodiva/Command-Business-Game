@@ -128,11 +128,11 @@ window.onload = function () {
   whoisTurnPreloader();
 
   // Check is it the player's turn?
-  // setInterval(() => {
-  //   if (!playerTurnPreloader.hidden) {
-  //     whoisTurnPreloader();
-  //   }
-  // }, 5000);
+  setInterval(() => {
+    if (!playerTurnPreloader.hidden) {
+      whoisTurnPreloader();
+    }
+  }, 1000);
 };
 
 
@@ -192,14 +192,26 @@ async function updatePlayerControlData() {
 }
 
 
-async function whoisTurnPreloader() {
+async function getWhoisTurn() {
   try {
     const response = await fetch("/whoisturn/" + playerId.innerHTML + "/");
     const data = await response.json();
+    return data;
 
-    var same_player = parseInt(playerId.innerHTML) === parseInt(data.player_id);
+  } catch (error) {
+    console.error("Whoisturn error:", error);
+  }
+}
 
-    if (same_player) {
+
+async function whoisTurnPreloader() {
+
+  // Get data about players turn
+  var data = await getWhoisTurn();
+  var is_the_same_player = parseInt(playerId.innerHTML) === parseInt(data.player_id);
+    
+  // If this player turn
+  if (is_the_same_player) {
       // Hide Turn preloader
       showTurnPreloader(false);
 
@@ -215,25 +227,77 @@ async function whoisTurnPreloader() {
       // Make sound and vibro
       playTurnSound();
       playVibration();
-    } else {
-      if (data.votion) {
+
+  } else {
+
+    // Check votion 
+    if (data.votion) {
+      if ( data.votion.business_status !== "ACTIVE" && data.votion.business_status !== "UNVOTE" ){
+
+        await updatePlayerControlData();
         voteMoveIdGlobal = data.votion.move_id;
+
         if (hasPlayerVoted(data.votion.votes) === false) {
           showTurnPreloader(false);
-          showVoteModal();
+          showVoteModal(data.votion);
           return;
         }
       }
-
-      await updatePlayerControlData();
-      playerTurnPreloader.hidden =
-        parseInt(playerIdGlobal) === parseInt(data.player_id);
-      playerTurnPreloaderText.innerText = `Ход игрока ${data.player_name}.`;
     }
-  } catch (error) {
-    console.error("Ошибка при определении очереди хода:", error);
+
+    playerTurnPreloader.hidden = is_the_same_player;
+    playerTurnPreloaderText.innerText = `Ход игрока ${data.player_name}.`;
   }
 }
+
+
+
+// async function whoisTurnPreloader() {
+//   try {
+//     const response = await fetch("/whoisturn/" + playerId.innerHTML + "/");
+//     const data = await response.json();
+
+//     var is_the_same_player = parseInt(playerId.innerHTML) === parseInt(data.player_id);
+//     if (is_the_same_player) {
+//       // Hide Turn preloader
+//       showTurnPreloader(false);
+
+//       // Delete BUG with fade
+//       removeModalBackdrop();
+
+//       // Update player info
+//       await updatePlayerControlData();
+
+//       // Check info about players move
+//       await whatIsMoveDetails();
+
+//       // Make sound and vibro
+//       playTurnSound();
+//       playVibration();
+//     } else {
+//       if (data.votion) {
+//         voteMoveIdGlobal = data.votion.move_id;
+
+//         console.log( data )
+
+//         if ( data.votion.business_status !== "ACTIVE" && data.votion.business_status !== "UNVOTE" ){
+//           if (hasPlayerVoted(data.votion.votes) === false) {
+//             showTurnPreloader(false);
+//             showVoteModal(data.votion);
+//             return;
+//           }
+//         }
+//       }
+
+//       await updatePlayerControlData();
+//       playerTurnPreloader.hidden =
+//         parseInt(playerIdGlobal) === parseInt(data.player_id);
+//       playerTurnPreloaderText.innerText = `Ход игрока ${data.player_name}.`;
+//     }
+//   } catch (error) {
+//     console.error("Ошибка при определении очереди хода:", error);
+//   }
+// }
 
 async function whatIsMoveDetails() {
   try {

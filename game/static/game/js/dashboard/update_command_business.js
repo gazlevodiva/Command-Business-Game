@@ -17,7 +17,7 @@ async function updateCommandBusiness(commandBank, commandPlayers) {
 
         var colShareDiv = document.createElement("div");
         colShareDiv.className = "col-2 h5";
-        colShareDiv.textContent = commandPlayer.name + "%";
+        colShareDiv.textContent = commandPlayer.share + "%";
 
         
         rowDiv.appendChild(colNameDiv);

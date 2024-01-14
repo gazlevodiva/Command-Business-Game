@@ -20,12 +20,18 @@
   <!-- Command Business -->
   {% include 'game/player_control/player_control_button_command_business.html' %}
 
-  <!-- Rules -->
-  {% include 'game/player_control/player_control_button_rules.html' %}
-
   <!-- Business cards -->
   {% for player_business in player_businesses%} 
     {% include 'game/player_control/player_control_card_business.html' %} 
   {% endfor %}
+
+  <a
+    class="btn btn-outline-secondary mb-4"
+    type="button"
+    data-bs-toggle="modal"
+    data-bs-target="#rulesModal"
+  >
+    Почитать правила
+  </a>
   
 </div>

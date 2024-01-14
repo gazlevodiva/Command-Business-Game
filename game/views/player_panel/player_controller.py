@@ -109,9 +109,14 @@ def move_details(request, session, player_id):
 
     # Memory
     if player_last_action.category == "MEMO":
-        memory = Surprises.objects.get(
-            name=player_last_action.name, session_id=session.id
-        )
+        memories = Surprises.objects.filter(name=player_last_action.name)
+
+        if memories.filter(session_id=session.id).exists():
+            memory = memories.get(session_id=session.id)
+
+        if not memories.filter(session_id=session.id).exists():
+            memory = memories.get(session_id=0)
+
         context["memory_id"] = memory.id
 
     # Command surprise
@@ -208,7 +213,6 @@ def player_move(request, session, player_id, dice_value):
     if GAME_FIELD[new_player_position] == "skip-move-cell":
         set_skip_move(move)
 
-
     context['type'] = "player_move"
     context['player_id'] = player.id
     context['player_name'] = player.name
@@ -228,7 +232,7 @@ def player_move(request, session, player_id, dice_value):
 @check_user_session_hash
 def whois_turn_data(request, session, player_id):
     # Who is turn
-    player_turn_id = playerTurn(session) 
+    player_turn_id = playerTurn(session)
     player_turn = Player.objects.get(pk=player_turn_id)
     player_turn_last_move = Moves.objects.filter(player=player_turn).last()
 
@@ -502,7 +506,7 @@ def player_control(request=None, session=None, player_id=None, modal=False):
                 category="MEMO",
                 is_command=False,
                 is_personal=True,
-                is_public=True,
+                is_public=False,
             )
 
             MemoryAnswers.objects.create(

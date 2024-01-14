@@ -48,7 +48,7 @@ async function updateGameHistory(gameActions) {
 
       if (action.action_count != 0) {
         var actionCount = document.createElement("span");
-        actionCount.textContent = " " + action.action_count;
+        actionCount.textContent = " " + formatNumber(action.action_count);
 
         if (action.action_count < 0) {
           actionCount.classList.add("text-danger");

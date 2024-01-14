@@ -67,7 +67,7 @@ def set_memory(move):
         name=memory.name,
         count=memory.count,
         is_personal=True,
-        is_public=False,
+        is_public=True,
         is_command=False,
         category="MEMO",
     )

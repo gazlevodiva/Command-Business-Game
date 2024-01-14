@@ -232,7 +232,7 @@ def sellCommandShare(move, sell_count=None):
 
     if sell_count:
         count = sell_count
-        name = f"Вывел {count} из командного бизнеса"
+        name = "Вывел средства из КБ"
 
     Actions.objects.create(
         move=move,
@@ -244,7 +244,11 @@ def sellCommandShare(move, sell_count=None):
         is_public=True,
     )
 
-    CommandPayments.objects.create(move=move, category="WITHDRAW", count=-count)
+    CommandPayments.objects.create(
+        move=move,
+        category="WITHDRAW",
+        count=-count
+    )
 
 
 def setVotion(move, business):
@@ -332,10 +336,12 @@ def getVotion(move):
         )
 
     business = players_business_status.players_business.business
+    player = votion_started_action.move.player
 
     return {
         "move_id": votion_started_action.move.id,
-        "player_id": votion_started_action.move.player.id,
+        "player_id": player.id,
+        "player_name": player.name,
         "business_id": business.id,
         "business_name": business.name,
         "business_cost": business.cost,

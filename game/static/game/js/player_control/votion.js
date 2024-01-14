@@ -1,23 +1,28 @@
 const voteForButton = document.getElementById("vote_for_btn");
 voteForButton?.addEventListener("click", async function () {
   showTurnPreloader(true);
-  newVote("VOTE_FOR");
+  await setNewVote("VOTE_FOR");
 });
 
 const voteAgnButton = document.getElementById("vote_agn_btn");
 voteAgnButton?.addEventListener("click", async function () {
   showTurnPreloader(true);
-  newVote("VOTE_AGN");
+  await setNewVote("VOTE_AGN");
 });
+
+const voteModal = document.getElementById("voteModal");
+const voteDescriptionName = document.getElementById("vote_description_name");
+const voteDescriptionCount = document.getElementById("vote_description_count");
 
 const votionModalButton = document.getElementById("votion_btn");
 const votionModalBody = document.getElementById("votion_modal_body");
+const votionModal = document.getElementById("votionModal");
 
 votionModalButton?.addEventListener("click", async function () {
   showTurnPreloader(true);
 });
 
-async function newVote(vote_category) {
+async function setNewVote(vote_category) {
   try {
     const response = await fetch(
       `/new_vote/${voteMoveIdGlobal}/${playerIdGlobal}/${vote_category}/`
@@ -25,16 +30,15 @@ async function newVote(vote_category) {
     const data = await response.json();
     return;
   } catch (error) {
-    console.error("Ошибка при голосовании:", error);
+    console.error("Error with set new vote:", error);
   }
 }
 
-const votion_modal = document.getElementById("votionModal");
+
 
 function showVotionModal(votion) {
   updateVotionModal(votion);
-
-  var votionModalInstance = new bootstrap.Modal(votion_modal);
+  var votionModalInstance = new bootstrap.Modal(votionModal);
   votionModalInstance.show();
 }
 
@@ -86,17 +90,22 @@ function startVotingStatusCheck(move_id) {
 
   votionInterval = setInterval(() => {
     checkVotingStatusCheck(move_id);
-  }, 2000);
+  }, 1000);
 }
 
 function stopVotingStatusCheck() {
   clearInterval(votionInterval);
 }
 
-function showVoteModal() {
-  const voteModal = document.getElementById("voteModal");
+function showVoteModal(votion) {
+  updateVoteModal(votion);
   var voteModalInstance = new bootstrap.Modal(voteModal);
   voteModalInstance.show();
+}
+
+function updateVoteModal(votion){
+  voteDescriptionName.innerHTML = `Игрок <b>${votion.player_name}</b> предлагает купить бизнес <b>${votion.business_name}</b> за`;
+  voteDescriptionCount.textContent = formatNumber(votion.business_cost);
 }
 
 function countVotes(votes) {
@@ -111,7 +120,7 @@ function countVotes(votes) {
   });
 
   return voteCounts;
-}
+} 
 
 function hasPlayerVoted(votes) {
   const vote = votes.find((v) => v.player_id === parseInt(playerIdGlobal));
