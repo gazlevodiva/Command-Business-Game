@@ -58,7 +58,7 @@ def dashboard_online(request, session):
 
         # If command business payments
         if action.category == "BSNS" and action.is_command:
-            percent_pattern = r"(\d+)%"
+            percent_pattern = r"(-?\d+)%"
             match = re.search(percent_pattern, action.name)
             if match:
                 percent = int(match.group(1))

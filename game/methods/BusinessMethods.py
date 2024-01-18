@@ -169,7 +169,7 @@ def setCommandBusinessIncome(player_business, move):
             category="BSNS",
             is_command=True,
             is_personal=True,
-            is_public=False,
+            is_public=True,
         )
         payment_actions.append(payment_action)
 
