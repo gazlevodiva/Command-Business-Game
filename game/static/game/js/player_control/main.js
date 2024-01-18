@@ -364,7 +364,7 @@ async function moveReaction(data) {
       var nlwl_actions_modal = document.getElementById("new_level_actions");
 
       nlwl_actions_modal.innerHTML = "";
-      nlwl_income_modal.textContent = "💵 Доход круга " + income + " 💰";
+      nlwl_income_modal.textContent = "💵 Доход круга " + formatNumber(income) + " 💰";
 
       if (income < 0) {
         nlwl_income_modal.classList.add("text-danger");
@@ -381,7 +381,7 @@ async function moveReaction(data) {
 
           var actionCount = document.createElement("span");
           if (action.count !== 0) {
-            actionCount.textContent = action.count;
+            actionCount.textContent = formatNumber(action.count);
             if (action.count < 0) {
               actionCount.classList.add("text-danger");
             }
@@ -439,7 +439,7 @@ async function moveReaction(data) {
       var surprise_count = document.getElementById("surprise_count_modal");
 
       surprise_name.textContent = data.action_name;
-      surprise_count.textContent = data.action_count;
+      surprise_count.textContent = formatNumber(data.action_count);
 
       if (data.action_count < 0) {
         surprise_count.classList.remove("text-success");
@@ -464,7 +464,7 @@ async function moveReaction(data) {
       var surprise_count = document.getElementById("cmndsurprise_count_modal");
 
       surprise_name.textContent = data.action_name;
-      surprise_count.textContent = data.action_count;
+      surprise_count.textContent = formatNumber(data.action_count);
 
       if (data.action_count < 0) {
         surprise_count.classList.remove("text-success");
