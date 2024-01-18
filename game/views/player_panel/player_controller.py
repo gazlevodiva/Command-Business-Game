@@ -413,6 +413,12 @@ def player_control_business_data(
 
     businesses = json.loads(serialize("json", businesses))
 
+    # get businesses count
+    businesses_count = getBusinesses(player)
+    can_buy_more = True
+    if len(businesses_count) >= 10:
+        can_buy_more = False
+
     context = {
         "player_id": player.id,
         "businesses": businesses,
@@ -420,6 +426,7 @@ def player_control_business_data(
         "command_share": share,
         "command_count": count,
         "command_bank": bank,
+        "can_buy_more": can_buy_more,
     }
     response = JsonResponse(context)
     return response

@@ -604,10 +604,18 @@ function createBusinessCard(
 
 async function getPlayerBusinessData(category) {
   try {
-    const response = await fetch(
+    const business_buy_modal = document.getElementById("business_cards");
+    const response = await fetch( 
       `/get_player_control_business_data_${playerIdGlobal}_${category}/`
     );
     const data = await response.json();
+
+    if (!data.can_buy_more){
+      business_buy_modal.innerHTML = `
+        <div class="text-center h4 mt-4 mb-4">10 бизнесов максимум 😓</div>
+      `;
+      return;
+    }
 
     const businessCards = data.businesses
       .map((business) =>
@@ -618,11 +626,10 @@ async function getPlayerBusinessData(category) {
           data.command_share
         )
       )
-      .join("");
+      .join(""); 
 
     // If not businesses to buy
     if (businessCards == "") {
-      let business_buy_modal = document.getElementById("business_cards");
       business_buy_modal.innerHTML = `
         <div class="text-center h4 mt-4 mb-4">Вы ничего не можете купить 😓</div>
       `;

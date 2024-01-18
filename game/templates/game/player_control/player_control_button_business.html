@@ -34,9 +34,6 @@
         ></button>
       </div>
       <div class="modal-body" id="buy_business_modal_body">
-        {% if player_businesses|length >= 10 %}
-        <div class="h3 text-danger text-center">Максимум 10 бизнесов</div>
-        {% else %}
         <input
           type="hidden"
           id="player_id"
@@ -63,7 +60,6 @@
             будете получать 20% + ваш процент в командном бизнесе от прибыли.
           </p>
         </div>
-        {% endif %}
       </div>
       <div class="modal-footer">
         <button
