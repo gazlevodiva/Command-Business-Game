@@ -1,23 +1,9 @@
-const resetGameButton = document.getElementById("reset-game");
+
 
 window.onload = function () {
   updateSessionPlayers();
   setInterval(updateSessionPlayers, 2500);
 };
-
-resetGameButton?.addEventListener("click", async function () {
-  var reset_data = await resetGame();
-  var resetGameModal = bootstrap.Modal.getInstance(
-    document.getElementById("resetGameModal")
-  );
-
-  if (reset_data.result) {
-    location.reload();
-  } else {
-    alert(reset_data.describe);
-    console.log(reset_data.error);
-  }
-});
 
 async function deletePlayer(playerId) {
   var delete_result = await deletePlayerFetch(playerId);
@@ -44,22 +30,6 @@ async function deletePlayerFetch(playerId) {
     return data;
   } catch (error) {
     console.error("Error delete player:", error);
-  }
-}
-
-async function resetGame() {
-  try {
-    const response = await fetch("/reset_game/");
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    const data = await response.json();
-
-    console.log(data);
-
-    return data;
-  } catch (error) {
-    console.error("Error game reset:", error);
   }
 }
 

@@ -80,3 +80,28 @@ function getCookie(name) {
   }
   return cookieValue;
 }
+
+async function resetGame() {
+  try {
+    const response = await fetch("/reset_game/");
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error game reset:", error);
+  }
+}
+
+const resetGameButton = document.getElementById("reset-game");
+resetGameButton?.addEventListener("click", async function () {
+  var reset_data = await resetGame();
+  var resetGameModal = bootstrap.Modal.getInstance(
+    document.getElementById("resetGameModal")
+  );
+
+  if (reset_data.result) {
+    location.reload();
+  } else {
+    alert(reset_data.describe);
+    console.log(reset_data.error);
+  }
+});
