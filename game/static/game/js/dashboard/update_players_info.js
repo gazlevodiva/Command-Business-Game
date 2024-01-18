@@ -1,6 +1,6 @@
 const playersListDiv = document.getElementById("players_list");
 
-let currentPlayerTurnId = null;
+let currentPlayerTurnId = 0;
 
 async function updatePlayersInfo(players) {
   const newCurrentPlayerTurnId = players.find((player) => player.is_turn)?.id;

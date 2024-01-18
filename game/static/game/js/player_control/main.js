@@ -1,4 +1,5 @@
 // Globals
+var playerTurnGlobal = false;
 var playerIdGlobal = "";
 var playerNameGlobal = "";
 var playerLevelGlobal = 0;
@@ -75,8 +76,10 @@ start_accept_btn?.addEventListener("click", function () {
 const new_level_accept_btn = document.getElementById("new_level_accept");
 new_level_accept_btn?.addEventListener("click", async function () {
   if (playerNextCellGlobal) {
+
     await finishTheMove();
     await MakeAMove(playerNextCellGlobal);
+
   } else {
     await handleCloseButtonClick();
   }
@@ -129,10 +132,10 @@ window.onload = function () {
 
   // Check is it the player's turn?
   setInterval(() => {
-    if (!playerTurnPreloader.hidden) {
+    if (!playerTurnGlobal) {
       whoisTurnPreloader();
     }
-  }, 1000);
+  }, 1500);
 };
 
 
@@ -143,17 +146,39 @@ async function handleCloseButtonClick() {
 
 
 function showTurnPreloader(show) {
-  playerTurnPreloaderText.innerText = `Ваш ход окончен.`;
-  playerTurnPreloader.hidden = !show;
+  // // Old version preloader
+  // playerTurnPreloaderText.innerText = `Ваш ход окончен.`;
+  // playerTurnPreloader.hidden = !show;
+
+  // New version
+  document.querySelectorAll('.action-button').forEach(button => {
+    if(show){
+      playerTurnGlobal = false;
+      button.classList.add('disabled');
+      button.setAttribute('disabled', 'disabled');
+    }
+    if(!show){
+      
+      button.classList.remove('disabled');
+      button.removeAttribute('disabled');
+    }
+  });
+}
+
+async function getPlayerControlData(){
+  try {
+    const response = await fetch(`/get_player_control_data_${playerId.innerHTML}/`);
+    const data = await response.json();
+    return data;
+
+  } catch (error) {
+    console.error("getPlayerControlData error:", error);
+  }
 }
 
 
 async function updatePlayerControlData() {
-  try {
-    const response = await fetch(
-      `/get_player_control_data_${playerId.innerHTML}/`
-    );
-    const data = await response.json();
+    const data = await getPlayerControlData();
 
     // Update globals
     playerIdGlobal = data.player_id;
@@ -177,24 +202,22 @@ async function updatePlayerControlData() {
       playerCommandShareGlobal = data.command_share;
       playerCommandCountGlobal = data.command_count;
       playerCommandBankGlobal = data.command_bank;
-      playerCommandShare.textContent = `${playerCommandShareGlobal}% (${formatNumber(
-        playerCommandCountGlobal
-      )}) в КБ`;
+      playerCommandShare.textContent = 
+      `${playerCommandShareGlobal}% (${formatNumber(playerCommandCountGlobal)}) в КБ`;
     }
 
     if (data.is_open_command_business) {
       playerIsCommandGlobal = data.is_open_command_business;
       commandBusinessButton.hidden = false;
     }
-  } catch (error) {
-    console.error("Error updating player control data:", error);
-  }
+
+
 }
 
 
 async function getWhoisTurn() {
   try {
-    const response = await fetch("/whoisturn/" + playerId.innerHTML + "/");
+    const response = await fetch(`/whoisturn/${playerId.innerHTML}/`);
     const data = await response.json();
     return data;
 
@@ -204,22 +227,26 @@ async function getWhoisTurn() {
 }
 
 
+let voteModalOpenGlobal = false;
 async function whoisTurnPreloader() {
 
   // Get data about players turn
   var data = await getWhoisTurn();
   var is_the_same_player = parseInt(playerId.innerHTML) === parseInt(data.player_id);
-    
+  
+  playerTurnGlobal = is_the_same_player;
+
+  // Update player info
+  await updatePlayerControlData();
+
   // If this player turn
   if (is_the_same_player) {
+
       // Hide Turn preloader
       showTurnPreloader(false);
 
       // Delete BUG with fade
       removeModalBackdrop();
-
-      // Update player info
-      await updatePlayerControlData();
 
       // Check info about players move
       await whatIsMoveDetails();
@@ -231,77 +258,31 @@ async function whoisTurnPreloader() {
   } else {
 
     // Check votion 
-    if (data.votion) {
-      if ( data.votion.business_status !== "ACTIVE" && data.votion.business_status !== "UNVOTE" ){
-
-        await updatePlayerControlData();
+    if(data.votion) {
+      if(data.votion.business_status == "VOTING"){
         voteMoveIdGlobal = data.votion.move_id;
 
-        if (hasPlayerVoted(data.votion.votes) === false) {
+        if (hasPlayerVoted(data.votion.votes) === false && !voteModalOpenGlobal) {
           showTurnPreloader(false);
           showVoteModal(data.votion);
+          voteModalOpenGlobal = true;
           return;
         }
+
       }
     }
 
-    playerTurnPreloader.hidden = is_the_same_player;
-    playerTurnPreloaderText.innerText = `Ход игрока ${data.player_name}.`;
+    showTurnPreloader(true);
+    // old version
+    // playerTurnPreloader.hidden = is_the_same_player;
+    // playerTurnPreloaderText.innerText = `Ход игрока ${data.player_name}.`;
   }
 }
 
 
-
-// async function whoisTurnPreloader() {
-//   try {
-//     const response = await fetch("/whoisturn/" + playerId.innerHTML + "/");
-//     const data = await response.json();
-
-//     var is_the_same_player = parseInt(playerId.innerHTML) === parseInt(data.player_id);
-//     if (is_the_same_player) {
-//       // Hide Turn preloader
-//       showTurnPreloader(false);
-
-//       // Delete BUG with fade
-//       removeModalBackdrop();
-
-//       // Update player info
-//       await updatePlayerControlData();
-
-//       // Check info about players move
-//       await whatIsMoveDetails();
-
-//       // Make sound and vibro
-//       playTurnSound();
-//       playVibration();
-//     } else {
-//       if (data.votion) {
-//         voteMoveIdGlobal = data.votion.move_id;
-
-//         console.log( data )
-
-//         if ( data.votion.business_status !== "ACTIVE" && data.votion.business_status !== "UNVOTE" ){
-//           if (hasPlayerVoted(data.votion.votes) === false) {
-//             showTurnPreloader(false);
-//             showVoteModal(data.votion);
-//             return;
-//           }
-//         }
-//       }
-
-//       await updatePlayerControlData();
-//       playerTurnPreloader.hidden =
-//         parseInt(playerIdGlobal) === parseInt(data.player_id);
-//       playerTurnPreloaderText.innerText = `Ход игрока ${data.player_name}.`;
-//     }
-//   } catch (error) {
-//     console.error("Ошибка при определении очереди хода:", error);
-//   }
-// }
-
 async function whatIsMoveDetails() {
   try {
-    const response = await fetch(`/move_details_${playerIdGlobal}/`);
+    const response = await fetch(`/move_details_${playerId.innerHTML}/`);
     const data = await response.json();
 
     const isActionable =
@@ -344,8 +325,8 @@ async function goToStart() {
 
     if (data.result) {
       playerMoveIdGlobal = data.move_id;
-      finishTheMove();
-      MakeAMove(11);
+      await finishTheMove();
+      await MakeAMove(11);
     }
   } catch (error) {
     console.error("Ошибка при возвращении на старт:", error);
@@ -508,9 +489,7 @@ async function moveReaction(data) {
 
 async function MakeAMove(diceValue) {
   try {
-    const response = await fetch(
-      `/player_move_${playerIdGlobal}_${diceValue}/`
-    );
+    const response = await fetch(`/player_move_${playerIdGlobal}_${diceValue}/`);
     const data = await response.json();
 
     if (data) {

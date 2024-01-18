@@ -61,7 +61,7 @@
               required
             />
             <button
-              class="btn btn-outline-secondary"
+              class="btn btn-outline-secondary action-button"
               type="button"
               id="invest_all"
             >
@@ -74,7 +74,7 @@
           <div class="row d-flex justify-content-between gap-2 mx-2">
             {% if command_count >= 50000 and command_count >= 50000 %}
             <a
-              class="col btn btn-block btn-outline-secondary"
+              class="col btn btn-block btn-outline-secondary action-button"
               href="/sell_share_{{player.id}}_50000/"
               type="button"
               onclick="Preloader()"
@@ -83,7 +83,7 @@
             </a>
             {% else %}
             <a
-              class="col btn btn-block btn-outline-secondary disabled"
+              class="col btn btn-block btn-outline-secondary disabled action-button"
               href="#"
               type="button"
               onclick="Preloader()"
@@ -102,7 +102,7 @@
             </a>
             {% else %}
             <a
-              class="col btn btn-block btn-outline-secondary disabled"
+              class="col btn btn-block btn-outline-secondary disabled action-button"
               href="#"
               type="button"
               onclick="Preloader()"
@@ -121,7 +121,7 @@
             </a>
             {% else %}
             <a
-              class="col btn btn-block btn-outline-secondary disabled"
+              class="col btn btn-block btn-outline-secondary disabled action-button"
               href="#"
               type="button"
               onclick="Preloader()"
@@ -139,7 +139,7 @@
           >
             Отмена
           </button>
-          <button class="btn btn-danger" type="submit">Вложить</button>
+          <button class="btn btn-danger action-button" type="submit">Вложить</button>
         </div>
       </form>
     </div>

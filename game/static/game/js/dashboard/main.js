@@ -8,7 +8,6 @@ var fistPageUpdate = false;
 
 async function updateOnlineDashboard() {
   let data = await getDashboardData();
-
   const diceValueAction = data.game_actions.find(action => action.action_category === "DICE_VALUE");
 
   if( diceValueAction && lastRollDiceActionId !== diceValueAction.action_id ){
@@ -20,13 +19,13 @@ async function updateOnlineDashboard() {
       const diceTwo = parseInt(parts[1]);
       await rollTheDice( diceOne, diceTwo );
     }    
-  }    
+  }
 
-  await updatePlayersInfo(data.players);
-
-  await updateGameHistory(data.game_actions);
+  await updateGameHistory(data.game_actions, data.votion);
 
   await updateCommandBusiness(data.command_bank, data.command_players);
+
+  await updatePlayersInfo(data.players);
 
   fistPageUpdate = true;
 

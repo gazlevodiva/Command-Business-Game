@@ -4,6 +4,7 @@ from game.models.CommandPayments import CommandPayments
 from game.models.Player import Player
 from game.models.Moves import Moves
 
+from game.methods.BusinessMethods import getVotion
 from game.methods.BusinessMethods import getCommandPlayers
 from game.methods.BusinessMethods import getCommandBank
 
@@ -33,7 +34,7 @@ def dashboard_online(request, session):
 
     # Get actions for History
     context["game_actions"] = []
-    for action in getActionsDashboard(session):
+    for action in getActionsDashboard(session)[:20]:
         count = action.count
 
         if action.category == "SURP" and action.is_command:
@@ -41,7 +42,7 @@ def dashboard_online(request, session):
             count = command_payment.count
 
         context["game_actions"].append(
-            {   
+            {
                 "move_id": action.move.id,
                 "move_number": action.move.number,
                 "move_stage": action.move_stage,
@@ -54,6 +55,10 @@ def dashboard_online(request, session):
                 "action_category": action.category,
             }
         )
+
+    # Get active votion
+    move = Moves.objects.filter(player__game_session=session).last()
+    context["votion"] = getVotion(move)
 
     # Total command balance
     context["command_bank"] = getCommandBank(session)

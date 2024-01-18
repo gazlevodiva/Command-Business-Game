@@ -7,13 +7,13 @@ from game.models.Player import Player
 
 class Moves(models.Model):
     
-    number       = models.IntegerField( blank=True )
-    player       = models.ForeignKey( Player, default=None, on_delete=models.CASCADE )
-    position     = models.IntegerField( default=None )
-    created_date = models.DateTimeField( default=timezone.now )
+    number = models.IntegerField(blank=True)
+    player = models.ForeignKey(Player, default=None, on_delete=models.CASCADE)
+    position = models.IntegerField(default=None)
+    created_date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return f'''{ self.player.name } делает { self.number } ход. '''
+        return f"""{ self.player.name } делает { self.number } ход. """
 
     def save(self, *args, **kwargs):
         if self.number is None and self.number != 0:
@@ -31,14 +31,11 @@ class Moves(models.Model):
         super(Moves, self).save(*args, **kwargs)
 
     def get_next_move_number(self):
-        # Получаем максимальный номер хода для всех игроков в текущей игровой сессии
         max_move_number = Moves.objects.filter(
             player__game_session=self.player.game_session
-        ).aggregate(Max('number'))['number__max']
+        ).aggregate(Max("number"))["number__max"]
 
-        # Если еще не было ни одного хода, устанавливаем номер хода равным 1
         if max_move_number is None:
             return 1
 
-        # В противном случае увеличиваем номер хода на 1
         return max_move_number + 1

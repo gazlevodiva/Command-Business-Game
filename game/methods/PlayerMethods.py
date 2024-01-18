@@ -233,6 +233,7 @@ def getBusinessesCost(player):
 
 
 def playerTurn(session):
+    # Get all actions
     players_list_query = (
         Player.objects.filter(visible=True)
         .filter(game_session=session)
@@ -243,14 +244,53 @@ def playerTurn(session):
     if len(players_list_query) == 0:
         return False
 
+    # Get list of players
     players_list = [player.id for player in players_list_query]
 
-    last_action = (
-        Actions.objects.filter(move__player__game_session=session)
+    # Get last action ftom game session
+    player_actions = (
+        Actions.objects
+        .filter(move__player__game_session=session)
         .filter(move__player__visible=True)
-        .exclude(category__in=["VOTE_FOR", "VOTE_AGN"])
-        .last()
+        .exclude(category__in=["VOTE_FOR", "VOTE_AGN", "BSNS"])
     )
+
+    # Get the last action
+    last_action = player_actions.last()
+
+    # If player drop the dice in last move, we check start and end position
+    player_move_actions = (
+        player_actions
+        .filter(move__number=last_action.move.number)
+    )
+    if player_move_actions.filter(category="DICE_VALUE").exists():
+
+        # Get dice action
+        dice_action = (
+            player_move_actions
+            .filter(category="DICE_VALUE")
+            .get(move_stage="END")
+        )
+
+        # get dice value from action
+        dice_action_value = sum([int(x) for x in dice_action.name.split('-')])
+
+        # Check finish position to current position
+        finish_position = dice_action.move.position + dice_action_value
+        if finish_position > 25:
+            finish_position = finish_position - 24
+
+        if finish_position == 25:
+            finish_position = 1
+
+        current_position = last_action.move.position
+
+        # return player_id to finish moves
+        if current_position != finish_position:
+            return dice_action.move.player.id
+
+    if last_action.move.position == 14:
+        return last_action.move.player.id
 
     if last_action.move_stage == "START":
         return last_action.move.player.id

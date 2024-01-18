@@ -28,6 +28,8 @@ async function setNewVote(vote_category) {
       `/new_vote/${voteMoveIdGlobal}/${playerIdGlobal}/${vote_category}/`
     );
     const data = await response.json();
+    // To close vote modal
+    voteModalOpenGlobal = false;
     return;
   } catch (error) {
     console.error("Error with set new vote:", error);

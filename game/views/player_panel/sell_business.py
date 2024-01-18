@@ -19,7 +19,7 @@ def sell_business(request, session, player_business_id):
     move = Moves.objects.create(player=player, position=last_move.position)
 
     if players_business.is_command:
-        name = f"Продал личный бизнес {players_business.business.name}"
+        name = f"Продал командный бизнес {players_business.business.name}"
 
         Actions.objects.create(
             move=move,
@@ -39,7 +39,7 @@ def sell_business(request, session, player_business_id):
         )
 
     if not players_business.is_command:
-        name = f"Продал командный бизнес {players_business.business.name}"
+        name = f"Продал личный бизнес {players_business.business.name}"
 
         Actions.objects.create(
             move=move,

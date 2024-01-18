@@ -29,10 +29,11 @@ class Actions(models.Model):
         ('START', 'start'),
         ('CONTINUE', 'continue'),
         ('END', 'end'),
+        ('-', 'none'),
     )
     
     move         = models.ForeignKey( Moves, null=True, on_delete=models.CASCADE )
-    move_stage   = models.CharField( max_length=9, choices=MOVE_STAGE, default='CONTINUE' )
+    move_stage   = models.CharField( max_length=9, choices=MOVE_STAGE, default='CONTINUE', null=True )
     name         = models.CharField( max_length=200 )
     count        = models.IntegerField( default=0 )
     category     = models.CharField( max_length=10, choices=ACTIONS_CATEGORY, default='OTHER' )

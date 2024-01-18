@@ -1,18 +1,28 @@
-{% extends 'game/base.html' %} {% block content %}
+{% extends 'game/base.html' %} 
+{% block content %}
+{% load static %}
 
 <div class="container">
   <div class="row align-items-center">
     <div class="col-sm-9 col-md-7 col-lg-5 mx-auto mt-5">
       <div class="card border-0 shadow rounded-3 my-5">
         <div class="card-body p-4 p-sm-5">
-          <h4 class="card-title text-center mb-3 fs-5">
-            Введите никнейм нового игрока
-          </h4>
+          <img
+            src="{% static 'game/img/logo1.svg' %}"
+            alt="abp-logo"
+            class="card-img-top mt-5 mb-2"
+            style="height: 9vh"
+          />
+          <div class="h3 fw-bold text-center" style="color: #393939;">
+            TEAM BUSINESS
+          </div>
+          <div class="card-title text-justify h2 mt-5 mb-4">
+            {{ session_description }}
+          </div>
 
           <!-- FORM new player -->
           <form method="POST" onsubmit="Preloader()">
             {% csrf_token %}
-
             <div class="form-floating mb-3">
               <input
                 type="text"
@@ -23,7 +33,7 @@
                 maxlength="16"
                 required
               />
-              <label for="floatingInput">Ник игрока</label>
+              <label for="floatingInput">Введите имя нового игрока</label>
             </div>
 
             <div class="d-grid">
@@ -32,6 +42,8 @@
               </button>
             </div>
           </form>
+
+          <p class="text-center text-muted mt-4 mb-0">{{ session_name }}</p>
         </div>
       </div>
     </div>

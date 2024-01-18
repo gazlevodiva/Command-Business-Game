@@ -7,7 +7,6 @@ async function updatePlayerCardOnGameTable(player) {
     );
 
     
-
     if (oldPlayerCardCellNumber !== player.current_position) {
 
       const newPlayerCell = document.getElementById(

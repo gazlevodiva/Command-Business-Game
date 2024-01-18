@@ -71,21 +71,47 @@ GAME_FIELD = {
 
 @check_user_session_hash
 def move_details(request, session, player_id):
+    context = {}
     player = Player.objects.get(pk=player_id)
-    player_move = Moves.objects.filter(player=player).last()
-    player_last_action = (
-        Actions.objects.filter(move__number=player_move.number).last()
-    )
+    player_moves = Moves.objects.filter(player=player)
+    player_move = player_moves.last()
+    player_actions = Actions.objects.filter(move__number=player_move.number)
+    player_last_action = player_actions.last()
 
-    context = {
-        "type": "move_details",
-        "player_id": player_id,
-        "player_name": player.name,
-        "move_id": player_move.id,
-        "move_stage": player_last_action.move_stage,
-        "cell_name": GAME_FIELD[player_move.position],
-        "cell_position": player_move.position,
-    }
+    context["type"] = "move_details"
+    context["next_cell"] = False
+    context["player_id"] = player_id
+    context["player_name"] = player.name
+    context["move_id"] = player_move.id
+    context["move_stage"] = player_last_action.move_stage
+    context["cell_name"] = GAME_FIELD[player_move.position]
+    context["cell_position"] = player_move.position
+
+    # If player drop the dice
+    if player_actions.filter(category="DICE_VALUE").exists():
+
+        # Get dice value from last move
+        last_action_dice = (
+            player_actions
+            .filter(category="DICE_VALUE")
+            .get(move_stage="END")
+        )
+        action_dive_value = (
+            sum([int(x) for x in last_action_dice.name.split('-')])
+        )
+        context['dice_value'] = action_dive_value
+
+        if len(player_moves) > 1:
+            previous_move = player_moves.order_by('-id')[1]
+            context['previous_cell_position'] = previous_move.position
+            end_cell_position = previous_move.position + action_dive_value
+
+            if end_cell_position > 25:
+                context['next_cell'] = True
+                context['next_cell_move'] = end_cell_position - 25
+
+        else:
+            previous_move = None
 
     # Vote for buy command business
     if player.id in playerIdForVotion(player.game_session):
@@ -141,13 +167,13 @@ def player_move(request, session, player_id, dice_value):
     current_player_move = Moves.objects.filter(player=player).last()
     new_player_position = current_player_move.position + move_value
 
-    if is_rolled:
-        set_end_move(current_player_move)
+    # if is_rolled:
+    #     set_end_move(current_player_move)
 
     # For new level
     is_newlevel = False
     next_cell = False
-    next_cell_name = False
+    # next_cell_name = False
     next_move_value = False
 
     # The player went around the circle and stood further from the start
@@ -158,17 +184,44 @@ def player_move(request, session, player_id, dice_value):
 
         is_newlevel = True
         new_player_position = 1
-        next_cell_name = GAME_FIELD[next_move_value + 1]
+        # next_cell_name = GAME_FIELD[next_move_value + 1]
 
     # If player go on start
     if new_player_position == 25:
         is_newlevel = True
         new_player_position = 1
 
-    # Create new move for player and action position
-    move = Moves.objects.create(player=player, position=new_player_position)
     if is_rolled:
-        set_dice_roll(move, dice_value)
+        # Set up dice move
+        dice_move = (
+            Moves.objects
+            .create(
+                player=player,
+                position=current_player_move.position
+            )
+        )
+        set_dice_roll(dice_move, dice_value)
+
+        # New move
+        move = (
+            Moves.objects
+            .create(
+                player=player,
+                number=dice_move.number,
+                position=new_player_position
+            )
+        )
+
+    # Create new move for player and action position
+    if not is_rolled:
+        move = (
+            Moves.objects
+            .create(
+                player=player,
+                position=new_player_position
+            )
+        )
+
     set_start_move(move)
 
     context = {}
@@ -222,7 +275,7 @@ def player_move(request, session, player_id, dice_value):
     context['cell_name'] = GAME_FIELD[new_player_position]
     context['cell_position'] = new_player_position
     context['next_cell'] = next_cell
-    context['next_cell_name'] = next_cell_name
+    # context['next_cell_name'] = next_cell_name
     context['next_cell_move'] = next_move_value
 
     response = JsonResponse(context)
@@ -374,6 +427,7 @@ def player_control_business_data(
 
 @check_user_session_hash
 def player_control_data(request, session, player_id):
+    context = {}
     player = Player.objects.get(pk=player_id)
     player_balance = getBalance(player)
     share, count = getCommandShare(player)
@@ -389,17 +443,15 @@ def player_control_data(request, session, player_id):
 
     is_open_command_business = isOpenCommandBusiness(player)
 
-    context = {
-        "player_id": player.id,
-        "player_name": player.name,
-        "player_level": player.level,
-        "player_balance": player_balance,
-        "command_share": share,
-        "command_count": count,
-        "command_bank": bank,
-        "is_player_turn": is_player_turn,
-        "is_open_command_business": is_open_command_business,
-    }
+    context["player_id"] = player.id
+    context["player_name"] = player.name
+    context["player_level"] = player.level
+    context["player_balance"] = player_balance
+    context["command_share"] = share
+    context["command_count"] = count
+    context["command_bank"] = bank
+    context["is_player_turn"] = is_player_turn
+    context["is_open_command_business"] = is_open_command_business
     response = JsonResponse(context)
     return response
 

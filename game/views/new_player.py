@@ -28,6 +28,9 @@ def generate_unique_icon(game_session) -> str:
 
 @check_user_session_hash
 def new_player(request, session):
+    context = {}
+    context['session_name'] = session.session_name
+    context['session_description'] = session.description
     players_count = Player.objects.filter(game_session=session).count()
 
     # If more then 6 players - 404
@@ -40,7 +43,9 @@ def new_player(request, session):
 
         # Create new player
         new_player = Player.objects.create(
-            name=player_name, icon=player_icon, game_session=session
+            name=player_name,
+            icon=player_icon,
+            game_session=session
         )
 
         # player start balance
@@ -67,4 +72,4 @@ def new_player(request, session):
 
         return request_template
 
-    return render(request, "game/new_player.html")
+    return render(request, "game/new_player.html", context)
