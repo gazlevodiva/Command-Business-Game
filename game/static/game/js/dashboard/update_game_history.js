@@ -31,7 +31,7 @@ async function updateGameHistory(gameActions, votion) {
   );
  
   // If first acton not changed and we don`t have active votion, dont change history
-  if (first_game_history_action_id == new_first_action.action_id ) {
+  if (new_first_action && first_game_history_action_id == new_first_action.action_id ) {
     if(!current_votion_active || current_votion_votes_count == votion.votes.length){
       return;
     }
@@ -41,7 +41,7 @@ async function updateGameHistory(gameActions, votion) {
   current_votion_votes_count = current_votion_active ? votion.votes.length : 0; 
 
   // If we have a new action, change action id and set animation to off
-  first_game_history_action_id = new_first_action.action_id;
+  first_game_history_action_id = new_first_action ? new_first_action.action_id : 0;
   first_game_history_action_id_animated = false;
 
   // Clear history to update
