@@ -51,6 +51,48 @@
             >Вернуться к игре</a
           >
         </div>
+        <div class="d-grid mb-2">
+          <a
+            class="btn btn-outline-secondary"
+            type="button"
+            data-bs-toggle="modal"
+            data-bs-target="#resetGameModal"
+          >
+            ♻️ Начать новую игру
+          </a>
+          <div
+            class="modal fade"
+            id="resetGameModal"
+            tabindex="-1"
+            aria-labelledby="resetGameModal"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="resetGameModal">
+                    Вы хотите начать заново?
+                  </h1>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  Все записи касательно нынешней игровой сессии будут стерты. Все игроки
+                  будут удалены.
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-danger" id="reset-game">
+                    Начать новую игру!
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </form>
     </div>
   </div>

@@ -18,7 +18,7 @@ async function updateOnlineDashboard() {
       const diceOne = parseInt(parts[0]);
       const diceTwo = parseInt(parts[1]);
       await rollTheDice( diceOne, diceTwo );
-    }    
+    }
   }
 
   await updateGameHistory(data.game_actions, data.votion);

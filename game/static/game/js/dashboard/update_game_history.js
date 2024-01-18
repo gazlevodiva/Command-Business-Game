@@ -29,7 +29,7 @@ async function updateGameHistory(gameActions, votion) {
   const new_first_action = gameActions.find(action => 
     action.player_name !== "X" && action.action_visible
   );
-
+ 
   // If first acton not changed and we don`t have active votion, dont change history
   if (first_game_history_action_id == new_first_action.action_id ) {
     if(!current_votion_active || current_votion_votes_count == votion.votes.length){

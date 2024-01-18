@@ -88,10 +88,10 @@ async function updateSessionPlayers() {
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="text-start text-muted mx-3">
-                            <span class="h5">${player.icon}</span>
+                            <span class="h2">${player.icon}</span>
                         </div>
                         <div class="text-center">
-                            <span class="h5">${player.name}</span>
+                            <span class="h4">${player.name}</span>
                         </div>
                         <div class="text-end">
                             <button 

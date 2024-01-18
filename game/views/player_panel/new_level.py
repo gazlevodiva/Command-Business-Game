@@ -12,9 +12,12 @@ from game.models.Actions import Actions
 
 def is_new_level(player):
     player_move = Moves.objects.filter(player=player).last()
-    player_last_actions = Actions.objects.filter(
-        move__number=player_move.number
-    ).filter(move__player=player).exclude(category="DICE_VALUE")
+    player_last_actions = (
+        Actions.objects
+        .filter(move__number=player_move.number)
+        .filter(move__player=player)
+        .exclude(category="DICE_VALUE")
+    )
 
     if not player_last_actions.filter(category="NLWL"):
         print("Player dont have any new_level actions.")

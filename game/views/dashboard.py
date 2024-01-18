@@ -1,6 +1,8 @@
 from django.shortcuts import render
 
+from game.models.BusinessPayments import BusinessPayments
 from game.models.CommandPayments import CommandPayments
+from game.models.Actions import Actions
 from game.models.Player import Player
 from game.models.Moves import Moves
 
@@ -17,8 +19,9 @@ from game.methods.PlayerMethods import getCommandBusinesses
 from game.decorators import check_user_session_hash
 from django.contrib.auth.decorators import login_required
 
+from django.db.models import Sum
 from django.http import JsonResponse
-
+import re
 
 @login_required(login_url="/login/")
 @check_user_session_hash
@@ -37,9 +40,45 @@ def dashboard_online(request, session):
     for action in getActionsDashboard(session)[:20]:
         count = action.count
 
+        # If new level, count total payments
+        if action.category == "NLWL":
+            count = (
+                Actions.objects
+                .filter(move__number=action.move.number)
+                .filter(move__player=action.move.player)
+                .filter(visible=True)
+                .filter(is_personal=True)
+                .aggregate(total_count=Sum('count'))
+            )['total_count'] or 0
+
+        # If command surpise get count info from CommandPayments
         if action.category == "SURP" and action.is_command:
             command_payment = CommandPayments.objects.get(move=action.move)
             count = command_payment.count
+
+        # If command business payments
+        if action.category == "BSNS" and action.is_command:
+            percent_pattern = r"(\d+)%"
+            match = re.search(percent_pattern, action.name)
+            if match:
+                percent = int(match.group(1))
+            else:
+                percent = 0
+            pass
+            players_actions_by_move_number = (
+                Actions.objects
+                .filter(move__number=action.move.number)
+            )
+            players_move_number_new_level = (
+                players_actions_by_move_number
+                .get(category="NLWL")
+                .move
+            )
+            business_payment = (
+                BusinessPayments.objects
+                .filter(move=players_move_number_new_level)
+            )
+            count = business_payment.get(rentability=percent).count
 
         context["game_actions"].append(
             {
@@ -53,6 +92,7 @@ def dashboard_online(request, session):
                 "action_count": count,
                 "action_visible": action.visible,
                 "action_category": action.category,
+                "action_is_command": action.is_command,
             }
         )
 

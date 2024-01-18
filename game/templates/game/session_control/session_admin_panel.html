@@ -3,24 +3,58 @@
 {% load static %}
 
 <div class="container">
-  <div class="row align-items-center">
-    <div class="col-10 col-md-8 col-lg-6 mx-auto">
-      <div class="my-5">
+  <div class="mt-5">
+    <img
+      src="{% static 'game/img/logo1.svg' %}"
+      alt="abp-logo"
+      class="card-img-top mb-2"
+      style="height: 9vh"
+    />
+    <div class="h3 fw-bold text-center" style="color: #393939;">
+      TEAM BUSINESS
+    </div>
+    <p class="text-center text-muted">{{ session.session_name }}</p>
+    <div class="h2 text-center mt-5">{{session.description}}</div>
+  </div>
+  <div class="row justify-content-md-center">
+
+    <div class="col-4">
+      <div class="h4 mb-4 mt-5">Подключенные игроки:</div>
+      <div class="" id="sessions-players"></div>
+    </div>
+
+    <div class="col-6 col-md-8 col-lg-6">
         <div class="p-4 p-sm-5">
-          <h5 class="text-center text-muted">⚙️ Настройка игры ⚙️</h5>
-          <h4 class="text-center mt-3">{{session.description}}</h4>
+          
+          <!-- QR code -->
           <div class="d-flex justify-content-center align-items-center mb-3">
+            <div class="h4">
+              Для начала игры отсканируйте QR код:
+            </div>
             <div class="qr-code-placeholder">
               <img
                 src="data:image/png;base64,{{ qr_code_base64 }}"
                 alt="QR-code-placeholder"
-                class="img-fluid"
+                style="height: 22vh"
               />
-              <p class="text-center">
-                http://{{ request.get_host }}/s/{{ session.session_hash }}
-              </p>
-            </div>
+            </div>           
           </div>
+          <div class="mb-5">
+            <div class="h4">Или перешлите эту ссылку игрокам, чтоб они перешли по ней для подключения к игре:</div>
+            <div class="h5 text-center text-muted">http://{{ request.get_host }}/s/{{ session.session_hash }}</div>
+          </div>
+          <!-- QR code end -->
+
+          <!-- Players -->
+          <!-- <div class="row">
+            <div class="col-10 mx-auto mb-2">
+              <div class="h4 mb-4">Подключенные игроки:</div>
+              <div class="" id="sessions-players"></div>
+            </div>
+          </div> -->
+          <!-- Players end -->
+
+          <!-- Game settings -->
           <div class="d-grid mb-3 col-lg-8 mx-auto">
             <a
               class="btn btn-lg btn-danger mb-2"
@@ -30,67 +64,19 @@
               ИГРАТЬ
             </a>
             <a
-              class="btn btn-lg btn-outline-danger mb-2"
+              class="btn btn-lg btn-outline-danger"
               type="button"
               href="/memory_setup/"
             >
-              Настроить MEMORY
+              Настройки
             </a>
           </div>
-          <div class="row">
-            <div class="col-lg-8 mx-auto mb-2">
-              <hr />
-              <p>Игроки:</p>
-              <div class="" id="sessions-players"></div>
-            </div>
-          </div>
+          <!-- Game setting end -->
+
         </div>
-      </div>
     </div>
-  </div>
-  <div class="text-center mb-5">
-    <p class="text-muted">{{ session.session_name }}</p>
-    <a
-      class="btn btn-outline-secondary"
-      type="button"
-      data-bs-toggle="modal"
-      data-bs-target="#resetGameModal"
-    >
-      ♻️ Начать новую игру
-    </a>
-  </div>
-  <div
-    class="modal fade"
-    id="resetGameModal"
-    tabindex="-1"
-    aria-labelledby="resetGameModal"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="resetGameModal">
-            Вы хотите начать заново?
-          </h1>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
-        </div>
-        <div class="modal-body">
-          Все записи касательно нынешней игровой сессии будут стерты. Все игроки
-          будут удалены.
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-danger" id="reset-game">
-            Начать новую игру!
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+    
+  </div>  
 </div>
 
 <script src="{% static 'game/js/session/control.js' %}"></script>
