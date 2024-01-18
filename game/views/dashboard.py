@@ -62,23 +62,21 @@ def dashboard_online(request, session):
             match = re.search(percent_pattern, action.name)
             if match:
                 percent = int(match.group(1))
-            else:
-                percent = 0
-            pass
-            players_actions_by_move_number = (
-                Actions.objects
-                .filter(move__number=action.move.number)
-            )
-            players_move_number_new_level = (
-                players_actions_by_move_number
-                .get(category="NLWL")
-                .move
-            )
-            business_payment = (
-                BusinessPayments.objects
-                .filter(move=players_move_number_new_level)
-            )
-            count = business_payment.get(rentability=percent).count
+                
+                players_actions_by_move_number = (
+                    Actions.objects
+                    .filter(move__number=action.move.number)
+                )
+                players_move_number_new_level = (
+                    players_actions_by_move_number
+                    .get(category="NLWL")
+                    .move
+                )
+                business_payment = (
+                    BusinessPayments.objects
+                    .filter(move=players_move_number_new_level)
+                )
+                count = business_payment.get(rentability=percent).count
 
         context["game_actions"].append(
             {
