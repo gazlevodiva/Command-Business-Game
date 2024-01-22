@@ -37,7 +37,7 @@ def dashboard_online(request, session):
 
     # Get actions for History
     context["game_actions"] = []
-    for action in getActionsDashboard(session)[:20]:
+    for action in getActionsDashboard(session)[:30]:
         count = action.count
 
         # If new level, count total payments
@@ -105,7 +105,11 @@ def dashboard_online(request, session):
     context["command_bank"] = getCommandBank(session)
 
     # Take all players from session
-    players = Player.objects.filter(game_session=session).filter(visible=True)
+    players = (
+        Player.objects
+        .filter(game_session=session)
+        .filter(visible=True)
+    )
 
     player_turn_id = playerTurn(session)
     for player in players:
@@ -118,7 +122,8 @@ def dashboard_online(request, session):
 
         player_info["balance"] = getBalance(player)
         player_info["businesses"] = []
-        for business in getBusinesses(player):
+        for business in getBusinesses(player).filter(is_command=False):
+
             player_info["businesses"].append(
                 {
                     "name": str(business.business.name),
@@ -127,7 +132,10 @@ def dashboard_online(request, session):
             )
 
         player_info["current_position"] = (
-            Moves.objects.filter(player=player).last().position
+            Moves.objects
+            .filter(player=player)
+            .last()
+            .position
         )
         player_info["past_position"] = 0
 
@@ -141,12 +149,28 @@ def dashboard_online(request, session):
 
     # Command player info
     context["command_players"] = []
+
     for command_player in getCommandPlayers(session):
+
+        command_businesses_info = []
+        command_player_businesses = (
+            getBusinesses(command_player["move__player"])
+            .filter(is_command=True)
+        )
+        for command_business in command_player_businesses:
+            command_businesses_info.append(
+                {
+                    "name": command_business.business.name,
+                    "cost": command_business.business.cost,
+                }
+            )
+
         context["command_players"].append(
             {
-                "name": str(command_player["move__player"].name),
+                "name": command_player["move__player"].name,
                 "share": command_player["share"],
                 "count": command_player["count"],
+                "businesses": command_businesses_info,
             }
         )
 

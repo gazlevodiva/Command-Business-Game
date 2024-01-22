@@ -19,9 +19,15 @@ async function updateCommandBusiness(commandBank, commandPlayers) {
         colShareDiv.className = "col-2 h5";
         colShareDiv.textContent = commandPlayer.share + "%";
 
+        var colBusinessDiv = document.createElement("div");
+        colBusinessDiv.className = "col-2 h5";
+        colBusinessDiv.textContent = '🏦'.repeat(commandPlayer.businesses.length);
+        // colBusinessDiv.textContent = commandPlayer.share + "%";
+
         
         rowDiv.appendChild(colNameDiv);
-        rowDiv.appendChild(colShareDiv);        
+        rowDiv.appendChild(colShareDiv);
+        rowDiv.appendChild(colBusinessDiv);  
         commandPlayersDiv.appendChild(rowDiv);
       }
     });

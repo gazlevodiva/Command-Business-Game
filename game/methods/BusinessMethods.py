@@ -23,7 +23,7 @@ def setDefoult(player_business, move):
             move=move,
         )
 
-        name = f"🔥Командный бизнес {business.name} - Дефолт"
+        name = f"🔥КБ {business.name} - Дефолт"
 
         defoult_action = Actions.objects.create(
             move=move,
@@ -95,7 +95,7 @@ def setPersonalBusinessIncome(player_business, move):
     )
 
     name = (
-        f"Личный бизнес {player_business.business.name}, рентабельность {rentability}%"
+        f"Личный бизнес {player_business.business.name}, рент. {rentability}%"
     )
     payment_action = Actions.objects.create(
         move=move,
@@ -141,11 +141,11 @@ def setCommandBusinessIncome(player_business, move):
             # Count new shares. Admin +20%
             if command_player["move__player"] == admin_player:
                 count += admin_share
-                name = f"Командный бизнес {player_business.business.name}, рентабельность {rentability}%"
+                name = f"КБ {player_business.business.name}, рент. {rentability}%"
                 is_personal = True
                 is_public = True
             else:
-                name = f"Доход от командного бизнеса"
+                name = f"Доход от КБ"
                 is_personal = True
                 is_public = False
 
@@ -161,7 +161,7 @@ def setCommandBusinessIncome(player_business, move):
             payment_actions.append(payment_action)
 
     if profit <= 0:
-        name = f"Командный бизнес {player_business.business.name}, рентабельность {rentability}%"
+        name = f"КБ {player_business.business.name}, рент. {rentability}%"
         payment_action = Actions.objects.create(
             move=move,
             name=name,
@@ -228,7 +228,7 @@ def getCommandShare(player):
 def sellCommandShare(move, sell_count=None):
     share, count = getCommandShare(move.player)
 
-    name = f"Продал свою долю {share}% командного бизнеса за {count}"
+    name = f"Продал свою долю {share}% КБ за {count}"
 
     if sell_count:
         count = sell_count

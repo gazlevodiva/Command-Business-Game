@@ -52,7 +52,7 @@ async function updateGameHistory(gameActions, votion) {
   gameActions.forEach((action) => {
 
     // Counter flag for 6 actions
-    if(actionIndex == 6) {return}    
+    if(actionIndex == 8) {return}    
 
     // Lets print all actions
     if(action.player_name !== "X" && action.action_visible) {

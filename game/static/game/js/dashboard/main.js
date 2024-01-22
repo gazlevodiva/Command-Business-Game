@@ -44,6 +44,6 @@ async function getDashboardData() {
 }
 
 function formatNumber(number) {
-  const formatter = new Intl.NumberFormat("en-US");
+  const formatter = new Intl.NumberFormat("ru-RU"); // "en-US" for ','
   return formatter.format(number);
 }

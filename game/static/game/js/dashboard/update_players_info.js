@@ -74,11 +74,11 @@ function createInfoElement(player) {
   const playerNameElement = createPlayerNameElement(player);
   infoElement.appendChild(playerNameElement);
 
-  const businessesCountElement = createBusinessesCountElement(player);
-  infoElement.appendChild(businessesCountElement);
-
   const balanceElement = createBalanceElement(player);
   infoElement.appendChild(balanceElement);
+
+  const businessesCountElement = createBusinessesCountElement(player);
+  infoElement.appendChild(businessesCountElement);
 
   return infoElement;
 }
@@ -99,7 +99,12 @@ function createPlayerNameElement(player) {
 function createBusinessesCountElement(player) {
   const businessesCountElement = document.createElement("div");
   businessesCountElement.classList.add("text-muted");
-  businessesCountElement.textContent = "Бизнесов: " + player.businesses.length;
+  businessesCountElement.classList.add("h5");
+  // businessesCountElement.textContent = "Бизнесов: " + player.businesses.length;
+
+  if ( player.businesses.length > 0 ){
+    businessesCountElement.textContent = '🏦'.repeat(player.businesses.length);
+  }
 
   return businessesCountElement;
 }

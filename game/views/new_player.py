@@ -17,7 +17,7 @@ def generate_unique_icon(game_session) -> str:
         .filter(game_session=game_session)
         .values_list("icon", flat=True)
     )
-    emoji = ['⭐️', '🌚', '🌝', '☠️', '👾', '💎', '👽']
+    emoji = ['⭐️', '🌚', '🌝', '🎃', '👾', '💎', '👽']
     available_icons = list(set(emoji) - set(used_emoji))
 
     if not available_icons:

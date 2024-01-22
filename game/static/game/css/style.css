@@ -632,7 +632,7 @@
 
 .command-surprise-r-cell img{
     width: 100px;
-    transform: rotate(-45deg);    
+    transform: rotate(45deg);    
 }
 
 .command-surprise-l-cell{
@@ -661,6 +661,8 @@
   } */
 
 .skip-move-cell{
+  color: white;
+  font-size: 20px;
   background-color:rgb(150, 150, 150);
 }
 

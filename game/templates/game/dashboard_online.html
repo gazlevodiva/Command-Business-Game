@@ -166,7 +166,9 @@
           </div>
         </div>
         <div class="g-start-8" style="grid-row: 5">
-          <div class="cell skip-move-cell column-cell" id="cell-12"></div>
+          <div class="cell skip-move-cell column-cell" id="cell-12">
+            SKIP
+          </div>
         </div>
         <div class="g-start-8" style="grid-row: 6">
           <div class="cell back-to-start-cell column-cell" id="cell-13">
@@ -181,14 +183,14 @@
     <div class="col-2" style="margin-left: 3vh">
       <div class="d-flex flex-column justify-content-center h-100">
         <div class="players-list m-3 mt-4" style="text-align: start">
-          <div class="card-title fs-2">Командный бизнес 💵</div>
+          <div class="card-title fs-2">Командный Бизнес</div>
           <div class="display-5 mt-4" id="command_bank">{{ command_bank }}</div>
 
           <div>
             <div class="row text-muted mt-4 mb-2">
               <div class="col-6">Игрок</div>
               <div class="col-2">Доля</div>
-              <div class="col-4"></div>
+              <div class="col-2">Бизнесы</div>
             </div>
             <div id="command_players">
               {% for command_player in command_players %}

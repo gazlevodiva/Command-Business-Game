@@ -1,5 +1,5 @@
 function formatNumber(number) {
-  const formatter = new Intl.NumberFormat("en-US");
+  const formatter = new Intl.NumberFormat("ru-RU");
   return formatter.format(number);
 }
 

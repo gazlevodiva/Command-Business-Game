@@ -105,7 +105,8 @@ def getSalary(move):
 def getBusinesses(player):
     res = PlayersBusiness.objects.annotate(
         latest_status=Subquery(
-            PlayersBusinessStatus.objects.filter(players_business=OuterRef("pk"))
+            PlayersBusinessStatus.objects
+            .filter(players_business=OuterRef("pk"))
             .order_by("-move")
             .values("status")[:1]
         )
@@ -119,7 +120,7 @@ def getCommandBusinesses(player=None):
 
 def newBusiness(move, business, is_command):
     if is_command:
-        name = f"Командный бизнес. Стал администратором в {business.name}"
+        name = f"КБ. Стал администратором в {business.name}"
 
         Actions.objects.create(
             move=move,
@@ -175,7 +176,7 @@ def PlayerXReinvest(move):
     if player_x_balance == 0:
         return
 
-    name = f"Вложил в командный бизнес {player_x_balance}"
+    name = f"Вложил в КБ {player_x_balance}"
 
     new_move = Moves.objects.create(player=player_x, number=move.number)
 
