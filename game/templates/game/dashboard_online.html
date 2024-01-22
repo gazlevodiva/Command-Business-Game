@@ -7,8 +7,8 @@
     class="row d-flex align-items-center justify-content-center"
     style="height: 90vh; width: 100%"
   >
-    <div class="col-2">
-      <div class="d-flex flex-column justify-content-center h-100">
+    <div class="col-2" style="height: 750px">
+      <div class="mt-4">
         <div class="players-list" id="players_list"></div>
       </div>
     </div>
@@ -180,15 +180,15 @@
     </div>
     <!-- End Game field -->
 
-    <div class="col-2" style="margin-left: 3vh">
-      <div class="d-flex flex-column justify-content-center h-100">
-        <div class="players-list m-3 mt-4" style="text-align: start">
+    <div class="col-2" style="margin-left: 5vh; height: 750px">
+      <div class="mt-4">
+        <div class="players-list" style="text-align: start">
           <div class="card-title fs-2">Командный Бизнес</div>
           <div class="display-5 mt-4" id="command_bank">{{ command_bank }}</div>
 
           <div>
             <div class="row text-muted mt-4 mb-2">
-              <div class="col-6">Игрок</div>
+              <div class="col-4">Игрок</div>
               <div class="col-2">Доля</div>
               <div class="col-2">Бизнесы</div>
             </div>
@@ -196,7 +196,7 @@
               {% for command_player in command_players %}
               <div class="row">
                 {% if command_player.command_player.count > 0 %}
-                <div class="col-6 h5">
+                <div class="col-4 h5">
                   {{ command_player.command_player.move__player.name }}
                 </div>
                 <div class="col-2 h5">
@@ -207,6 +207,7 @@
                   {% endif %}
                 </div>
                 {% endif %}
+                <div class="col-2"></div>
               </div>
               {% endfor %}
             </div>

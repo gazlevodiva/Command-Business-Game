@@ -1,5 +1,5 @@
 <!-- Card -->
-<div class="card text-center mb-3">
+<div class="card business-card text-center mb-3" >
   {% if player_business.business.is_command %}
   <div class="card-header text-secondary">Командный бизнес 💰</div>
   {% else %}
@@ -14,12 +14,14 @@
     <p class="card-text text-muted">
       Доход: от {{player_business.business.business.min_rent}}% до
       {{player_business.business.business.max_rent}}%
-    </p>
+    </p> 
     <div class="card-body row justify-content-center">
       <div class="col mx-2">
+
         {% if player_business.business_payments|length == 0 %}
-        <p class="text-muted mb-1">Нет истории бизнеса</p>
+          <p class="text-muted mb-1">Нет истории бизнеса</p>
         {% endif %} 
+
         {% for business_payment in player_business.business_payments %}
           {% if business_payment.count < 0 %}
           <div class="text-start text-danger">
@@ -33,6 +35,7 @@
           </div>
           {% endif %} 
         {% endfor %}
+        
       </div>
     </div>
     <div class="text-center d-grid gap-2 col mx-auto">

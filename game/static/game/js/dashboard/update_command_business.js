@@ -12,7 +12,7 @@ async function updateCommandBusiness(commandBank, commandPlayers) {
         rowDiv.className = "row";
 
         var colNameDiv = document.createElement("div");
-        colNameDiv.className = "col-6 h5";
+        colNameDiv.className = "col-4 h5";
         colNameDiv.textContent = commandPlayer.name;
 
         var colShareDiv = document.createElement("div");
@@ -20,9 +20,8 @@ async function updateCommandBusiness(commandBank, commandPlayers) {
         colShareDiv.textContent = commandPlayer.share + "%";
 
         var colBusinessDiv = document.createElement("div");
-        colBusinessDiv.className = "col-2 h5";
-        colBusinessDiv.textContent = '🏦'.repeat(commandPlayer.businesses.length);
-        // colBusinessDiv.textContent = commandPlayer.share + "%";
+        colBusinessDiv.className = "col-6 h5";
+        colBusinessDiv.textContent = '🏦'.repeat(commandPlayer.businesses.length); // normal for 7 biz
 
         
         rowDiv.appendChild(colNameDiv);
