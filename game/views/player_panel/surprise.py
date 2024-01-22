@@ -121,11 +121,18 @@ def surprise(request, session, player_id, surprise_type):
     # Get all surprises
     all_surprises = Surprises.objects.all()
     if surprise_type == "memo":
-        answered_questions_subquery = MemoryAnswers.objects.filter(
-            action__move__player=OuterRef("pk")
-        ).values("question")
-        all_surprises = all_surprises.exclude(
-            pk__in=Subquery(answered_questions_subquery)
+        answered_questions_subquery = (
+            MemoryAnswers.objects
+            .filter(
+                action__move__player=OuterRef("pk")
+            )
+            .values("question")
+        )
+        all_surprises = (
+            all_surprises
+            .exclude(
+                pk__in=Subquery(answered_questions_subquery)
+            )
         )
 
     surprise_list = suprise_list_generator(all_surprises, all_categories)

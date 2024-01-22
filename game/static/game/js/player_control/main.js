@@ -61,10 +61,9 @@ surprise_close_btn?.addEventListener("click", handleCloseButtonClick);
 const cmndsurp_close_btn = document.getElementById("cmndsurp_accept");
 cmndsurp_close_btn?.addEventListener("click", handleCloseButtonClick);
 
-const success_business_buy_btn = document.getElementById(
-  "success-business-buy-btn"
-);
+const success_business_buy_btn = document.getElementById("success-business-buy-btn");
 success_business_buy_btn?.addEventListener("click", function () {
+  // location.reload();
   showTurnPreloader(true);
 });
 

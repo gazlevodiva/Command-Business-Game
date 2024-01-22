@@ -18,8 +18,11 @@ def sell_business(request, session, player_business_id):
     last_move = Moves.objects.filter(player=player).last()
     move = Moves.objects.create(player=player, position=last_move.position)
 
+    # Minus 5% cost by sale
+    sold_business_price = players_business.business.cost*0.95
+
     if players_business.is_command:
-        name = f"Продал командный бизнес {players_business.business.name}"
+        name = f"Продал КБ {players_business.business.name}"
 
         Actions.objects.create(
             move=move,
@@ -33,7 +36,7 @@ def sell_business(request, session, player_business_id):
         )
 
         CommandPayments.objects.create(
-            count=players_business.business.cost,
+            count=sold_business_price,
             category="SELL_BIS",
             move=move
         )
@@ -44,7 +47,7 @@ def sell_business(request, session, player_business_id):
         Actions.objects.create(
             move=move,
             move_stage="START",
-            count=players_business.business.cost,
+            count=sold_business_price,
             name=name,
             category="SELL_BIS",
             is_personal=True,
@@ -52,7 +55,9 @@ def sell_business(request, session, player_business_id):
         )
 
     PlayersBusinessStatus.objects.create(
-        move=move, players_business=players_business, status="SOLD"
+        move=move, 
+        players_business=players_business, 
+        status="SOLD"
     )
 
     return redirect(f"/player_control_{ player.id }/")
