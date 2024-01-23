@@ -3,7 +3,13 @@ const commandPlayersDiv = document.getElementById("command_players");
 
 async function updateCommandBusiness(commandBank, commandPlayers) {
   if (command_bank.innerText !== formatNumber(commandBank)) {
+
     command_bank.innerText = formatNumber(commandBank);
+    if (commandBank < 0) {
+      command_bank.classList.add("text-danger");
+    } else {
+      command_bank.classList.remove("text-danger");
+    }
 
     commandPlayersDiv.innerHTML = "";
     commandPlayers.forEach((commandPlayer) => {

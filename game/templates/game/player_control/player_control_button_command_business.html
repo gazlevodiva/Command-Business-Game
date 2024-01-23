@@ -1,6 +1,6 @@
 <!-- Button -->
 <button
-  class="btn btn-outline-secondary"
+  class="btn btn-outline-secondary action-button"
   type="button"
   data-bs-toggle="modal"
   data-bs-target="#CommandBusinessModal{{ player.id }}"
@@ -72,63 +72,33 @@
             Вы также можете вывести свои средства.
           </div>
           <div class="row d-flex justify-content-between gap-2 mx-2">
-            {% if command_count >= 50000 and command_count >= 50000 %}
             <a
-              class="col btn btn-block btn-outline-secondary action-button"
-              href="/sell_share_{{player.id}}_50000/"
+              class="col btn btn-block btn-outline-secondary"
               type="button"
-              onclick="Preloader()"
+              id="sale-share-50"
+              data-bs-dismiss="modal"
+              aria-label="Close"
             >
               50,000
             </a>
-            {% else %}
-            <a
-              class="col btn btn-block btn-outline-secondary disabled action-button"
-              href="#"
-              type="button"
-              onclick="Preloader()"
-            >
-              50,000
-            </a>
-            {% endif %} 
-            {% if command_count >= 100000 and command_count >= 100000 %}
             <a
               class="col btn btn-block btn-outline-secondary"
-              href="/sell_share_{{player.id}}_100000/"
               type="button"
-              onclick="Preloader()"
+              id="sale-share-100"
+              data-bs-dismiss="modal"
+              aria-label="Close"
             >
               100,000
             </a>
-            {% else %}
-            <a
-              class="col btn btn-block btn-outline-secondary disabled action-button"
-              href="#"
-              type="button"
-              onclick="Preloader()"
-            >
-              100,000
-            </a>
-            {% endif %} 
-            {% if command_count >= 200000 and command_count >= 200000 %}
             <a
               class="col btn btn-block btn-outline-secondary"
-              href="/sell_share_{{player.id}}_200000/"
               type="button"
-              onclick="Preloader()"
+              id="sale-share-200"
+              data-bs-dismiss="modal"
+              aria-label="Close"
             >
               200,000
             </a>
-            {% else %}
-            <a
-              class="col btn btn-block btn-outline-secondary disabled action-button"
-              href="#"
-              type="button"
-              onclick="Preloader()"
-            >
-              200,000
-            </a>
-            {% endif %}
           </div>
         </div>
         <div class="modal-footer mt-3">

@@ -1,4 +1,5 @@
 from django.shortcuts import redirect
+from django.http import JsonResponse
 
 from game.models.Moves import Moves
 from game.models.Player import Player
@@ -15,4 +16,5 @@ def sell_share(request, session, player_id, count):
     new_move = Moves.objects.create(player=player, position=last_move.position)
 
     sellCommandShare(new_move, count)
-    return redirect(f"/player_control_{ player.id }/")
+    
+    return JsonResponse({"result": True})

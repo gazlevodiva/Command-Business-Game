@@ -122,6 +122,37 @@ investAllCheckbox2?.addEventListener("click", function () {
 });
 
 
+// Sale Command Business Share
+const sale_share_50 = document.getElementById("sale-share-50");
+sale_share_50?.addEventListener("click", async function () {
+  await sellCommandBusinessShare(50000);
+  updatePlayerControlData();
+});
+
+const sale_share_100 = document.getElementById("sale-share-100");
+sale_share_100?.addEventListener("click", async function () {
+  await sellCommandBusinessShare(100000);
+  updatePlayerControlData();
+});
+
+const sale_share_200 = document.getElementById("sale-share-200");
+sale_share_200?.addEventListener("click", async function () {
+  await sellCommandBusinessShare(200000);
+  updatePlayerControlData();
+});
+
+async function sellCommandBusinessShare(count){
+  try {
+    const response = await fetch(`/sell_share_${playerIdGlobal}_${count}/`);
+    const data = await response.json();
+    return data;
+
+  } catch (error) {
+    console.error("sellCommandBusinessShare error:", error);
+  }
+}
+
+
 
 window.onload = function () {
   business_btn.hidden = true;
@@ -203,6 +234,24 @@ async function updatePlayerControlData() {
       playerCommandBankGlobal = data.command_bank;
       playerCommandShare.textContent = 
       `${playerCommandShareGlobal}% (${formatNumber(playerCommandCountGlobal)}) в КБ`;
+
+      if( data.command_count >= 50000 && data.command_bank >= 50000){
+        sale_share_50.classList.remove("disabled");
+      } else {
+        sale_share_50.classList.add("disabled");
+      }
+
+      if( data.command_count >= 100000 && data.command_bank >= 100000){
+        sale_share_100.classList.remove("disabled");
+      } else {
+        sale_share_100.classList.add("disabled");
+      }
+
+      if( data.command_count >= 200000 && data.command_bank >= 200000){
+        sale_share_200.classList.remove("disabled");
+      } else {
+        sale_share_200.classList.add("disabled");
+      }
     }
 
     if (data.is_open_command_business) {
