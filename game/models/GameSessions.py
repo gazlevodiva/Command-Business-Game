@@ -66,7 +66,8 @@ class GameSessions(models.Model):
             playerX_balance = self.bank_balance
 
             new_player = Player.objects.create(
-                name         = playerX_name, 
+                name         = playerX_name,
+                icon         = "❌",
                 visible      = False, 
                 game_session = self
             )
@@ -84,14 +85,14 @@ class GameSessions(models.Model):
 
             Actions.objects.create(
                 move     = move,
-                name     = f"Начал игру - {playerX_balance}",
+                name     = "Начал игру",
                 count    = playerX_balance,
                 category = 'OTHER',
             )
 
             Actions.objects.create(
                 move     = move,
-                name     = f"Вложил в командный бизнес - {playerX_balance}",
+                name     = "Вложил в КБ",
                 count    = -playerX_balance,
                 category = 'CMND',
                 is_command = True,

@@ -75,7 +75,8 @@ def getAchievements(players):
 
     # Принес больше всего денег КБ
     CommandLeader = (
-        CommandPayments.objects.filter(category="DEPOSITE", move__player__visible=True)
+        CommandPayments.objects
+        .filter(category="DEPOSITE", move__player__visible=True)
         .values("move__player")
         .annotate(total_investments=Sum("count"))
         .order_by("-total_investments")
@@ -89,8 +90,11 @@ def getAchievements(players):
 
     # Нанес самый больший ущерб КБ
     EternalIntern = (
-        CommandPayments.objects.filter(
-            category="SURP", move__player__visible=True, count__lt=0
+        CommandPayments.objects
+        .filter(
+            category="SURP",
+            move__player__visible=True,
+            count__lt=0
         )
         .values("move__player")
         .annotate(total_withdrawals=Sum(F("count") * -1))
@@ -359,6 +363,14 @@ def getAchievements(players):
             achievements_list.append(
                 Achievement(title="Играл ✅", text="За хорошую игру!")
             )
+
+        if player.name == "X":
+            achievements_list = [
+                Achievement(
+                    title="Пассивный инвестор 💰",
+                    text="Просто ничего не делал",
+                )
+            ]
 
         Achievements[player] = achievements_list
 

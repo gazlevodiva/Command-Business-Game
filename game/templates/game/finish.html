@@ -3,6 +3,9 @@
 {% block content %}
 
 <div class="mt-5">
+
+  <h1>{{player_x_total}}</h1>
+
   <div class="row justify-content-center m-5">
     {% for player_info in players_info %}
     <div class="col-2 mb-4" style="width: 300px">
@@ -16,9 +19,9 @@
 
           <div class="card-text">
             {% if player_info.profit > 0 %}
-              <div class="fs-1 text-success">+{{ player_info.profit }}%</div>
+              <div class="fs-1 text-success">{{ player_info.profit }}</div>
             {% else %}
-              <div class="fs-1 text-danger">{{ player_info.profit }}%</div>
+              <div class="fs-1 text-danger">{{ player_info.profit }}</div>
             {% endif %} 
               за {{ player_info.player.level }} кругов 
               
