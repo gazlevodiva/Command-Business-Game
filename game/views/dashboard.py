@@ -65,7 +65,7 @@ def dashboard_online(request, session):
 
                 players_actions_by_move_number = (
                     Actions.objects
-                    .filter(move_player_game_session=session)
+                    .filter(move__player__game_session=session)
                     .filter(move__number=action.move.number)
                 )
                 players_move_number_new_level = (
