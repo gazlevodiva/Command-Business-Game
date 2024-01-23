@@ -39,8 +39,13 @@ class Achievement:
 
 def getAchievements(players):
     # Нажал на кнопку “Сюрприз” больше других игроков
+
+    session = players[0].game_session
+
     SurpriseMan = (
-        Player.objects.annotate(
+        Player.objects
+        .filter(game_session=session)
+        .annotate(
             num_surp_actions=Count(
                 "moves__actions", filter=Q(moves__actions__category="SURP")
             )
@@ -51,7 +56,9 @@ def getAchievements(players):
 
     # Нажал на кнопку “Сюрприз для КБ” больше других игроков
     CommandSurpriseMan = (
-        Player.objects.annotate(
+        Player.objects
+        .filter(game_session=session)
+        .annotate(
             num_command_surp_actions=Count(
                 "moves__actions",
                 filter=Q(
@@ -64,7 +71,9 @@ def getAchievements(players):
     )
 
     MemoryMan = (
-        Player.objects.annotate(
+        Player.objects
+        .filter(game_session=session)
+        .annotate(
             num_memo_actions=Count(
                 "moves__actions", filter=Q(moves__actions__category="MEMO")
             )
@@ -76,6 +85,7 @@ def getAchievements(players):
     # Принес больше всего денег КБ
     CommandLeader = (
         CommandPayments.objects
+        .filter(move__player__game_session=session)
         .filter(category="DEPOSITE", move__player__visible=True)
         .values("move__player")
         .annotate(total_investments=Sum("count"))
@@ -91,6 +101,7 @@ def getAchievements(players):
     # Нанес самый больший ущерб КБ
     EternalIntern = (
         CommandPayments.objects
+        .filter(move__player__game_session=session)
         .filter(
             category="SURP",
             move__player__visible=True,
@@ -109,7 +120,9 @@ def getAchievements(players):
 
     # Больше всего раз выводил деньги из КБ
     ShipRunner = (
-        CommandPayments.objects.filter(
+        CommandPayments.objects
+        .filter(move__player__game_session=session)
+        .filter(
             category="WITHDRAW", move__player__visible=True, count__lt=0
         )
         .values("move__player")
@@ -125,7 +138,9 @@ def getAchievements(players):
 
     # Больше всего раз получил дефолт
     DefoultMan = (
-        Player.objects.annotate(
+        Player.objects
+        .filter(game_session=session)
+        .annotate(
             num_defoult_actions=Count(
                 "moves__actions", filter=Q(moves__actions__category="DEF_BIS")
             )
@@ -136,7 +151,9 @@ def getAchievements(players):
 
     # Заработал больше всего денег на бизнесе
     BornBusinessman = (
-        Player.objects.filter(visible=True)
+        Player.objects
+        .filter(game_session=session)
+        .filter(visible=True)
         .annotate(
             total_bsns_in_surp=Sum(
                 "moves__actions__count",
@@ -149,7 +166,9 @@ def getAchievements(players):
 
     # Самый убыточные бизнесы
     BadLuckBusinessman = (
-        Player.objects.filter(visible=True)
+        Player.objects
+        .filter(game_session=session)
+        .filter(visible=True)
         .annotate(
             total_bsns_in_surp=Sum(
                 "moves__actions__count",
@@ -162,7 +181,9 @@ def getAchievements(players):
 
     # Больше всего инфляций
     InflationCaller = (
-        Player.objects.filter(visible=True)
+        Player.objects
+        .filter(game_session=session)
+        .filter(visible=True)
         .annotate(
             num_infl_actions=Count(
                 "moves__actions", filter=Q(moves__actions__category="INFL")
@@ -174,7 +195,9 @@ def getAchievements(players):
 
     # Больше всего проданных и купленных бизнесов
     MarketTrader = (
-        Player.objects.filter(visible=True)
+        Player.objects
+        .filter(game_session=session)
+        .filter(visible=True)
         .annotate(
             num_buy_actions=Count(
                 "moves__actions", filter=Q(moves__actions__category="BUY_BIS")
@@ -189,7 +212,9 @@ def getAchievements(players):
 
     # Больше всего заработал на сюрпризах
     LuckyMan = (
-        Player.objects.filter(visible=True)
+        Player.objects
+        .filter(game_session=session)
+        .filter(visible=True)
         .annotate(
             total_earnings_in_surp=Sum(
                 "moves__actions__count",
@@ -202,7 +227,9 @@ def getAchievements(players):
 
     # Потерял на сюрпризах больше всех
     UnLuckyMan = (
-        Player.objects.filter(visible=True)
+        Player.objects
+        .filter(game_session=session)
+        .filter(visible=True)
         .annotate(
             total_losses_in_surp=Sum(
                 "moves__actions__count",
@@ -215,7 +242,9 @@ def getAchievements(players):
 
     # Заработал больше всего денег
     WarrenBaffet = (
-        Player.objects.filter(visible=True)
+        Player.objects
+        .filter(game_session=session)
+        .filter(visible=True)
         .annotate(
             total_earnings=Sum(
                 "moves__actions__count", filter=Q(moves__actions__count__gt=0)
@@ -227,7 +256,9 @@ def getAchievements(players):
 
     # Самое большое кол-во Action
     ActiveBro = (
-        Player.objects.filter(visible=True)
+        Player.objects
+        .filter(game_session=session)
+        .filter(visible=True)
         .annotate(num_actions=Count("moves__actions"))
         .order_by("-num_actions")
         .first()
