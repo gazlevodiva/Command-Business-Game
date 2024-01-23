@@ -45,7 +45,7 @@
         data-bs-toggle="modal"
         data-bs-target="#AreUsure{{ player_business.business.id }}"
       >
-        Продать за {{ player_business.business.business.cost }}
+        Продать
       </button>
     </div>
   </div>
@@ -72,11 +72,11 @@
       </div>
 
       <div class="modal-body">
-        <h5>
-          Вы уверенны что хотите продать 
-          {{ player_business.business.business.name }} за 
-          {{ player_business.business.business.cost }}?
-        </h5>
+          <h5>
+            Вы уверенны что хотите продать 
+            {{ player_business.business.business.name }} за 
+            {{ player_business.business.business.cost }} со штрафом 5%?
+          </h5>
       </div>
 
       <div class="modal-footer">
