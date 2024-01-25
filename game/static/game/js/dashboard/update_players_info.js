@@ -87,8 +87,8 @@ function createPlayerNameElement(player) {
   const playerNameElement = document.createElement("a");
 
   playerNameElement.classList.add("card-title");
-  playerNameElement.classList.add("text-dark", "text-decoration-none");
-  playerNameElement.classList.add("fs-4");
+  playerNameElement.classList.add("text-dark", "text-decoration-none", "text-break");
+  playerNameElement.classList.add("fs-5");
 
   playerNameElement.href = "/player_control_" + player.id + "/";
   playerNameElement.textContent = player.name;
@@ -99,14 +99,15 @@ function createPlayerNameElement(player) {
 function createBusinessesCountElement(player) {
   const businessesCountElement = document.createElement("div");
   businessesCountElement.classList.add("text-muted");
-  businessesCountElement.classList.add("h5");
+  // businessesCountElement.classList.add("h5");
   businessesCountElement.textContent = '🏦'.repeat(player.businesses.length);
+  // businessesCountElement.textContent = '🔥🔥🔥🏦🏦🏦🏦';
   return businessesCountElement;
 }
 
 function createBalanceElement(player) {
   const balanceElement = document.createElement("div");
-  balanceElement.classList.add("fs-4");
+  balanceElement.classList.add("fs-3");
   balanceElement.textContent = formatNumber(player.balance);
 
   if (player.balance < 0) {

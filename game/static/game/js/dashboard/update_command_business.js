@@ -15,10 +15,10 @@ async function updateCommandBusiness(commandBank, commandPlayers) {
     commandPlayers.forEach((commandPlayer) => {
       if (commandPlayer.count > 0) {
         var rowDiv = document.createElement("div");
-        rowDiv.className = "row";
+        rowDiv.className = "row mt-2 mb-2";
 
         var colNameDiv = document.createElement("div");
-        colNameDiv.className = "col-4 h5";
+        colNameDiv.className = "col-4 h5 text-break";
         colNameDiv.textContent = commandPlayer.name;
 
         var colShareDiv = document.createElement("div");
@@ -26,7 +26,7 @@ async function updateCommandBusiness(commandBank, commandPlayers) {
         colShareDiv.textContent = commandPlayer.share + "%";
 
         var colBusinessDiv = document.createElement("div");
-        colBusinessDiv.className = "col-6 h5";
+        colBusinessDiv.className = "col-4 h5";
         colBusinessDiv.textContent = '🏦'.repeat(commandPlayer.businesses.length); // normal for 7 biz
 
         

@@ -89,7 +89,8 @@ def getInflation(move):
 def getSalary(move):
     try:
         salary = SALARY[move.player.level]
-    except:
+    except Exception as e:
+        print("Salary end", e)
         salary = 0
 
     return Actions.objects.create(
@@ -202,11 +203,13 @@ def getActions(session):
 
 
 def getActionsDashboard(session):
-    return (
-        Actions.objects.filter(move__player__game_session=session)
+    game_session_actions = (
+        Actions.objects
+        .filter(move__player__game_session=session)
         .filter(is_public=True)
         .order_by("-created_date")
     )
+    return game_session_actions
 
 
 def getPlayerCategoties(player):

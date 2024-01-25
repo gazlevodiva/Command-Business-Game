@@ -184,33 +184,15 @@
       <div class="mt-4">
         <div class="players-list" style="text-align: start">
           <div class="card-title fs-2">Командный Бизнес</div>
-          <div class="display-5 mt-4" id="command_bank">{{ command_bank }}</div>
+          <div class="display-5 mt-4" id="command_bank"></div>
 
           <div>
             <div class="row text-muted mt-4 mb-2">
               <div class="col-4">Игрок</div>
               <div class="col-2">Доля</div>
-              <div class="col-2">Бизнесы</div>
+              <div class="col-4">Бизнесы</div>
             </div>
-            <div id="command_players">
-              {% for command_player in command_players %}
-              <div class="row">
-                {% if command_player.command_player.count > 0 %}
-                <div class="col-4 h5">
-                  {{ command_player.command_player.move__player.name }}
-                </div>
-                <div class="col-2 h5">
-                  {% if command_player.command_player.share == 0 %} 
-                    ~1% 
-                  {% else %} 
-                    {{ command_player.command_player.share }}% 
-                  {% endif %}
-                </div>
-                {% endif %}
-                <div class="col-2"></div>
-              </div>
-              {% endfor %}
-            </div>
+            <div id="command_players"></div>
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@ window.onload = async function () {
   setInterval(updateOnlineDashboard, 3500);
 };
 
+
 var lastRollDiceActionId = 0;
 var fistPageUpdate = false;
 
