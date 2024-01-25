@@ -99,16 +99,20 @@ function createPlayerNameElement(player) {
 function createBusinessesCountElement(player) {
   const businessesCountElement = document.createElement("div");
   businessesCountElement.classList.add("text-muted");
-  // businessesCountElement.classList.add("h5");
-
-  console.log(player.businesses);
-
+  businessesCountElement.classList.add("h5");
   // businessesCountElement.textContent = '🏦'.repeat(player.businesses.length);
 
-  businessesCountElement.textContent = player.businesses.map(business => 
-      business.status === "ACTIVE" ? '🏦' : '🔥'
-  ).join('');
+  const defaultBusinesses = player.businesses
+    .filter(business => business.status === "DEFOULT")
+    .map(() => '🔥')
+    .join('');
 
+  const activeBusinesses = player.businesses
+    .filter(business => business.status === "ACTIVE")
+    .map(() => '🏦')
+   .join('');
+
+  businessesCountElement.textContent = defaultBusinesses + activeBusinesses;
   return businessesCountElement;
 }
 

@@ -27,9 +27,19 @@ async function updateCommandBusiness(commandBank, commandPlayers) {
 
         var colBusinessDiv = document.createElement("div");
         colBusinessDiv.className = "col-4 h5";
-        colBusinessDiv.textContent = '🏦'.repeat(commandPlayer.businesses.length); // normal for 7 biz
+        // colBusinessDiv.textContent = '🏦'.repeat(commandPlayer.businesses.length); // normal for 7 biz
+        const defaultBusinesses = commandPlayer.businesses
+          .filter(business => business.status === "DEFOULT")
+          .map(() => '🔥')
+          .join('');
 
-        
+        const activeBusinesses = commandPlayer.businesses
+          .filter(business => business.status === "ACTIVE")
+          .map(() => '🏦')
+          .join('');
+
+        colBusinessDiv.textContent = defaultBusinesses + activeBusinesses;
+
         rowDiv.appendChild(colNameDiv);
         rowDiv.appendChild(colShareDiv);
         rowDiv.appendChild(colBusinessDiv);  

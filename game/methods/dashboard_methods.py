@@ -116,6 +116,7 @@ def get_players_data(session):
         for business in getBusinesses(player).filter(is_command=False):
             player_info["businesses"].append(
                 {
+                    "id": business.id,
                     "name": business.business.name,
                     "cost": business.business.cost,
                     "status": business.latest_status
@@ -146,8 +147,10 @@ def get_command_players_data(session):
         for command_business in command_player_businesses:
             command_businesses_info.append(
                 {
+                    "id": command_business.id,
                     "name": command_business.business.name,
                     "cost": command_business.business.cost,
+                    "status": command_business.latest_status
                 }
             )
 

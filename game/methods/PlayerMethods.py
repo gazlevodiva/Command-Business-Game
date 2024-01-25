@@ -116,7 +116,7 @@ def getBusinesses(player):
         )
         .filter(
             Q(player=player) &
-            Q(latest_status="ACTIVE") | Q(latest_status="DEFOULT")
+            (Q(latest_status="ACTIVE") | Q(latest_status="DEFOULT"))
         )
     )
 
