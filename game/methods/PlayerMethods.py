@@ -1,6 +1,6 @@
 from random import randint
 
-from django.db.models import Sum, Subquery, OuterRef
+from django.db.models import Q, Sum, Subquery, OuterRef
 
 from game.models.Moves import Moves
 from game.models.Player import Player
@@ -104,15 +104,21 @@ def getSalary(move):
 
 
 def getBusinesses(player):
-    res = PlayersBusiness.objects.annotate(
-        latest_status=Subquery(
-            PlayersBusinessStatus.objects
-            .filter(players_business=OuterRef("pk"))
-            .order_by("-move")
-            .values("status")[:1]
+    return (
+        PlayersBusiness.objects
+        .annotate(
+            latest_status=Subquery(
+                PlayersBusinessStatus.objects
+                .filter(players_business=OuterRef("pk"))
+                .order_by("-move")
+                .values("status")[:1]
+            )
         )
-    ).filter(player=player, latest_status="ACTIVE")
-    return res
+        .filter(
+            Q(player=player) &
+            Q(latest_status="ACTIVE") | Q(latest_status="DEFOULT")
+        )
+    )
 
 
 def getCommandBusinesses(player=None):

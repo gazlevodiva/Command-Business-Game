@@ -1,6 +1,6 @@
 window.onload = async function () {
   await updateOnlineDashboard();
-  setInterval(updateOnlineDashboard, 3500);
+  // setInterval(updateOnlineDashboard, 3500);
 };
 
 

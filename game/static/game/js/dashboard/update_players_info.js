@@ -100,8 +100,15 @@ function createBusinessesCountElement(player) {
   const businessesCountElement = document.createElement("div");
   businessesCountElement.classList.add("text-muted");
   // businessesCountElement.classList.add("h5");
-  businessesCountElement.textContent = '🏦'.repeat(player.businesses.length);
-  // businessesCountElement.textContent = '🔥🔥🔥🏦🏦🏦🏦';
+
+  console.log(player.businesses);
+
+  // businessesCountElement.textContent = '🏦'.repeat(player.businesses.length);
+
+  businessesCountElement.textContent = player.businesses.map(business => 
+      business.status === "ACTIVE" ? '🏦' : '🔥'
+  ).join('');
+
   return businessesCountElement;
 }
 

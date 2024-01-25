@@ -106,8 +106,8 @@ def get_players_data(session):
     for player in players:
         player_info = {}
         player_info["id"] = player.id
-        player_info["name"] = str(player.name)
-        player_info["icon"] = str(player.icon)
+        player_info["name"] = player.name
+        player_info["icon"] = player.icon
         player_info["level"] = player.level
         player_info["balance"] = getBalance(player)
         player_info["is_turn"] = player_id_turn == player.id
@@ -116,8 +116,9 @@ def get_players_data(session):
         for business in getBusinesses(player).filter(is_command=False):
             player_info["businesses"].append(
                 {
-                    "name": str(business.business.name),
+                    "name": business.business.name,
                     "cost": business.business.cost,
+                    "status": business.latest_status
                 }
             )
 
