@@ -1,11 +1,21 @@
-window.onload = async function () {
-  await updateOnlineDashboard();
-  // setInterval(updateOnlineDashboard, 3500);
-};
-
 
 var lastRollDiceActionId = 0;
-var fistPageUpdate = false;
+var fistPageUpdate = true;
+var isAnimating = false;
+
+
+window.onload = async function () {
+  await updateOnlineDashboard();
+  // setInterval(checkAndUpdateDashboard, 1000); 
+}
+
+
+async function checkAndUpdateDashboard() {
+  if (!isAnimating) {
+    await updateOnlineDashboard();
+  }
+}
+
 
 async function updateOnlineDashboard() {
   let data = await getDashboardData();
@@ -14,21 +24,23 @@ async function updateOnlineDashboard() {
   if( diceValueAction && lastRollDiceActionId !== diceValueAction.action_id ){
     lastRollDiceActionId = diceValueAction.action_id;
 
-    if ( fistPageUpdate ){
+    if ( !fistPageUpdate ){
       const parts = diceValueAction.action_name.split("-");
       const diceOne = parseInt(parts[0]);
       const diceTwo = parseInt(parts[1]);
+      isAnimating = true;
       await rollTheDice( diceOne, diceTwo );
+      isAnimating = false;
     }
   }
 
-  await updateGameHistory(data.game_actions, data.votion);
+  if (!isAnimating) {
+    await updateGameHistory(data.game_actions, data.votion);
+    await updateCommandBusiness(data.command_bank, data.command_players);
+    await updatePlayersInfo(data.players);
+  }
 
-  await updateCommandBusiness(data.command_bank, data.command_players);
-
-  await updatePlayersInfo(data.players);
-
-  fistPageUpdate = true;
+  fistPageUpdate = false;
 
 }
 

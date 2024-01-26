@@ -69,7 +69,12 @@ function createIconElement(player) {
 
 function createInfoElement(player) {
   const infoElement = document.createElement("div");
-  infoElement.classList.add("col-6");
+  infoElement.classList.add(
+    "col-8",
+    "d-flex",
+    "flex-column",
+    "justify-content-center",
+  ); 
 
   const playerNameElement = createPlayerNameElement(player);
   infoElement.appendChild(playerNameElement);
@@ -77,8 +82,10 @@ function createInfoElement(player) {
   const balanceElement = createBalanceElement(player);
   infoElement.appendChild(balanceElement);
 
+  if(player.businesses.length > 0){
   const businessesCountElement = createBusinessesCountElement(player);
   infoElement.appendChild(businessesCountElement);
+  }
 
   return infoElement;
 }
@@ -88,7 +95,7 @@ function createPlayerNameElement(player) {
 
   playerNameElement.classList.add("card-title");
   playerNameElement.classList.add("text-dark", "text-decoration-none", "text-break");
-  playerNameElement.classList.add("fs-5");
+  playerNameElement.classList.add("fs-4");
 
   playerNameElement.href = "/player_control_" + player.id + "/";
   playerNameElement.textContent = player.name;

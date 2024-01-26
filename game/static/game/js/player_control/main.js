@@ -157,7 +157,6 @@ async function sellCommandBusinessShare(count){
 window.onload = function () {
   business_btn.hidden = true;
 
-  updatePlayerControlData();
   whoisTurnPreloader();
 
   // Check is it the player's turn?
@@ -228,12 +227,14 @@ async function updatePlayerControlData() {
       playerBalance.classList.toggle("text-danger", playerBalanceGlobal < 0);
     }
 
-    if (playerCommandShareGlobal != data.command_share) {
+    if (data.command_share) {
       playerCommandShareGlobal = data.command_share;
       playerCommandCountGlobal = data.command_count;
       playerCommandBankGlobal = data.command_bank;
       playerCommandShare.textContent = 
       `${playerCommandShareGlobal}% (${formatNumber(playerCommandCountGlobal)}) в КБ`;
+
+      console.log(238, data)
 
       if( data.command_count >= 50000 && data.command_bank >= 50000){
         sale_share_50.classList.remove("disabled");

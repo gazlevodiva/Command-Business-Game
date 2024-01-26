@@ -563,6 +563,7 @@ def player_control(request=None, session=None, player_id=None, modal=False):
                 name=surprise.name,
                 count=0,
                 category="MEMO",
+                visible=False,
                 is_command=False,
                 is_personal=True,
                 is_public=False,
