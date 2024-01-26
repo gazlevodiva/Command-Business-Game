@@ -1,4 +1,3 @@
-<!-- Card -->
 <div class="card business-card text-center mb-3" data-business-id="{{ player_business.business.id }}">
   {% if player_business.business.is_command %}
   <div class="card-header text-secondary">Командный бизнес 💰</div>
@@ -6,7 +5,6 @@
   <div class="card-header text-secondary">Личный бизнес</div>
   {% endif %}
 
-  <!-- Business information -->
   <div class="card-body">
     <div class="card-title h4 mb-2">
       {{ player_business.business.business.name }}
@@ -51,7 +49,6 @@
   </div>
 </div>
 
-<!-- Modal -->
 <div
   class="modal fade"
   id="AreUsure{{player_business.business.id}}"
@@ -70,23 +67,19 @@
           aria-label="Close"
         ></button>
       </div>
-
       <div class="modal-body">
-          <h5>
+          <div class="h5">
             Вы уверенны что хотите продать 
             {{ player_business.business.business.name }} за 
             {{ player_business.business.business.cost }} со штрафом 5%?
-          </h5>
+          </div>
       </div>
-
       <div class="modal-footer">
         <button
           type="button"
           class="btn btn-outline-secondary"
           data-bs-dismiss="modal"
-        >
-          Отмена
-        </button>
+        >Отмена</button>
         <a
           href="/sell_business_{{player_business.business.id}}/"
           class="btn btn-danger"

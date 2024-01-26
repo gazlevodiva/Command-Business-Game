@@ -234,8 +234,6 @@ async function updatePlayerControlData() {
       playerCommandShare.textContent = 
       `${playerCommandShareGlobal}% (${formatNumber(playerCommandCountGlobal)}) в КБ`;
 
-      console.log(238, data)
-
       if( data.command_count >= 50000 && data.command_bank >= 50000){
         sale_share_50.classList.remove("disabled");
       } else {
@@ -260,7 +258,7 @@ async function updatePlayerControlData() {
       commandBusinessButton.hidden = false;
     }
 
-
+  return data;
 }
 
 
@@ -286,7 +284,7 @@ async function whoisTurnPreloader() {
   playerTurnGlobal = is_the_same_player;
 
   // Update player info
-  await updatePlayerControlData();
+  let player_data = await updatePlayerControlData();
 
   // If this player turn
   if (is_the_same_player) {
@@ -298,54 +296,31 @@ async function whoisTurnPreloader() {
       removeModalBackdrop();
 
       // Check info about players move
-      await whatIsMoveDetails();
+      if (
+        player_data.move_stage !== "END" && 
+        player_data.action_category !== "SELL_BIS" &&
+        player_data.action_category !== "CMND"
+      ) { moveReaction(player_data) }
 
       // Make sound and vibro
       playTurnSound();
       playVibration();
 
   } else {
-
     // Check votion 
-    if(data.votion) {
-      if(data.votion.business_status == "VOTING"){
-        voteMoveIdGlobal = data.votion.move_id;
-
-        if (hasPlayerVoted(data.votion.votes) === false && !voteModalOpenGlobal) {
-          showTurnPreloader(false);
-          showVoteModal(data.votion);
-          voteModalOpenGlobal = true;
-          return;
-        }
-
+    if(data.votion && data.votion.business_status == "VOTING") {
+       voteMoveIdGlobal = data.votion.move_id;
+      if (hasPlayerVoted(data.votion.votes) === false && !voteModalOpenGlobal) {
+        showTurnPreloader(false);
+        showVoteModal(data.votion);
+        voteModalOpenGlobal = true;
+        return;
       }
     }
-
     showTurnPreloader(true);
-    // old version
-    // playerTurnPreloader.hidden = is_the_same_player;
-    // playerTurnPreloaderText.innerText = `Ход игрока ${data.player_name}.`;
   }
 }
 
-
-async function whatIsMoveDetails() {
-  try {
-    const response = await fetch(`/move_details_${playerId.innerHTML}/`);
-    const data = await response.json();
-
-    const isActionable =
-      data.move_stage !== "END" &&
-      data.action_category !== "SELL_BIS" &&
-      data.action_category !== "CMND";
-
-    if (isActionable) {
-      moveReaction(data);
-    }
-  } catch (error) {
-    console.error("Move details error:", error);
-  }
-}
 
 async function finishTheMove() {
   try {
@@ -383,7 +358,7 @@ async function goToStart() {
 }
 
 async function moveReaction(data) {
-  await updatePlayerControlData();
+  // await updatePlayerControlData();
 
   var cell_name = data.cell_name;
   playerMoveIdGlobal = data.move_id;

@@ -1,5 +1,5 @@
 from game.models.Actions import Actions
-
+from game.models.Moves import Moves
 
 GAME_FIELD = {
     1: "start-cell",
@@ -92,3 +92,40 @@ def set_dice_roll(move, value):
         is_personal=True,
         is_public=True,
     )
+
+
+def set_go_to_start(move):
+    return Actions.objects.create(
+        move=move,
+        move_stage="CONTINUE",
+        name="Переходит сразу на старт",
+        category="OTHER",
+        visible=True,
+        is_command=False,
+        is_personal=True,
+        is_public=True,
+    )
+
+
+def set_back_to_start(move):
+    Actions.objects.create(
+        move=move,
+        move_stage="CONTINUE",
+        name="Вернулся на старт",
+        category="OTHER",
+        visible=True,
+        is_command=False,
+        is_personal=True,
+        is_public=True,
+    )
+
+    set_end_move(move)  # end back to start position
+
+    # change position to start cell
+    new_move = Moves.objects.create(player=move.player, position=1)
+
+    # Set start position action
+    set_start_move(new_move)
+
+    # Set end move position action
+    set_end_move(new_move)

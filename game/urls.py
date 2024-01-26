@@ -2,8 +2,12 @@ from django.urls import path
 
 from game.views.player_panel import player_controller
 from game.views.player_panel import sell_business
+from game.views.player_panel import buy_business_data
+from game.views.player_panel import buy_business
 from game.views.player_panel import sell_share
+from game.views.player_panel import whoisturn
 from game.views.player_panel import surprise
+from game.views.player_panel import make_move
 from game.views import rules
 
 from game.views import session_controller
@@ -54,7 +58,7 @@ urlpatterns = [
     ),
     path(
         route="whoisturn/<int:player_id>/",
-        view=player_controller.whois_turn_data,
+        view=whoisturn.whois_turn_data,
         name="whois_turn_data",
     ),
     path(
@@ -73,13 +77,8 @@ urlpatterns = [
         name="player_back_to_start",
     ),
     path(
-        route="move_details_<int:player_id>/",
-        view=player_controller.move_details,
-        name="player_details",
-    ),
-    path(
         route="player_move_<int:player_id>_<str:dice_value>/",
-        view=player_controller.player_move,
+        view=make_move.player_move,
         name="online_player_move_result",
     ),
     path(
@@ -99,12 +98,12 @@ urlpatterns = [
     ),
     path(
         route="get_player_control_business_data_<int:player_id>_<str:business_category>/",
-        view=player_controller.player_control_business_data,
+        view=buy_business_data.player_control_business_data,
         name="player_control_business_data_ajax",
     ),
     path(
         route="buy_<str:is_command>_business_<int:player_id>_<int:business_id>/",
-        view=player_controller.player_control_buy_business,
+        view=buy_business.player_control_buy_business,
         name="player_control_buy_business_view",
     ),
     path(

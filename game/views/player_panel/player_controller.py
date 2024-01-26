@@ -6,34 +6,30 @@ from django.http import JsonResponse
 from game.models.Moves import Moves
 from game.models.Player import Player
 from game.models.Actions import Actions
-from game.models.Business import Business
 from game.models.Surprises import Surprises
 from game.models.MemoryAnswers import MemoryAnswers
 from game.models.CommandPayments import CommandPayments
 
+from game.methods.MoveMethods import set_go_to_start
+from game.methods.MoveMethods import set_back_to_start
 from game.methods.MoveMethods import set_end_move
 from game.methods.MoveMethods import set_skip_move
 from game.methods.MoveMethods import set_start_move
 from game.methods.MoveMethods import set_dice_roll
 
 from game.methods.PlayerMethods import getBalance
-from game.methods.PlayerMethods import newBusiness
 from game.methods.PlayerMethods import getBusinesses
 from game.methods.PlayerMethods import playerTurn
 from game.methods.PlayerMethods import isOpenCommandBusiness
 from game.methods.PlayerMethods import firstInvestToCommandBusiness
 
 from game.methods.BusinessMethods import getVotion
-from game.methods.BusinessMethods import setVotion
 from game.methods.BusinessMethods import playerIdForVotion
 from game.methods.BusinessMethods import getCommandBank
 from game.methods.BusinessMethods import getCommandShare
 from game.methods.BusinessMethods import getBusinessPayments
 
 from game.decorators import check_user_session_hash
-
-from django.core.serializers import serialize
-import json
 
 from .new_level import is_new_level
 from .new_level import set_new_level
@@ -70,26 +66,109 @@ GAME_FIELD = {
 
 
 @check_user_session_hash
-def move_details(request, session, player_id):
+def player_finish_move(request, session, move_id):
+    set_end_move(Moves.objects.get(pk=move_id))
+    return JsonResponse({"result": True})
+
+
+@check_user_session_hash
+def player_back_to_start(request, session, move_id):
+    set_back_to_start(Moves.objects.get(pk=move_id))
+    return JsonResponse({"result": True, "move_id": move_id})
+
+
+@check_user_session_hash
+def player_go_to_start(request, session, move_id):
+    set_go_to_start(Moves.objects.get(pk=move_id))
+    return JsonResponse({"result": True, "move_id": move_id})
+
+
+
+
+
+
+
+
+
+
+
+@check_user_session_hash
+def player_control_data(request, session, player_id):
     context = {}
     player = Player.objects.get(pk=player_id)
+    player_balance = getBalance(player)
+    share, count = getCommandShare(player)
+    bank = getCommandBank(session)
+
+    # Get moves info
     player_moves = Moves.objects.filter(player=player)
     player_move = player_moves.last()
+
+    # Get actions info
     player_actions = Actions.objects.filter(move__number=player_move.number)
     player_last_action = player_actions.last()
 
-    context["type"] = "move_details"
-    context["next_cell"] = False
-    context["player_id"] = player_id
+    # Whos player turn
+    player_turn = playerTurn(session)
+    if player == player_turn:
+        is_player_turn = True
+
+    if player != player_turn:
+        is_player_turn = False
+
+    context["player_id"] = player.id
     context["player_name"] = player.name
+    context["player_level"] = player.level
+    context["player_balance"] = player_balance
+    context["command_share"] = share
+    context["command_count"] = count
+    context["command_bank"] = bank
+    context["is_player_turn"] = is_player_turn
+    context["is_open_command_business"] = isOpenCommandBusiness(player)
     context["move_id"] = player_move.id
     context["move_stage"] = player_last_action.move_stage
     context["cell_name"] = GAME_FIELD[player_move.position]
     context["cell_position"] = player_move.position
 
+    # Vote for buy command business
+    if player.id in playerIdForVotion(player.game_session):
+        context["votion"] = getVotion(player_move)
+    else:
+        context["votion"] = False
+
+    # Fisrt action with command business
+    context["first_invest_chance"] = firstInvestToCommandBusiness(player_move)
+
+    # Does the player have a new_level?
+    new_level_details = is_new_level(player)
+
+    if new_level_details:
+        context["is_new_level"] = new_level_details
+
+    if not new_level_details:
+        context["action_name"] = player_last_action.name
+        context["action_count"] = player_last_action.count
+        context["action_category"] = player_last_action.category
+
+    # Memory
+    if player_last_action.category == "MEMO":
+        memories = Surprises.objects.filter(name=player_last_action.name)
+        memory_exist = memories.filter(session_id=session.id).exists()
+
+        if memory_exist:
+            memory = memories.get(session_id=session.id)
+
+        if not memory_exist:
+            memory = memories.get(session_id=0)
+
+        context["memory_id"] = memory.id
+
+    # Command surprise
+    if player_last_action.category == "SURP" and player_last_action.is_command:
+        context["action_count"] = CommandPayments.objects.get(move=player_move).count
+
     # If player drop the dice
     if player_actions.filter(category="DICE_VALUE").exists():
-
         # Get dice value from last move
         last_action_dice = (
             player_actions
@@ -106,6 +185,7 @@ def move_details(request, session, player_id):
             context['previous_cell_position'] = previous_move.position
             end_cell_position = previous_move.position + action_dive_value
 
+            context["next_cell"] = False
             if end_cell_position > 25:
                 context['next_cell'] = True
                 context['next_cell_move'] = end_cell_position - 25
@@ -113,354 +193,7 @@ def move_details(request, session, player_id):
         else:
             previous_move = None
 
-    # Vote for buy command business
-    if player.id in playerIdForVotion(player.game_session):
-        context["votion"] = getVotion(player_move)
-    else:
-        context["votion"] = False
-
-    # Does the player have a new_level?
-    new_level_details = is_new_level(player)
-
-    first_invest_chance = firstInvestToCommandBusiness(player_move)
-    context["first_invest_chance"] = first_invest_chance
-
-    if new_level_details:
-        context["is_new_level"] = new_level_details
-
-    if not new_level_details:
-        context["action_name"] = str(player_last_action.name)
-        context["action_count"] = player_last_action.count
-        context["action_category"] = player_last_action.category
-
-    # Memory
-    if player_last_action.category == "MEMO":
-        memories = Surprises.objects.filter(name=player_last_action.name)
-
-        if memories.filter(session_id=session.id).exists():
-            memory = memories.get(session_id=session.id)
-
-        if not memories.filter(session_id=session.id).exists():
-            memory = memories.get(session_id=0)
-
-        context["memory_id"] = memory.id
-
-    # Command surprise
-    if player_last_action.category == "SURP" and player_last_action.is_command:
-        command_payment = CommandPayments.objects.get(move=player_move)
-        context["action_count"] = command_payment.count
-
     return JsonResponse(context)
-
-
-@check_user_session_hash
-def player_move(request, session, player_id, dice_value):
-    # string param to int - '2-5' -> 7
-    is_rolled = False
-    if len(dice_value.split('-')) == 2:
-        is_rolled = True
-
-    move_value = sum([int(x) for x in dice_value.split('-')])
-
-    # Get players positiones and math new position
-    player = Player.objects.get(pk=player_id)
-    current_player_move = Moves.objects.filter(player=player).last()
-    new_player_position = current_player_move.position + move_value
-
-    # if is_rolled:
-    #     set_end_move(current_player_move)
-
-    # For new level
-    is_newlevel = False
-    next_cell = False
-    # next_cell_name = False
-    next_move_value = False
-
-    # The player went around the circle and stood further from the start
-    if new_player_position > 25:
-
-        next_cell = True
-        next_move_value = new_player_position - 25
-
-        is_newlevel = True
-        new_player_position = 1
-        # next_cell_name = GAME_FIELD[next_move_value + 1]
-
-    # If player go on start
-    if new_player_position == 25:
-        is_newlevel = True
-        new_player_position = 1
-
-    if is_rolled:
-        # Set up dice move
-        dice_move = (
-            Moves.objects
-            .create(
-                player=player,
-                position=current_player_move.position
-            )
-        )
-        set_dice_roll(dice_move, dice_value)
-
-        # New move
-        move = (
-            Moves.objects
-            .create(
-                player=player,
-                number=dice_move.number,
-                position=new_player_position
-            )
-        )
-
-    # Create new move for player and action position
-    if not is_rolled:
-        move = (
-            Moves.objects
-            .create(
-                player=player,
-                position=new_player_position
-            )
-        )
-
-    set_start_move(move)
-
-    context = {}
-
-    # For create a new level action with new move, not old
-    if is_newlevel:
-        set_new_level(move)
-        context["is_new_level"] = is_new_level(player)
-
-    if not is_newlevel:
-        context["is_new_level"] = []
-
-    # SURPRISE
-    if GAME_FIELD[new_player_position] == "surprise-cell":
-        surprise = set_surprise(move)
-        context["surprise_id"] = surprise.id
-        context["action_name"] = surprise.name
-        context["action_count"] = surprise.count
-
-    # MEMORY
-    if GAME_FIELD[new_player_position] == "memory-cell":
-        memory = set_memory(move)
-        context["memory_id"] = memory.id
-        context["action_name"] = memory.name
-        context["action_count"] = memory.count
-
-    # COMMAND SURPRISE
-    if GAME_FIELD[new_player_position] == "command-surprise-cell":
-        first_invest_chance = firstInvestToCommandBusiness(move)
-        context["first_invest_chance"] = first_invest_chance
-
-        # If first time and open command investments
-        if not first_invest_chance:
-            command_surprise = set_command_surprise(move)
-            context["surprise_id"] = command_surprise.id
-            context["action_name"] = command_surprise.name
-
-            command_payment = CommandPayments.objects.get(move=move)
-            context["action_count"] = command_payment.count
-
-    # SKIP MOVE
-    if GAME_FIELD[new_player_position] == "skip-move-cell":
-        set_skip_move(move)
-
-    context['type'] = "player_move"
-    context['player_id'] = player.id
-    context['player_name'] = player.name
-    context['move_id'] = move.id
-    context['move_stage'] = "START"
-    context['move_number'] = move.number
-    context['cell_name'] = GAME_FIELD[new_player_position]
-    context['cell_position'] = new_player_position
-    context['next_cell'] = next_cell
-    # context['next_cell_name'] = next_cell_name
-    context['next_cell_move'] = next_move_value
-
-    response = JsonResponse(context)
-    return response
-
-
-@check_user_session_hash
-def whois_turn_data(request, session, player_id):
-    # Who is turn
-    player_turn_id = playerTurn(session)
-    player_turn = Player.objects.get(pk=player_turn_id)
-    player_turn_last_move = Moves.objects.filter(player=player_turn).last()
-
-    context = {}
-    context["move_id"] = player_turn_last_move.id
-    context["move_number"] = player_turn_last_move.number
-    context["player_id"] = player_turn.id
-    context["player_name"] = player_turn.name
-
-    if player_id in playerIdForVotion(player_turn.game_session):
-        context["votion"] = getVotion(player_turn_last_move)
-    else:
-        context["votion"] = False
-
-    return JsonResponse(context)
-
-
-@check_user_session_hash
-def player_finish_move(request, session, move_id):
-    move = Moves.objects.get(pk=move_id)
-    set_end_move(move)
-    context = {"result": True}
-    return JsonResponse(context)
-
-
-@check_user_session_hash
-def player_back_to_start(request, session, move_id):
-    move = Moves.objects.get(pk=move_id)
-
-    Actions.objects.create(
-        move=move,
-        move_stage="CONTINUE",
-        name="Вернулся на старт",
-        category="OTHER",
-        visible=True,
-        is_command=False,
-        is_personal=True,
-        is_public=True,
-    )
-
-    set_end_move(move)  # end back to start position
-
-    # change position to start cell
-    new_move = Moves.objects.create(player=move.player, position=1)
-
-    # Set start position action
-    set_start_move(new_move)
-
-    # Set end move position action
-    set_end_move(new_move)
-
-    context = {"result": True}
-    return JsonResponse(context)
-
-
-@check_user_session_hash
-def player_go_to_start(request, session, move_id):
-    move = Moves.objects.get(pk=move_id)
-
-    Actions.objects.create(
-        move=move,
-        move_stage="CONTINUE",
-        name="Переходит сразу на старт",
-        category="OTHER",
-        visible=True,
-        is_command=False,
-        is_personal=True,
-        is_public=True,
-    )
-
-    context = {"result": True, "move_id": move_id}
-    return JsonResponse(context)
-
-
-@check_user_session_hash
-def player_control_buy_business(
-    request,
-    session,
-    player_id,
-    business_id,
-    is_command
-):
-    player = Player.objects.get(pk=player_id)
-    move = Moves.objects.filter(player=player).last()
-    business = Business.objects.get(pk=business_id)
-
-    context = {}
-
-    if is_command == "command":
-        if len(playerIdForVotion(session)) == 1:
-            newBusiness(move, business, is_command=True)
-            context["result"] = True
-            return JsonResponse(context)
-
-        setVotion(move, business)
-        context["votion"] = getVotion(move)
-
-    if is_command == "personal":
-        newBusiness(move, business, is_command=False)
-        context["result"] = True
-
-    return JsonResponse(context)
-
-
-@check_user_session_hash
-def player_control_business_data(
-    request,
-    session,
-    player_id,
-    business_category
-):
-    player = Player.objects.get(pk=player_id)
-    player_balance = getBalance(player)
-    share, count = getCommandShare(player)
-    bank = getCommandBank(session)
-
-    businesses = (
-        Business.objects
-        .filter(game_mode=session.game_mode)
-        .order_by("cost")
-    )
-
-    if business_category != "ALL":
-        businesses = businesses.filter(category=business_category)
-
-    businesses = json.loads(serialize("json", businesses))
-
-    # get businesses count
-    businesses_count = getBusinesses(player)
-    can_buy_more = True
-    if len(businesses_count) >= 10:
-        can_buy_more = False
-
-    context = {
-        "player_id": player.id,
-        "businesses": businesses,
-        "player_balance": player_balance,
-        "command_share": share,
-        "command_count": count,
-        "command_bank": bank,
-        "can_buy_more": can_buy_more,
-    }
-    response = JsonResponse(context)
-    return response
-
-
-@check_user_session_hash
-def player_control_data(request, session, player_id):
-    context = {}
-    player = Player.objects.get(pk=player_id)
-    player_balance = getBalance(player)
-    share, count = getCommandShare(player)
-    bank = getCommandBank(session)
-
-    # whos player Turn???
-    player_turn = playerTurn(session)
-    if player == player_turn:
-        is_player_turn = True
-
-    if player != player_turn:
-        is_player_turn = False
-
-    is_open_command_business = isOpenCommandBusiness(player)
-
-    context["player_id"] = player.id
-    context["player_name"] = player.name
-    context["player_level"] = player.level
-    context["player_balance"] = player_balance
-    context["command_share"] = share
-    context["command_count"] = count
-    context["command_bank"] = bank
-    context["is_player_turn"] = is_player_turn
-    context["is_open_command_business"] = is_open_command_business
-    response = JsonResponse(context)
-    return response
 
 
 # Main player controller
@@ -577,8 +310,7 @@ def player_control(request=None, session=None, player_id=None, modal=False):
 
         return redirect(f"/player_control_{player_id}/")
 
-    is_open_command_business = isOpenCommandBusiness(player)
-    context["is_open_command_business"] = is_open_command_business
+    context["is_open_command_business"] = isOpenCommandBusiness(player)
 
     context["modal"] = modal
 

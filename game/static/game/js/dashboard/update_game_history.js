@@ -16,6 +16,7 @@ async function updateGameHistory(gameActions, votion) {
   const votion_action = gameActions.find(action => 
     action.action_id !== votion.action_id
   );
+
   if(votion_action && votion && votion.business_status == "VOTING"){
     current_votion_active = true;
     current_votion_move_id = votion.move_id;
