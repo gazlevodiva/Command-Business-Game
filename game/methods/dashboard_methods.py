@@ -67,7 +67,10 @@ def get_dashboard_actions(session):
                             rentability=percent
                         )
                     )
-                    count = business_payment_query.first().count if business_payment_query.exists() else 0
+                    count = (
+                        business_payment_query.first().count
+                        if business_payment_query.exists() else 0
+                    )
                     business_payments_cache[key] = count
 
                 count = business_payments_cache[key]

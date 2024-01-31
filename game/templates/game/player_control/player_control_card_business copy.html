@@ -1,0 +1,93 @@
+<div class="card business-card text-center mb-3" data-business-id="{{ player_business.business.id }}">
+  {% if player_business.business.is_command %}
+  <div class="card-header text-secondary">Командный бизнес 💰</div>
+  {% else %}
+  <div class="card-header text-secondary">Личный бизнес</div>
+  {% endif %}
+
+  <div class="card-body">
+    <div class="card-title h4 mb-2">
+      {{ player_business.business.business.name }}
+    </div>
+    <p class="card-text text-muted">
+      Доход: от {{player_business.business.business.min_rent}}% до
+      {{player_business.business.business.max_rent}}%
+    </p> 
+    <div class="card-body row justify-content-center">
+      <div class="col mx-2">
+
+        {% if player_business.business_payments|length == 0 %}
+          <p class="text-muted mb-1">Нет истории бизнеса</p>
+        {% endif %} 
+
+        {% for business_payment in player_business.business_payments %}
+          {% if business_payment.count < 0 %}
+          <div class="text-start text-danger">
+            {{ business_payment.player_level }} круг: рента 
+            {{ business_payment.rentability }}%, {{ business_payment.count }}.
+          </div>
+          {% else %}
+          <div class="text-start">
+            {{ business_payment.player_level }} круг: рента  
+            {{ business_payment.rentability }}% , {{ business_payment.count }}.
+          </div>
+          {% endif %} 
+        {% endfor %}
+        
+      </div>
+    </div>
+    <div class="text-center d-grid gap-2 col mx-auto">
+      <button
+        type="button"
+        class="btn btn-outline-danger action-button"
+        data-bs-toggle="modal"
+        data-bs-target="#AreUsure{{ player_business.business.id }}"
+      >
+        Продать
+      </button>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="AreUsure{{player_business.business.id}}"
+  tabindex="-1"
+  aria-labelledby="AreUsure{{player_business.business.id}}"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5">Продажа бизнеса</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+          <div class="h5">
+            Вы уверенны что хотите продать 
+            {{ player_business.business.business.name }} за 
+            {{ player_business.business.business.cost }} со штрафом 5%?
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          data-bs-dismiss="modal"
+        >Отмена</button>
+        <a
+          href="/sell_business_{{player_business.business.id}}/"
+          class="btn btn-danger"
+          onclick="Preloader()"
+        >
+          Продать
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

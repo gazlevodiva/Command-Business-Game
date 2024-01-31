@@ -78,7 +78,7 @@ async function updateGameHistory(gameActions, votion) {
       actionDiv.appendChild(playerName);
 
       var actionText = document.createElement("span");
-      actionText.textContent = action.action_name;
+      
 
       if(current_votion_active && action.move_id == current_votion_move_id){
         actionText.textContent = `
@@ -87,6 +87,8 @@ async function updateGameHistory(gameActions, votion) {
         ${formatNumber(votion.business_cost)} 
         ✅ ${votion.votes_for_count} / ${votion.votes_agn_count} ❌
         `;
+      } else {
+        actionText.textContent = action.action_name;
       }
       actionDiv.appendChild(actionText);
 

@@ -178,15 +178,16 @@ def setCommandBusinessIncome(player_business, move):
 
 def getCommandBank(game_session):
     return (
-        CommandPayments.objects.filter(
-            move__player__game_session=game_session
-        ).aggregate(Sum("count"))
+        CommandPayments.objects
+        .filter( move__player__game_session=game_session)
+        .aggregate(Sum("count"))
     )["count__sum"]
 
 
 def getBusinessPayments(player_business):
-    return BusinessPayments.objects.filter(
-        player_business=player_business,
+    return (
+        BusinessPayments.objects
+        .filter(player_business=player_business)
     )
 
 

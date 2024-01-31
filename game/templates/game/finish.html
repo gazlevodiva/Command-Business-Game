@@ -4,26 +4,30 @@
 
 <div class="mt-5">
 
-  <h1>{{player_x_total}}</h1>
-
   <div class="row justify-content-center m-5">
     {% for player_info in players_info %}
     <div class="col-2 mb-4" style="width: 300px">
       <div class="card border-0 shadow">
         <div class="card-body text-center">
-          <div class="text-center display-3 mb-4">
+          <div class="text-center display-3 mt-3 mb-3">
             {{ player_info.player.icon }}
           </div>
-
-          <div class="card-title fs-3">{{ player_info.player.name }}</div>
-
+          <div class="card-title fs-3">
+            {{ player_info.player.name }}
+          </div>
           <div class="card-text">
             {% if player_info.profit > 0 %}
               <div class="fs-1 text-success">{{ player_info.profit }}</div>
             {% else %}
               <div class="fs-1 text-danger">{{ player_info.profit }}</div>
             {% endif %} 
-              за {{ player_info.player.level }} кругов 
+
+            <div class="fs-4">
+              💲{{ player_info.profit_level_avarage }} за круг.
+            </div>
+            <div class="fs-5">
+              📈 В <b>{{ player_info.profit_multiplier }}</b> раз за {{ player_info.player.level }} кругов.
+            </div> 
               
             {% for achieve in player_info.achievements %}
               <div class="mt-4">

@@ -213,20 +213,24 @@ async function updatePlayerControlData() {
     playerIdGlobal = data.player_id;
     playerNameGlobal = data.player_name;
 
+    // Update invest modal form
     commandInvestInput.max = data.player_balance;
     commandInvestInput2.max = data.player_balance;
 
+    // Player Level
     if (playerLevelGlobal != data.player_level) {
       playerLevelGlobal = data.player_level;
       playerLevel.textContent = `${playerLevelGlobal} круг`;
     }
 
+    // Command Balance
     if (playerBalanceGlobal != data.player_balance) {
       playerBalanceGlobal = data.player_balance;
       playerBalance.textContent = formatNumber(playerBalanceGlobal);
       playerBalance.classList.toggle("text-danger", playerBalanceGlobal < 0);
     }
 
+    // Command Business Share and modal window
     if (data.command_share) {
       playerCommandShareGlobal = data.command_share;
       playerCommandCountGlobal = data.command_count;
@@ -253,12 +257,71 @@ async function updatePlayerControlData() {
       }
     }
 
+    // Command Business Button
     if (data.is_open_command_business) {
       playerIsCommandGlobal = data.is_open_command_business;
       commandBusinessButton.hidden = false;
     }
 
+    // Create & Update business card
+    if (data.player_businesses){
+      const container = document.getElementById('business_info_cards');
+      container.innerHTML = '';
+
+      data.player_businesses.forEach( player_business => {
+        // Create business card
+        const business_card = createBusinessCardPlayerController(player_business)
+        container.appendChild(business_card);
+      });
+      
+    }
+    
+
   return data;
+}
+
+
+function createBusinessCardPlayerController(playerBusiness) {
+  // Get template
+  const template = document.getElementById('business-card-template');
+
+  // Create copy
+  const clone = document.importNode(template.content, true);
+
+  // Set data
+  clone.querySelector('.card-header').textContent = playerBusiness.business.is_command ? 'Командный Бизнес 💰' : 'Личный бизнес';;
+  clone.querySelector('.card-title').textContent = playerBusiness.business.name;
+  clone.querySelector('.card-text').textContent = `Доход: от ${playerBusiness.business.min_rent}% до ${playerBusiness.business.max_rent}%`;
+
+  const cardHistoryDiv = clone.querySelector('.card-history');
+  cardHistoryDiv.innerHTML = '';
+
+  playerBusiness.business_payments.forEach(payment => {
+    const paymentDiv = document.createElement('div');
+    paymentDiv.className = 'text-start';
+    if(payment.count <= 0 ){
+      paymentDiv.classList.add("text-danger");
+    }
+    paymentDiv.textContent = `Круг ${payment.player_level}: рент. ${payment.rentability}% , ${payment.count};`;
+    cardHistoryDiv.appendChild(paymentDiv);
+  });
+
+  if (playerBusiness.business_payments.length == 0){
+    cardHistoryDiv.innerHTML = '<p class="text-muted mb-1">Нет истории бизнеса</p>';
+  }
+
+  // Setup modal
+  const modal = clone.querySelector('.modal');
+  modal.id = `AreUsure${playerBusiness.business.id}`;
+  modal.querySelector('.modal-body .h5').textContent = `Вы уверены, что хотите продать ${playerBusiness.business.name} за ${formatNumber(playerBusiness.business.business_cost)} со штрафом 5%?`;
+
+  const askSellButton = clone.querySelector('.action-button');
+  askSellButton.dataset.bsTarget = `#AreUsure${playerBusiness.business.id}`;
+
+  const sellButton = clone.querySelector('.sell-button');
+  sellButton.href = `/sell_business_${playerBusiness.business.id}/`;
+
+  return clone;
 }
 
 

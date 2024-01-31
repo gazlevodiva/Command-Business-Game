@@ -3,8 +3,6 @@ from django.shortcuts import render
 from game.decorators import check_user_session_hash
 
 from game.models.Player import Player
-from game.models.CommandPayments import CommandPayments
-from django.db.models import Sum
 
 from game.methods.Achievements import getAchievements
 from game.methods.BusinessMethods import getCommandShare
@@ -29,7 +27,6 @@ def finish(request, session):
     # if playerX_total is None:
     #     playerX_total = 0
 
-
     # PLayers list
     players = Player.objects.filter(game_session=session)
 
@@ -51,15 +48,18 @@ def finish(request, session):
             command_cost = 0
 
         profit = int(balance + command_cost + business_cost)
+        profit_multiplier = round(profit/session.player_balance, 1)
+        profit_level_avarage = round(profit/player.level)
 
         players_info.append(
             {
                 "player": player,
                 "profit": profit,
+                "profit_multiplier": profit_multiplier,
+                "profit_level_avarage": profit_level_avarage,
                 "achievements": achievements[player][:5],
                 "memory_answers": memory_answers,
             }
         )
 
-    context = {"players_info": players_info}
-    return render(request, "game/finish.html", context)
+    return render(request, "game/finish.html", {"players_info": players_info})

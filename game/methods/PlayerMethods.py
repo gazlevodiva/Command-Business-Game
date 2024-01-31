@@ -9,6 +9,10 @@ from game.models.MemoryAnswers import MemoryAnswers
 from game.models.PlayersBusiness import PlayersBusiness
 from game.models.CommandPayments import CommandPayments
 from game.models.PlayersBusinessStatus import PlayersBusinessStatus
+from game.methods.BusinessMethods import getBusinessPayments
+
+from django.core import serializers
+import json
 
 
 SALARY = {
@@ -119,6 +123,40 @@ def getBusinesses(player):
             (Q(latest_status="ACTIVE") | Q(latest_status="DEFOULT"))
         )
     )
+
+
+def get_business_card_info(player):
+    business_card_info = []
+    for player_business in getBusinesses(player):
+        business_payments_model = getBusinessPayments(player_business)
+        business_payments = []
+
+        for payment in business_payments_model:
+            business_payments.append(
+                {
+                    "move_id": payment.move.id,
+                    "count": payment.count,
+                    "rentability": payment.rentability,
+                    "defoult_probability": payment.defoult_probability,
+                    "player_level": payment.player_level,
+                }
+            )
+
+        business_card_info.append(
+            {
+                "business": {
+                    "id": player_business.id,
+                    "name": player_business.business.name,
+                    "is_command": player_business.is_command,
+                    "business_cost": player_business.business.cost,
+                    "min_rent": player_business.business.min_rent,
+                    "max_rent": player_business.business.max_rent,
+                },
+                "business_payments": business_payments,
+            }
+        )
+
+    return business_card_info
 
 
 def getCommandBusinesses(player=None):

@@ -22,6 +22,7 @@ from game.methods.PlayerMethods import getBusinesses
 from game.methods.PlayerMethods import playerTurn
 from game.methods.PlayerMethods import isOpenCommandBusiness
 from game.methods.PlayerMethods import firstInvestToCommandBusiness
+from game.methods.PlayerMethods import get_business_card_info
 
 from game.methods.BusinessMethods import getVotion
 from game.methods.BusinessMethods import playerIdForVotion
@@ -81,15 +82,6 @@ def player_back_to_start(request, session, move_id):
 def player_go_to_start(request, session, move_id):
     set_go_to_start(Moves.objects.get(pk=move_id))
     return JsonResponse({"result": True, "move_id": move_id})
-
-
-
-
-
-
-
-
-
 
 
 @check_user_session_hash
@@ -192,6 +184,9 @@ def player_control_data(request, session, player_id):
 
         else:
             previous_move = None
+
+    # Get information for business cards
+    context["player_businesses"] = get_business_card_info(player)
 
     return JsonResponse(context)
 
