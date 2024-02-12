@@ -147,6 +147,7 @@ def get_business_card_info(player):
                 "business": {
                     "id": player_business.id,
                     "name": player_business.business.name,
+                    "status": player_business.latest_status,
                     "is_command": player_business.is_command,
                     "business_cost": player_business.business.cost,
                     "min_rent": player_business.business.min_rent,

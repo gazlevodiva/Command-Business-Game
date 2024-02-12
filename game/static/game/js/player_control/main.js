@@ -63,7 +63,6 @@ cmndsurp_close_btn?.addEventListener("click", handleCloseButtonClick);
 
 const success_business_buy_btn = document.getElementById("success-business-buy-btn");
 success_business_buy_btn?.addEventListener("click", function () {
-  // location.reload();
   showTurnPreloader(true);
 });
 
@@ -311,15 +310,24 @@ function createBusinessCardPlayerController(playerBusiness) {
   }
 
   // Setup modal
-  const modal = clone.querySelector('.modal');
-  modal.id = `AreUsure${playerBusiness.business.id}`;
-  modal.querySelector('.modal-body .h5').textContent = `Вы уверены, что хотите продать ${playerBusiness.business.name} за ${formatNumber(playerBusiness.business.business_cost)} со штрафом 5%?`;
+  if (playerBusiness.business.status == "DEFOULT"){
+    clone.querySelector('.card-header').textContent = "🔥 Прогорел 🔥";
+    clone.querySelector('.action-button').remove();
+    clone.querySelector('.modal').remove();
 
-  const askSellButton = clone.querySelector('.action-button');
-  askSellButton.dataset.bsTarget = `#AreUsure${playerBusiness.business.id}`;
+  } else if (playerBusiness.business.status == "ACTIVE"){
 
-  const sellButton = clone.querySelector('.sell-button');
-  sellButton.href = `/sell_business_${playerBusiness.business.id}/`;
+    const modal = clone.querySelector('.modal');
+    modal.id = `AreUsure${playerBusiness.business.id}`;
+    modal.querySelector('.modal-body .h5').textContent = `Вы уверены, что хотите продать ${playerBusiness.business.name} за ${formatNumber(playerBusiness.business.business_cost)} со штрафом 5%?`;
+
+    const askSellButton = clone.querySelector('.action-button');
+    askSellButton.dataset.bsTarget = `#AreUsure${playerBusiness.business.id}`;
+
+    const sellButton = clone.querySelector('.sell-button');
+    sellButton.href = `/sell_business_${playerBusiness.business.id}/`;
+  
+  }
 
   return clone;
 }
@@ -599,6 +607,7 @@ async function buyPersonalBusiness(business_id) {
     const data = await response.json();
 
     if (data.result) {
+      updatePlayerControlData();
       showModal(successBusinessBuyModal);
       return;
     }
@@ -615,6 +624,7 @@ async function buyCommandBusiness(business_id) {
     const data = await response.json();
 
     if (data.result) {
+      updatePlayerControlData();
       showModal(successBusinessBuyModal);
       return;
     }
