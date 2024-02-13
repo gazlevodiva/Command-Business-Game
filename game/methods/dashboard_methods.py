@@ -62,6 +62,7 @@ def get_dashboard_actions(session):
                 if key not in business_payments_cache:
                     business_payment_query = (
                         BusinessPayments.objects
+                        .filter(move__player=action.move.player)
                         .filter(
                             move__number=action.move.number,
                             rentability=percent

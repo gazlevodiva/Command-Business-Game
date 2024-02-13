@@ -97,7 +97,11 @@ def player_control_data(request, session, player_id):
     player_move = player_moves.last()
 
     # Get actions info
-    player_actions = Actions.objects.filter(move__number=player_move.number)
+    player_actions = (
+        Actions.objects
+        .filter(move__player=player)
+        .filter(move__number=player_move.number)
+    )
     player_last_action = player_actions.last()
 
     # Whos player turn
