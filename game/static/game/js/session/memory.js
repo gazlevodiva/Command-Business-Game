@@ -7,7 +7,7 @@ function createMemoryElement(memoryValue = "") {
   const div = document.createElement("div");
   div.className = "mb-3 mt-3 d-flex";
   div.innerHTML = `
-    <input type="text" class="form-control" name="memory-${memoryIndex}" id="memory-${memoryIndex}" maxlength="1000" pattern="\S(.*\S)?" style="background-color: rgb(244, 244, 244);" value="${memoryValue}" required>
+    <input type="text" class="form-control" name="memory-${memoryIndex}" id="memory-${memoryIndex}" maxlength="1000" pattern="\\S(.*\\S)?" style="background-color: rgb(244, 244, 244);" value="${memoryValue}" required>
     <button class="btn btn-outline-danger ms-2 deleteMemory">❌</button>
   `;
   memoryIndex++;
