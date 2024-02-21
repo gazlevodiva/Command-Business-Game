@@ -718,6 +718,7 @@ async function getPlayerBusinessData(category) {
       business_buy_modal.innerHTML = `
         <div class="text-center h4 mt-4 mb-4">10 бизнесов максимум 😓</div>
       `;
+      selector_business_category.disabled = true;
       return;
     }
 

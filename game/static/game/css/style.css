@@ -725,7 +725,7 @@
     border-radius: 50%;
     box-shadow: 0 0 8px rgb(40, 40, 40);
     animation-fill-mode: both;
-    z-index: 10000000;
+    z-index: 100000;
 }
 
 .preloader{
@@ -815,3 +815,49 @@
   }
   .swing-in { animation: swingIn 1s ease; }
   .drop-out { animation: dropOut 1s ease; }
+
+/* Класс для анимации пульсации */
+.pulse {
+    animation: pulseAnimation 2s infinite;
+  }
+  
+  @keyframes pulseAnimation {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+  /* Класс для анимации увеличения */
+  .grow {
+    animation: growAnimation 2s forwards;
+  }
+  
+  @keyframes growAnimation {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(1.5);
+    }
+  }
+  
+  /* Класс для анимации уменьшения */
+  .shrink {
+    animation: shrinkAnimation 2s forwards;
+  }
+  
+  @keyframes shrinkAnimation {
+    from {
+      transform: scale(1.5);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+  

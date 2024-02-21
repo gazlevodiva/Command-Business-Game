@@ -9,10 +9,6 @@ async function updatePlayersInfo(players) {
     updatePlayerCardOnGameTable(player); // update_players_card.js
   });
 
-  // if (currentPlayerTurnId === newCurrentPlayerTurnId) {
-  //   return;
-  // }
-
   currentPlayerTurnId = newCurrentPlayerTurnId;
   playersListDiv.innerHTML = "";
 

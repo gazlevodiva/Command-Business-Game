@@ -3,8 +3,20 @@ async function updatePlayerCardOnGameTable(player) {
 
   if (playerCard && !playerCard.classList.contains('animating')) {
     const oldPlayerCardCellNumber = parseInt(playerCard.parentElement.id.split("-")[1]);
+
+    if(player.is_turn){
+      playerCard.classList.add('pulse');
+      playerCard.style.zIndex = "100001";
+    } else{
+      playerCard.classList.remove('pulse');
+      playerCard.style.zIndex = "100000";
+    }
     
     if (oldPlayerCardCellNumber !== player.current_position) {
+
+      playerCard.classList.remove('pulse');
+
+
       const newPlayerCell = document.getElementById("cell-" + player.current_position);
 
       var newPlayerCard = createPlayerCard(player, 'new');
@@ -14,17 +26,28 @@ async function updatePlayerCardOnGameTable(player) {
       const newRect = newPlayerCard.getBoundingClientRect();
 
       playerCard.classList.add('animating');
+      playerCard.classList.add('grow');
+
+      let posX = newRect.left - oldRect.left;
+      let posY = newRect.top - oldRect.top;
+
       playerCard.animate(
         [
-          { transform: "translate(0, 0)" },
-          {
-            transform: `translate(${newRect.left - oldRect.left}px, ${
-              newRect.top - oldRect.top
-            }px)`,
+          { 
+            transform: "scale(1) translate(0, 0)",
+            offset: 0
+          },
+          { 
+            transform: "scale(1.5) translate(0, 0)",
+            offset: 0.2
+          },
+          { 
+            transform: `scale(1) translate(${posX}px, ${posY}px)`,
+            offset: 1
           },
         ],
         {
-          duration: 1000,
+          duration: 1500,
           fill: "forwards",
         }
       ).onfinish = () => {
@@ -35,7 +58,14 @@ async function updatePlayerCardOnGameTable(player) {
     }
   } else if (!playerCard) {
     var newPlayerCard = createPlayerCard(player);
-    animateCard(newPlayerCard, "in");
+
+    if(player.is_turn){
+      newPlayerCard.style.zIndex = "100001";
+      newPlayerCard.classList.add('pulse');
+
+    } else {
+      animateCard(newPlayerCard, "in");
+    }
   }
 }
 
@@ -93,15 +123,6 @@ function animateCard(card, animation) {
           "swing-in",
         ];
         var animationClass = getRandomItem(animation_list);
-        card.classList.add(animationClass);
-
-        card.addEventListener(
-          "animationend",
-          function () {
-            card.classList.remove(animationClass);
-          },
-          { once: true }
-        );
         break;
 
       case "out":
@@ -113,17 +134,15 @@ function animateCard(card, animation) {
           "drop-out",
         ];
         var animationClass = getRandomItem(animation_list);
-        card.classList.add(animationClass);
-
-        card.addEventListener(
-          "animationend",
-          function () {
-            card.classList.remove(animationClass);
-          },
-          { once: true }
-        );
         break;
     }
+
+    card.classList.add(animationClass);
+    card.addEventListener("animationend",function () {
+      card.classList.remove(animationClass);
+    },
+      { once: true }
+    );
   }
 }
 
