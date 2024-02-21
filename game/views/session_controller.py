@@ -145,7 +145,7 @@ def upload_memory_file(request, session):
         file = request.FILES.get("file")
         if file:
             try:
-                df = pd.read_excel(file)
+                df = pd.read_excel(file, engine='openpyxl')
 
                 if len(df.columns) == 1:
                     memories_list = df.values.tolist()
