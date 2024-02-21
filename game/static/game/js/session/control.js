@@ -36,66 +36,135 @@ async function deletePlayerFetch(playerId) {
 async function updateSessionPlayers() {
   try {
     const response = await fetch("/session_players/");
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
     const data = await response.json();
-
     const playersContainer = document.getElementById("sessions-players");
 
     data.players.forEach((player) => {
-      const existingPlayerCard = document.getElementById(
-        `player-card-${player.id}`
-      );
-      if (existingPlayerCard) {
-        return;
-      }
+      const existingPlayerCard = document.getElementById(`player-card-${player.id}`);
+      if (existingPlayerCard) {return}
 
       const playerCard = document.createElement("div");
       playerCard.classList.add("card", "mb-3");
-      playerCard.id = `player-card-${player.id}`;
-      playerCard.innerHTML = `
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="text-start text-muted mx-3">
-                            <span class="h2">${player.icon}</span>
-                        </div>
-                        <div class="text-center">
-                            <span class="h4">${player.name}</span>
-                        </div>
-                        <div class="text-end">
-                            <button 
-                                type="button" 
-                                class="btn text-danger m-0 p-0 mx-3 delete-player-button"
-                                data-bs-toggle="modal" 
-                                data-bs-target="#deletePlayerModal-${player.id}"
-                                data-player-id="${player.id}"
-                            >
-                                <i class="bi bi-trash-fill"></i> 
-                            </button>
-                            <div class="modal fade" id="deletePlayerModal-${player.id}" tabindex="-1" aria-labelledby="deletePlayerModal-${player.id}" aria-hidden="true">
-                              <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
-                                  <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="deletePlayerModal-${player.id}">Вы хотите удалить игрока?</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                  </div>
-                                  <div class="modal-body text-start">
-                                    Игрок ${player.name} и все его действия будут удалены. 
-                                  </div>
-                                  <div class="modal-footer">
-                                    <button type="button" class="btn btn-danger" onclick="deletePlayer(${player.id})">Удалить!</button>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>`;
 
+      playerCard.id = `player-card-${player.id}`;
+      playerCard.appendChild(createPlayerSessionCard(player));
       playersContainer.appendChild(playerCard);
+
     });
   } catch (error) {
     console.error("Error fetching players:", error);
   }
+}
+
+function createPlayerSessionCard(player){
+  const cardBody = document.createElement('div');
+  cardBody.classList.add('card-body');
+
+  const flexContainer = document.createElement('div');
+  flexContainer.classList.add('d-flex', 'justify-content-between', 'align-items-center');
+
+  // Player Icon
+  const textStart = document.createElement('div');
+  textStart.classList.add('text-start', 'text-muted', 'mx-3');
+
+  const iconSpan = document.createElement('span');
+  iconSpan.classList.add('h2');
+  iconSpan.innerHTML = player.icon;
+  textStart.appendChild(iconSpan);
+
+  // Player name
+  const textCenter = document.createElement('div');
+  textCenter.classList.add('text-center');
+
+  const nameSpan = document.createElement('span');
+  nameSpan.classList.add('h4');
+  nameSpan.textContent = player.name;
+  textCenter.appendChild(nameSpan);
+
+  // Delete button
+  if(!player.deletable){
+    var textEnd = document.createElement('div');
+    textEnd.classList.add('text-end');
+
+    const deleteButton = document.createElement('button');
+    deleteButton.type = 'button';
+    deleteButton.classList.add('btn', 'text-danger', 'm-0', 'p-0', 'mx-3', 'delete-player-button');
+    deleteButton.setAttribute('data-bs-toggle', 'modal');
+    deleteButton.setAttribute('data-bs-target', `#deletePlayerModal-${player.id}`);
+    deleteButton.setAttribute('data-player-id', player.id);
+
+    const icon = document.createElement('i');
+    icon.classList.add('bi', 'bi-trash-fill');
+    deleteButton.appendChild(icon);
+    textEnd.appendChild(deleteButton);
+
+    var modal = createPlayerSessionDeleteModal(player);
+    
+  } else {
+    var textEnd = document.createElement('div');
+    textEnd.classList.add('mx-4');
+    var modal = document.createElement('div');
+  }
+
+  flexContainer.appendChild(textStart);
+  flexContainer.appendChild(textCenter);
+  flexContainer.appendChild(textEnd);
+
+  cardBody.appendChild(flexContainer);
+  cardBody.appendChild(modal);
+
+  return cardBody;
+}
+
+function createPlayerSessionDeleteModal(player){
+  const modal = document.createElement('div');
+  modal.classList.add('modal', 'fade');
+  modal.id = `deletePlayerModal-${player.id}`;
+  modal.tabIndex = -1;
+  modal.setAttribute('aria-labelledby', `deletePlayerModalLabel-${player.id}`);
+  modal.setAttribute('aria-hidden', 'true');
+
+  const modalDialog = document.createElement('div');
+  modalDialog.classList.add('modal-dialog', 'modal-dialog-centered');
+
+  const modalContent = document.createElement('div');
+  modalContent.classList.add('modal-content');
+
+  const modalHeader = document.createElement('div');
+  modalHeader.classList.add('modal-header');
+
+  const modalTitle = document.createElement('h5');
+  modalTitle.classList.add('modal-title', 'fs-5');
+  modalTitle.id = `deletePlayerModalLabel-${player.id}`;
+  modalTitle.textContent = 'Вы хотите удалить игрока?';
+
+  const closeButton = document.createElement('button');
+  closeButton.type = 'button';
+  closeButton.classList.add('btn-close');
+  closeButton.setAttribute('data-bs-dismiss', 'modal');
+  closeButton.setAttribute('aria-label', 'Close');
+  modalHeader.appendChild(modalTitle);
+  modalHeader.appendChild(closeButton);
+
+  const modalBody = document.createElement('div');
+  modalBody.classList.add('modal-body', 'text-start');
+  modalBody.textContent = `Игрок ${player.name} и все его действия будут удалены.`;
+
+  const modalFooter = document.createElement('div');
+  modalFooter.classList.add('modal-footer');
+
+  const deleteConfirmButton = document.createElement('button');
+  deleteConfirmButton.type = 'button';
+  deleteConfirmButton.classList.add('btn', 'btn-danger');
+  deleteConfirmButton.textContent = 'Удалить!';
+  deleteConfirmButton.onclick = function() { deletePlayer(player.id); };
+  modalFooter.appendChild(deleteConfirmButton);
+
+  modalContent.appendChild(modalHeader);
+  modalContent.appendChild(modalBody);
+  modalContent.appendChild(modalFooter);
+  modalDialog.appendChild(modalContent);
+  modal.appendChild(modalDialog);
+
+  return modal;
 }

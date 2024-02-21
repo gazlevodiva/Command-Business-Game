@@ -152,6 +152,13 @@ async function sellCommandBusinessShare(count){
 }
 
 
+const make_a_move_button = document.getElementById("rollButton");
+make_a_move_button?.addEventListener("click", async function () {
+  
+  make_a_move_button.classList.add('disabled');
+  rollTheDice();
+});
+
 
 window.onload = function () {
   business_btn.hidden = true;
@@ -170,7 +177,7 @@ window.onload = function () {
 async function handleCloseButtonClick() {
   showTurnPreloader(true);
   await finishTheMove();
-}
+} 
 
 
 function showTurnPreloader(show) {
@@ -374,8 +381,8 @@ async function whoisTurnPreloader() {
       ) { moveReaction(player_data) }
 
       // Make sound and vibro
-      playTurnSound();
-      playVibration();
+      // playTurnSound();
+      // playVibration();
 
   } else {
     // Check votion 

@@ -19,7 +19,17 @@ from django.shortcuts import get_object_or_404
 def session_players(request, session):
     players = Player.objects.filter(game_session=session, visible=True)
     players_json = [
-        {"id": player.id, "name": player.name, "icon": player.icon}
+        {
+            "id": player.id,
+            "name": player.name,
+            "icon": player.icon,
+            "deletable": (
+                Actions.objects
+                .filter(move__player=player)
+                .filter(is_command=True)
+                .exists()
+            )
+        }
         for player in players
     ]
     response = JsonResponse({"players": players_json})
@@ -57,38 +67,10 @@ def session_panel(request=None, session=None):
         return {"players": players}
 
     return render(
-        request, 
-        "game/session_control/session_admin_panel.html", 
+        request,
+        "game/session_control/session_admin_panel.html",
         context
     )
-
-
-@check_user_session_hash
-def reset_last_move(request, session):
-    # Get last move in game session
-    last_move = Moves.objects.filter(player__game_session=session).last()
-
-    last_actions = Actions.objects.filter(move=last_move)
-
-    for action in last_actions:
-        if action.category == "NLWL":
-            action.move.player.level -= 1
-            action.move.player.save()
-
-        # Check all changes player_business status in move
-        related_statuses = (
-            PlayersBusinessStatus.objects.filter(move=action.move)
-        )
-
-        for players_business_status in related_statuses:
-            if players_business_status == "ACTIVE":
-                players_business_status.players_business.delete()
-
-    if last_move.number != 0:
-        last_move.delete()
-
-    response = JsonResponse({"res": "Try to delete..."})
-    return response
 
 
 @check_user_session_hash
@@ -124,20 +106,8 @@ def reset_game(request, session):
 
 @check_user_session_hash
 def delete_player(request, session, player_id):
-    player = get_object_or_404(Player, id=player_id)
-
-    command_actions = Actions.objects.filter(move__player=player).filter(
-        is_command=True
-    )
-    if command_actions:
-        return JsonResponse(
-            {
-                "result": False,
-                "describe": "Игрок совершил командные действия. Удаление невозможно.",
-            }
-        )
-
     try:
+        player = get_object_or_404(Player, id=player_id)
         player.delete()
         describe = "Игрок успешно удален."
     except Exception as e:

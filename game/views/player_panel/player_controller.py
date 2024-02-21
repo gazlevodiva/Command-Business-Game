@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404
 
 from django.http import JsonResponse
 
@@ -13,9 +14,6 @@ from game.models.CommandPayments import CommandPayments
 from game.methods.MoveMethods import set_go_to_start
 from game.methods.MoveMethods import set_back_to_start
 from game.methods.MoveMethods import set_end_move
-from game.methods.MoveMethods import set_skip_move
-from game.methods.MoveMethods import set_start_move
-from game.methods.MoveMethods import set_dice_roll
 
 from game.methods.PlayerMethods import getBalance
 from game.methods.PlayerMethods import getBusinesses
@@ -33,10 +31,6 @@ from game.methods.BusinessMethods import getBusinessPayments
 from game.decorators import check_user_session_hash
 
 from .new_level import is_new_level
-from .new_level import set_new_level
-from .surprise import set_memory
-from .surprise import set_surprise
-from .surprise import set_command_surprise
 
 GAME_FIELD = {
     1: "start-cell",
@@ -203,7 +197,8 @@ def player_control(request=None, session=None, player_id=None, modal=False):
     context["game_session"] = session
 
     # Get players businesses
-    player = Player.objects.get(pk=player_id)
+    # player = Player.objects.get(pk=player_id)
+    player = get_object_or_404(Player, pk=player_id)
     context["player"] = player
 
     last_move = Moves.objects.filter(player=player).last()
@@ -211,8 +206,7 @@ def player_control(request=None, session=None, player_id=None, modal=False):
     context["current_player_position"] = last_move.position
 
     # whos player Turn???
-    player_turn_id = playerTurn(session)
-    player_turn = Player.objects.get(pk=player_turn_id)
+    player_turn = Player.objects.get(pk=playerTurn(session))
 
     context["player_turn"] = player_turn
 

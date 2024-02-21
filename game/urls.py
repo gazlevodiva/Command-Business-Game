@@ -132,11 +132,6 @@ urlpatterns = [
         name="memory_setup",
     ),
     path(
-        route="reset_last_move/",
-        view=session_controller.reset_last_move,
-        name="reset_last_move_fetch",
-    ),
-    path(
         route="reset_game/",
         view=session_controller.reset_game,
         name="reset_game_fetch",
