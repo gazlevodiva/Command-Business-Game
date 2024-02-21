@@ -5,7 +5,6 @@ from game.models.Moves import Moves
 from game.models.Player import Player
 from game.models.Actions import Actions
 from game.models.Surprises import Surprises
-from game.models.PlayersBusinessStatus import PlayersBusinessStatus
 
 import io
 import base64

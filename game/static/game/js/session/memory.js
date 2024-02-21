@@ -46,8 +46,6 @@ fileInputMemories?.addEventListener("change", function () {
     .then((response) => response.json())
     .then((data) => {
 
-        console.log("errorFileModal", data);
-
         if (data.error) {
           this.value = "";
           var errorFileModal = new bootstrap.Modal(
