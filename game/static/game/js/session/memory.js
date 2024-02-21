@@ -43,8 +43,11 @@ fileInputMemories?.addEventListener("change", function () {
       },
       body: formData,
     })
-      .then((response) => response.json())
-      .then((data) => {
+    .then((response) => response.json())
+    .then((data) => {
+
+        console.log("errorFileModal", data);
+
         if (data.error) {
           this.value = "";
           var errorFileModal = new bootstrap.Modal(
@@ -61,8 +64,8 @@ fileInputMemories?.addEventListener("change", function () {
           });
         }
 
-      })
-      .catch((error) => console.error("Ошибка:", error));
+    })
+    .catch((error) => console.error("Ошибка загрузки файла:", error));
   }
 });
 
