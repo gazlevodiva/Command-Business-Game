@@ -25,12 +25,16 @@
         <div id="memories_list">
           {% for memory in memories %}
           <div class="mb-3 mt-3 d-flex">
-            <textarea
-              class="form-control"
+            <input
+              type="text"
+              class="form-control"              
               name="memory-{{ forloop.counter0 }}"
+              id="memory-{{ forloop.counter0 }}"
               style="background-color: rgb(244, 244, 244)"
-              rows="1"
-            >{{ memory.name }}</textarea
+              maxlength="1000"
+              pattern="\S(.*\S)?"
+              value="{{ memory.name }}"
+              required
             >
             <button class="btn btn-outline-danger ms-2 deleteMemory">❌</button>
           </div>

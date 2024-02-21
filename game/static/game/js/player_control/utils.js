@@ -24,43 +24,42 @@ function removeModalBackdrop() {
   }
 }
 
-// Функция для проверки валидности текстового поля
-function validateTextarea() {
-  // Получаем текстовое поле по его ID
-  var textarea = document.getElementById('memoryModalTextarea');
-  var text = textarea.value.trim(); // Удаляем пробелы с обеих сторон
+function validateTextarea(textarea) {
+  var text = textarea.value.trim();
 
-  // Минимальное и максимальное количество символов
-  var minLength = 10; // Пример минимального количества символов
-  var maxLength = 1000; // Пример максимального количества символов
+  var minLength = 4;
+  var maxLength = 1000;
 
-  // Проверяем, не пусто ли поле после удаления пробелов
   if (text.length === 0) {
-    alert('Поле не может быть пустым или содержать только пробелы.');
-    return false;
+    return {"result": false, "desc": 'Поле не может быть пустым или содержать только пробелы.'}
   }
 
-  // Проверяем минимальное количество символов
   if (text.length < minLength) {
-    alert(`Текст должен содержать минимум ${minLength} символов.`);
-    return false;
+    return {"result": false, "desc": `Текст должен содержать минимум ${minLength} символов.`}
   }
 
-  // Проверяем максимальное количество символов
   if (text.length > maxLength) {
-    alert(`Текст не должен превышать ${maxLength} символов.`);
-    return false;
+    return {"result": false, "desc": `Текст не должен превышать ${maxLength} символов.`};
   }
 
-  // Если все проверки пройдены успешно
-  return true;
+  return {"result": true, "desc": 'Ответ подходит.'};
 }
 
 // Добавляем обработчик события для формы на "submit"
-document.querySelector('form').addEventListener('submit', function(event) {
+document.getElementById('memory_answer_form').addEventListener('submit', function(event) {
   // Проверяем валидность текстового поля
-  if (!validateTextarea()) {
-    // Если валидация не пройдена, предотвращаем отправку формы
+
+  var textarea = document.getElementById('memoryModalTextarea');
+  var textareaInvalid = document.getElementById('memoryModalTextareaInvalid');
+ 
+  var valid = validateTextarea(textarea)
+
+  if (!valid.result) {
+    textarea.classList.add('is-invalid');
+    textareaInvalid.innerText = valid.desc;
     event.preventDefault();
+  } else {
+    textarea.classList.remove('is-invalid');
+    textareaInvalid.innerText = '';
   }
 });
