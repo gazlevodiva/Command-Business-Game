@@ -35,9 +35,7 @@ const go_to_start_modal = document.getElementById("goToStartModal");
 const random_move_modal = document.getElementById("randomMoveModal");
 const back_to_start_modal = document.getElementById("backToStartModal");
 const business_btn = document.getElementById("buy-business-modal-button");
-const commandBusinessButton = document.getElementById(
-  "command_business_button"
-);
+const commandBusinessButton = document.getElementById("command_business_button");
 
 // Close buttons
 const player_move_preloader = document.getElementById("player_move_preloader");
@@ -154,8 +152,12 @@ async function sellCommandBusinessShare(count){
 
 const make_a_move_button = document.getElementById("rollButton");
 make_a_move_button?.addEventListener("click", async function () {
-  
-  make_a_move_button.classList.add('disabled');
+
+  // commandBusinessButton.classList.add('disabled');
+  // make_a_move_button.classList.add('disabled');
+
+  disableActionButtons(true);
+
   rollTheDice();
 });
 
@@ -180,24 +182,34 @@ async function handleCloseButtonClick() {
 } 
 
 
-function showTurnPreloader(show) {
+function disableActionButtons(status){
+  document.querySelectorAll('.action-button').forEach(button => {
+
+    if(status){
+      button.classList.add('disabled');
+      button.setAttribute('disabled', 'disabled');
+    }
+
+    if(!status){
+      button.classList.remove('disabled');
+      button.removeAttribute('disabled');
+    }
+
+  });
+}
+
+
+function showTurnPreloader(status) {
   // // Old version preloader
   // playerTurnPreloaderText.innerText = `Ваш ход окончен.`;
   // playerTurnPreloader.hidden = !show;
 
   // New version
   document.querySelectorAll('.action-button').forEach(button => {
-    if(show){
-      playerTurnGlobal = false;
-      button.classList.add('disabled');
-      button.setAttribute('disabled', 'disabled');
-    }
-    if(!show){
-      
-      button.classList.remove('disabled');
-      button.removeAttribute('disabled');
-    }
+    playerTurnGlobal = !status;
+    disableActionButtons(status);
   });
+  
 }
 
 async function getPlayerControlData(){
@@ -247,6 +259,7 @@ async function updatePlayerControlData() {
       if( data.command_count >= 50000 && data.command_bank >= 50000){
         sale_share_50.classList.remove("disabled");
       } else {
+        
         sale_share_50.classList.add("disabled");
       }
 
@@ -377,8 +390,16 @@ async function whoisTurnPreloader() {
       if (
         player_data.move_stage !== "END" && 
         player_data.action_category !== "SELL_BIS" &&
-        player_data.action_category !== "CMND"
-      ) { moveReaction(player_data) }
+        player_data.action_category !== "CMND" &&
+        player_data.action_category !== "VOTE_FOR" &&
+        player_data.action_category !== "VOTE_AGN" &&
+        player_data.action_category !== "BSNS" 
+      ) { 
+
+        console.log(player_data)
+
+        moveReaction(player_data) 
+      }
 
       // Make sound and vibro
       // playTurnSound();
@@ -392,6 +413,8 @@ async function whoisTurnPreloader() {
         showTurnPreloader(false);
         showVoteModal(data.votion);
         voteModalOpenGlobal = true;
+
+        
         return;
       }
     }
@@ -437,23 +460,27 @@ async function goToStart() {
 
 async function moveReaction(data) {
   // await updatePlayerControlData();
-
-  var cell_name = data.cell_name;
+ 
   playerMoveIdGlobal = data.move_id;
 
   if (data.next_cell) {
-    playerNextCellGlobal = data.next_cell_move;
+    playerNextCellGlobal = data.next_cell_move;    
   }
 
   if (data.votion) {
     voteMoveIdGlobal = data.votion.move_id;
+
     if (playerIdGlobal === data.votion.player_id) {
       showVotionModal(data.votion);
       return;
+
     }
   }
 
+  var cell_name = data.cell_name;
+
   switch (cell_name) {
+
     case "start-cell":
       showModal(start_modal);
 
@@ -593,18 +620,14 @@ async function MakeAMove(diceValue) {
   try {
     const response = await fetch(`/player_move_${playerIdGlobal}_${diceValue}/`);
     const data = await response.json();
+    moveReaction(data)
 
-    if (data) {
-      moveReaction(data);
-    }
   } catch (error) {
     console.error("Ошибка при запросе хода:", error);
   }
 }
 
-const successBusinessBuyModal = document.getElementById(
-  "successBusinessBuyModal"
-);
+const successBusinessBuyModal = document.getElementById("successBusinessBuyModal");
 
 async function buyPersonalBusiness(business_id) {
   try {

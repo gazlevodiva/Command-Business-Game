@@ -24,12 +24,10 @@ votionModalButton?.addEventListener("click", async function () {
 
 async function setNewVote(vote_category) {
   try {
-    const response = await fetch(
-      `/new_vote/${voteMoveIdGlobal}/${playerIdGlobal}/${vote_category}/`
-    );
+    const response = await fetch(`/new_vote/${voteMoveIdGlobal}/${playerIdGlobal}/${vote_category}/`);
     const data = await response.json();
-    // To close vote modal
-    voteModalOpenGlobal = false;
+    
+    voteModalOpenGlobal = false; // To close vote modal
     return;
   } catch (error) {
     console.error("Error with set new vote:", error);
