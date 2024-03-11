@@ -177,6 +177,7 @@ window.onload = function () {
 
 
 async function handleCloseButtonClick() {
+  await updatePlayerControlData();
   showTurnPreloader(true);
   await finishTheMove();
 } 
@@ -395,8 +396,6 @@ async function whoisTurnPreloader() {
         player_data.action_category !== "VOTE_AGN" &&
         player_data.action_category !== "BSNS" 
       ) { 
-
-        console.log(player_data)
 
         moveReaction(player_data) 
       }

@@ -1,218 +1,242 @@
 from random import choice
 
 from game.models.Moves import Moves
-from game.models.Player import Player
 from game.models.Actions import Actions
 from game.models.Surprises import Surprises
 from game.models.MemoryAnswers import MemoryAnswers
 from game.models.CommandPayments import CommandPayments
-from game.methods.NotificationModal import Modal
 
-from game.views.player_panel import player_controller
-
-from game.methods.PlayerMethods import getPlayerCategoties
+from game.methods.PlayerMethods import get_player_categoties
 from game.methods.BusinessMethods import getCommandBank
 
-from game.decorators import check_user_session_hash
-from django.db.models import Subquery, OuterRef
+from django.db.models.query import QuerySet
+from typing import Optional, List
 
 
-def set_surprise(move):
-    all_surprises = Surprises.objects.all()
-    all_categories = getPlayerCategoties(move.player)
-    surprise_list = suprise_list_generator(all_surprises, all_categories)
+def set_surprise(move: Moves) -> Optional[Surprises]:
+    """
+    Assigns a surprise to a given move based on player categories.
 
-    if len(surprise_list) > 0:
-        surprise = choice(surprise_list)
-    else:
-        # Everything above is used only to determine the surprise,
-        # taking into account the business categories that the user has.
-        surprise = choice(all_surprises)
+    Retrieves all surprises and player categories. Generates a surprise list
+    relevant to the player's categories. If the list is not empty, a random
+    surprise is chosen from it. If the list is empty, a random surprise is
+    chosen from all available surprises. An action is then created with the
+    selected surprise and linked to the move.
 
-    # Make an Action
-    Actions.objects.create(
-        move=move,
-        move_stage="CONTINUE",
-        name=surprise.name,
-        count=surprise.count,
-        is_personal=True,
-        is_public=True,
-        is_command=False,
-        category="SURP",
-    )
-    return surprise
+    Args:
+    move (Moves): The move object to which the surprise will be assigned.
 
+    Returns:
+    Optional[Surprises]: The surprise object that was assigned to the move,
+    or None if an error occurs.
+    """
+    try:
+        surprises: QuerySet = Surprises.objects.all()
+        categories: QuerySet = get_player_categoties(move.player)
+        surprise_list: list = surprise_list_generator(surprises, categories)
 
-def set_memory(move):
-    memories = Surprises.objects.filter(
-        category="MEMO", session_id=move.player.game_session.id
-    )
-    if not memories:
-        memories = Surprises.objects.filter(category="MEMO", session_id=0)
-
-    # Get all answered players memories
-    answered_questions_subquery = MemoryAnswers.objects.filter(
-        action__move__player=OuterRef("pk")
-    ).values("question")
-    all_memories = (
-        memories.exclude(pk__in=Subquery(answered_questions_subquery))
-    )
-
-    # Get memory
-    memory = choice(all_memories)
-
-    Actions.objects.create(
-        move=move,
-        move_stage="CONTINUE",
-        name=memory.name,
-        count=memory.count,
-        is_personal=True,
-        is_public=True,
-        is_command=False,
-        category="MEMO",
-    )
-    return memory
-
-
-def set_command_surprise(move):
-    all_command_surprises = Surprises.objects.filter(category="COMMAND")
-    command_surprise = choice(all_command_surprises)
-
-    # Inflation
-    if command_surprise.count == 0:
-        command_bank = getCommandBank(move.player.game_session)
-        count = -int(command_bank / 2)
-
-    else:
-        count = command_surprise.count
-
-    # Make command Payment
-    CommandPayments.objects.create(
-        move=move,
-        category="SURP",
-        count=count,
-    )
-
-    Actions.objects.create(
-        move=move,
-        move_stage="CONTINUE",
-        name=command_surprise.name,
-        count=0,
-        is_personal=True,
-        is_public=True,
-        is_command=True,
-        category="SURP",
-    )
-
-    return command_surprise
-
-
-@check_user_session_hash
-def surprise(request, session, player_id, surprise_type):
-    player = Player.objects.get(pk=player_id)
-
-    # Get categories by surprise type
-    all_categories = {
-        "surp": getPlayerCategoties(player),
-        "memo": ["MEMO"],
-        "cmnd": ["COMMAND"],
-    }[surprise_type]
-
-    # Get all surprises
-    all_surprises = Surprises.objects.all()
-    if surprise_type == "memo":
-        answered_questions_subquery = (
-            MemoryAnswers.objects
-            .filter(
-                action__move__player=OuterRef("pk")
-            )
-            .values("question")
-        )
-        all_surprises = (
-            all_surprises
-            .exclude(
-                pk__in=Subquery(answered_questions_subquery)
-            )
-        )
-
-    surprise_list = suprise_list_generator(all_surprises, all_categories)
-
-    # Random surprise from surprise_list
-    if len(surprise_list) == 0:
-        surprise = choice(all_surprises)
-    else:
-        surprise = choice(surprise_list)
-
-    action_name = {
-        "surp": f'Сюрприз - "{surprise.name}" {surprise.count}.',
-        "memo": surprise.name,
-        "cmnd": f"{surprise.name} {surprise.count}.",
-    }[surprise_type]
-
-    modal_name = {
-        "surp": "Сюрпрайз!",
-        "memo": "Мемори!",
-        "cmnd": "Сюрприз для Командного бизнеса!",
-    }[surprise_type]
-
-    # Create modal
-    modal = Modal(modal_name, player, surprise.pk)
-    modal.surprise = surprise
-    modal.type = surprise_type
-
-    # If surprise personal
-    action_count = int(surprise.count)
-    is_command = False
-
-    if surprise_type == "memo":
-        return player_controller.player_control(
-            request=request, player_id=player_id, modal=modal
-        )
-
-    # Get new position from cookie
-    controller_position = request.COOKIES.get("controller_position")
-
-    # Make new move
-    move = Moves.objects.create(player=player, position=controller_position)
-
-    # If suprise Command
-    if surprise_type == "cmnd":
-        # Becouse action is personal counter
-        action_count = 0
-        is_command = True
-
-        if surprise.count == 0:
-            command_bank = getCommandBank(player.game_session)
-            count = -int(command_bank / 2)
-            action_name = f"{surprise.name} {count}"
+        if surprise_list:
+            surprise: Surprises = choice(surprise_list)
         else:
-            count = surprise.count
+            surprise: Surprises = choice(surprises)
 
-        # Make command Payment with no player
-        CommandPayments.objects.create(move=move, category="SURP", count=count)
+        # Creating an Action with the selected surprise
+        Actions.objects.create(
+            move=move,
+            move_stage="CONTINUE",
+            name=surprise.name,
+            count=surprise.count,
+            is_personal=True,
+            is_public=True,
+            is_command=False,
+            category="SURP",
+        )
+        return surprise
 
-    Actions.objects.create(
-        move=move,
-        name=action_name,
-        count=action_count,
-        is_personal=True,
-        category="SURP",
-        is_command=is_command,
-    )
-
-    return player_controller.player_control(
-        request=request, player_id=player_id, modal=modal
-    )
+    except (Surprises.DoesNotExist, Actions.DoesNotExist, Exception) as error:
+        print("Error in  set_surprise:", error)
+        return None
 
 
-def suprise_list_generator(surprises, categories) -> list:
-    result = []
+def get_memory(move: Moves) -> Optional[Surprises]:
+    """
+    Retrieves a memory based on the player's current game session
+    or a default memory if none are available.
 
+    Args:
+    move (Moves): The move instance to retrieve a memory for.
+
+    Returns:
+    Optional[Surprises]: A Surprises instance or None if an error occurs.
+    """
+    try:
+        # Attempt to retrieve memories for the current game session
+        memories: QuerySet = Surprises.objects.filter(
+            category="MEMO",
+            session_id=move.player.game_session.id
+        )
+
+        # If there are no memories for the current game session,
+        # retrieve default memories with session_id 0
+        if not memories.exists():
+            memories: QuerySet = Surprises.objects.filter(
+                category="MEMO", session_id=0
+            )
+
+        # Exclude memories that have already been answered by the player
+        answered_memories_ids: QuerySet = MemoryAnswers.objects.filter(
+            action__move__player=move.player
+        ).values_list("question__id", flat=True)
+
+        available_memories: List = memories.exclude(
+            id__in=answered_memories_ids
+        )
+
+        # Ensure that we can't choose from an empty QuerySet
+        if available_memories.exists():
+            return choice(list(available_memories))
+        else:
+            return choice(list(memories))
+
+    except Exception as error:
+        print("Error in  get_memory:", error)
+        return None
+
+
+def set_memory(move: Moves) -> Optional[Surprises]:
+    """
+    Sets a memory for the given move. It first tries to get memories
+    related to the current game session. If none are found, it defaults to
+    memories with session_id 0. It then excludes any memories already
+    associated with the player and selects one at random to create an Action.
+
+    Args:
+    move (Moves): The move instance for which to set a memory.
+
+    Returns:
+    Optional[Surprises]: The selected memory instance, or None.
+    """
+    try:
+        memory = get_memory(move)
+
+        if memory:
+            # Create an action with the selected memory
+            Actions.objects.create(
+                move=move,
+                move_stage="CONTINUE",
+                name=memory.name,
+                count=memory.count,
+                is_personal=True,
+                is_public=True,
+                is_command=False,
+                category="MEMO",
+            )
+            return memory
+        else:
+            # No valid memory could be found or created
+            return None
+
+    except Exception as error:
+        print("Error in set_memory:", error)
+        return None
+
+
+def set_command_surprise(move: Moves) -> Optional[Surprises]:
+    """
+    Sets a command surprise for the given move. Selects a random
+    command surprise, calculates the count based on specific logic
+    (inflation), and creates related command payment and action
+    entries in the database.
+
+    Args:
+    move (Moves): The move instance for which to set a command surprise.
+
+    Returns:
+    Optional[Surprises]: The Surprises instance selected or None.
+    """
+    try:
+        #  Retrieving all command surprises
+        all_command_surprises: QuerySet = Surprises.objects.filter(
+            category="COMMAND"
+        )
+
+        # Ensure there is at least one command surprise available
+        if not all_command_surprises.exists():
+            print("No command surprises available.")
+            return None
+
+        command_surprise: Surprises = choice(list(all_command_surprises))
+
+        # Inflation logic
+        if command_surprise.count == 0:
+            command_bank: int = getCommandBank(move.player.game_session)
+            count = -int(command_bank / 2)
+        else:
+            count = command_surprise.count
+
+        # Creating a CommandPayments entry
+        CommandPayments.objects.create(
+            move=move,
+            category="SURP",
+            count=count,
+        )
+
+        # Creating an Actions entry
+        Actions.objects.create(
+            move=move,
+            move_stage="CONTINUE",
+            name=command_surprise.name,
+            count=0, 
+            is_personal=True,
+            is_public=True,
+            is_command=True,
+            category="SURP",
+        )
+
+        return command_surprise
+
+    except Exception as error:
+        print(f"Error in set_command_surprise: {error}")
+        return None
+
+
+def surprise_list_generator(
+    surprises: QuerySet,
+    categories: QuerySet
+) -> List[Surprises]:
+    """
+    Generates a list of surprises based on the given categories.
+
+    This function takes a queryset of all surprises and a queryset
+    of categories, filters surprises by each category provided,
+    and aggregates them into a list. It assumes that both the surprises
+    and categories are querysets containing Surprises model instances
+    and their related category model instances, respectively.
+
+    Args:
+    surprises (QuerySet): A queryset containing Surprises instances.
+    categories (QuerySet): A queryset containing category instances.
+
+    Returns:
+    List[Surprises]: A list of Surprises instances
+    filtered by the given categories.
+    """
+    result: List[Surprises] = []
+
+    # Iterate through the categories to filter surprises
     for category in categories:
-        category_surprises = surprises.filter(category=category)
+        try:
+            # Here we assume 'category=category' is the correct way to filter
+            # If the actual field is different, replace 'category'
+            # with the correct field name
+            category_surprises: QuerySet = surprises.filter(category=category)
 
-        if len(category_surprises) > 0:
-            for surprise in category_surprises:
-                result.append(surprise)
+            # Extend the result list with the filtered surprises
+            result.extend(list(category_surprises))
+
+        except Surprises.DoesNotExist:
+            # Handle the case where the filter does
+            # not find any surprises for a category
+            continue  # Skip to the next category
 
     return result

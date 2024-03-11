@@ -17,7 +17,6 @@ from game.views import finish
 from game.views import voting
 from game.views import login
 from game.views import index
-from game.views import test
 
 
 urlpatterns = [
@@ -32,19 +31,9 @@ urlpatterns = [
         name="index_view",
     ),
     path(
-        route="test/",
-        view=test.test,
-        name="test_view",
-    ),
-    path(
         route="rules/",
         view=rules.rules,
         name="rules_view",
-    ),
-    path(
-        route="get_surprise_<int:player_id><str:surprise_type>/",
-        view=surprise.surprise,
-        name="surprise_view",
     ),
     path(
         route="dashboard/",

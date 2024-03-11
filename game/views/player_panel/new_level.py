@@ -15,7 +15,7 @@ def is_new_level(player):
     player_last_actions = (
         Actions.objects
         .filter(move__player=player)
-        .filter(move__number=player_move.number)        
+        .filter(move__number=player_move.number)
         .exclude(category="DICE_VALUE")
     )
 

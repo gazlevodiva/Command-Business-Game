@@ -24,6 +24,11 @@ async function updateCommandBusiness(commandBank, commandPlayers) {
         var colShareDiv = document.createElement("div");
         colShareDiv.className = "col-2 h5";
         colShareDiv.textContent = commandPlayer.share + "%";
+        if (commandPlayer.share < 1) {
+          colShareDiv.textContent = "~1%";
+        } else {
+          colShareDiv.textContent = commandPlayer.share + "%";
+        }
 
         var colBusinessDiv = document.createElement("div");
         colBusinessDiv.className = "col-4 h5";

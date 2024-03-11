@@ -15,8 +15,8 @@ def check_user_session_hash(view):
                 print("check_user_session_hash: No session_hash in DB. Return 404")
                 return error_404(request)
 
-        except:
-            print("check_user_session_hash: No session_hash. Return 404")
+        except Exception as error:
+            print("check_user_session_hash: No session_hash. Return 404", error)
             return error_404(request)
 
         return view(request, session, *args, **kwargs)

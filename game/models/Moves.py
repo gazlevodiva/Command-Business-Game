@@ -6,7 +6,7 @@ from game.models.Player import Player
 
 
 class Moves(models.Model):
-    
+
     number = models.IntegerField(blank=True)
     player = models.ForeignKey(Player, default=None, on_delete=models.CASCADE)
     position = models.IntegerField(default=None)

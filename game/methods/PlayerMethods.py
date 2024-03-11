@@ -11,9 +11,6 @@ from game.models.CommandPayments import CommandPayments
 from game.models.PlayersBusinessStatus import PlayersBusinessStatus
 from game.methods.BusinessMethods import getBusinessPayments
 
-from django.core import serializers
-import json
-
 
 SALARY = {
     1: 5000,
@@ -399,3 +396,102 @@ def firstInvestToCommandBusiness(move) -> bool:
         result = True
 
     return result
+
+
+def get_player_categoties(player):
+    player_businesses = getBusinesses(player)
+
+    categories = ["PERSONAL"]
+    for player_business in player_businesses:
+        if player_business.business.category not in categories:
+            categories.append(player_business.business.category)
+
+    return categories
+
+
+def who_is_turn(session):
+    # Get all actions
+    players_list_query = (
+        Player.objects.filter(visible=True)
+        .filter(game_session=session)
+        .order_by("created_at")
+        .all()
+    )
+
+    if len(players_list_query) == 0:
+        return False
+
+    # Get list of players
+    players_list = [player.id for player in players_list_query]
+
+    # Get last action ftom game session
+    player_actions = (
+        Actions.objects
+        .filter(move__player__game_session=session)
+        .filter(move__player__visible=True)
+        .exclude(category__in=["VOTE_FOR", "VOTE_AGN", "BSNS"])
+    )
+
+    # Get the last action
+    last_action = player_actions.last()
+
+    # If player drop the dice in last move, we check start and end position
+    player_move_actions = (
+        player_actions
+        .filter(move__number=last_action.move.number)
+    )
+    if player_move_actions.filter(category="DICE_VALUE").exists():
+
+        # Get dice action
+        dice_action = (
+            player_move_actions
+            .filter(category="DICE_VALUE")
+            .get(move_stage="END")
+        )
+
+        # get dice value from action
+        dice_action_value = sum([int(x) for x in dice_action.name.split('-')])
+
+        # Check finish position to current position
+        finish_position = dice_action.move.position + dice_action_value
+        if finish_position > 25:
+            finish_position = finish_position - 24
+
+        if finish_position == 25:
+            finish_position = 1
+
+        current_position = last_action.move.position
+
+        # return player_id to finish moves
+        if current_position != finish_position:
+            return dice_action.move.player.id
+
+    if last_action.move.position == 14:
+        return last_action.move.player.id
+
+    if last_action.move_stage == "START":
+        return last_action.move.player.id
+
+    if last_action.move_stage == "CONTINUE":
+        return last_action.move.player.id
+
+    player_last_move = (
+        Actions.objects.filter(move__player__game_session=session)
+        .filter(move__player__visible=True)
+        .filter(move_stage="END")
+        .last()
+    )
+    player = player_last_move.move.player
+
+    if not player_last_move:
+        return players_list[0]
+
+    try:
+        last_move_player_index = players_list.index(player.id)
+    except Exception as e:
+        print("Не удалось определить последнего игрока.", e)
+        return False
+
+    next_player_index = (last_move_player_index + 1) % len(players_list)
+    next_player_id = players_list[next_player_index]
+    return next_player_id

@@ -46,7 +46,7 @@ function updateVotionModal(votion) {
   switch (votion.business_status) {
     case "VOTING":
       votionModalBody.innerHTML = `
-        <h4> <b>${votion.business_name}</b>. Идет голосование ...</h4>
+        <h4> <b>${votion.business_name}</b>. Стоимость ${formatNumber(votion.business_cost)}.</br>Рент. от ${votion.min_rent}% до ${votion.max_rent}%.</br>Идет голосование ...</h4>
         <h2>✅ ${votion.votes_for_count} / ${votion.votes_agn_count} ❌</h2>
       `;
       votionModalButton.textContent = "Идет голосование...";
@@ -104,7 +104,10 @@ function showVoteModal(votion) {
 }
 
 function updateVoteModal(votion){
-  voteDescriptionName.innerHTML = `Игрок <b>${votion.player_name}</b> предлагает купить бизнес <b>${votion.business_name}</b> за`;
+
+  console.log(votion);
+
+  voteDescriptionName.innerHTML = `<b>${votion.player_name}</b> предлагает купить бизнес <b>${votion.business_name}.</b><br/>Рент. от ${votion.min_rent}% до ${votion.max_rent}%`;
   voteDescriptionCount.textContent = formatNumber(votion.business_cost);
 }
 

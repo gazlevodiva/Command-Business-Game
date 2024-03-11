@@ -179,7 +179,7 @@ def setCommandBusinessIncome(player_business, move):
 def getCommandBank(game_session):
     return (
         CommandPayments.objects
-        .filter( move__player__game_session=game_session)
+        .filter(move__player__game_session=game_session)
         .aggregate(Sum("count"))
     )["count__sum"]
 
@@ -346,6 +346,81 @@ def getVotion(move):
         "business_id": business.id,
         "business_name": business.name,
         "business_cost": business.cost,
+        "min_rent": business.min_rent,
+        "max_rent": business.max_rent,
+        "business_status": players_business_status.status,
+        "votes": votes,
+        "votes_for_count": vote_for,
+        "votes_agn_count": vote_agn,
+    }
+
+
+def get_votion(move):
+    move_actions = (
+        Actions.objects
+        .filter(move__player__game_session=move.player.game_session)
+        .filter(move__number=move.number)
+    )
+
+    votion_started_action = move_actions.filter(category="START_VOTE")
+
+    if move_actions.filter(category="START_VOTE").exists():
+        votion_started_action = (
+            move_actions
+            .filter(category="START_VOTE")
+            .first()
+        )
+    else:
+        return False
+
+    players_business_status = (
+        PlayersBusinessStatus.objects
+        .filter(move__player__game_session=move.player.game_session)
+        .get(move__number=move.number)
+    )
+
+    # if players_business_status.status in ["ACTIVE", "UNVOTE"]:
+    #     return False
+
+    votes_actions = move_actions.filter(category__in=["VOTE_FOR", "VOTE_AGN"])
+
+    # Add suggested player
+
+    vote_for = 1
+    vote_agn = 0
+    votes = [
+        {
+            "player_id": votion_started_action.move.player.id,
+            "category": "VOTE_FOR",
+        },
+    ]
+    for vote in votes_actions:
+        if vote.category == "VOTE_FOR":
+            vote_for += 1
+
+        if vote.category == "VOTE_AGN":
+            vote_agn += 1
+
+        votes.append(
+            {
+                "player_id": vote.move.player.id,
+                "category": vote.category,
+            }
+        )
+
+    business = players_business_status.players_business.business
+    player = votion_started_action.move.player
+
+    return {
+        "def": "get_votion",
+        "move_id": votion_started_action.move.id,
+        "player_id": player.id,
+        "player_name": player.name,
+        "business_id": business.id,
+        "business_name": business.name,
+        "business_cost": business.cost,
+        "min_rent": business.min_rent,
+        "max_rent": business.max_rent,
         "business_status": players_business_status.status,
         "votes": votes,
         "votes_for_count": vote_for,
@@ -455,6 +530,16 @@ def setNewVote(move, player, category):
 
 
 def playerIdForVotion(game_session):
+    command_players = getCommandPlayers(game_session)
+    players = [
+        player["move__player"].id
+        for player in command_players
+        if player["move__player"].visible
+    ]
+    return players
+
+
+def player_id_for_votion(game_session):
     command_players = getCommandPlayers(game_session)
     players = [
         player["move__player"].id
