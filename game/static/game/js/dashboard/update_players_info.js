@@ -119,7 +119,7 @@ function createBusinessesCountElement(player) {
 
   businessesCountElement.textContent = defaultBusinesses + activeBusinesses;
 
-  businessesCountElement.textContent = '🏦'.repeat(10);
+  // businessesCountElement.textContent = '🏦'.repeat(10);
   return businessesCountElement;
 }
 

@@ -50,7 +50,7 @@ async function updateCommandBusiness(commandBank, commandPlayers) {
           .join('');
 
         colBusinessDiv.textContent = defaultBusinesses + activeBusinesses;
-        colBusinessDiv.textContent = '🏦'.repeat(10); // normal for 7 biz
+        // colBusinessDiv.textContent = '🏦'.repeat(10); // normal for 7 biz
 
         rowDiv.appendChild(colNameDiv);
         rowDiv.appendChild(colShareDiv);
