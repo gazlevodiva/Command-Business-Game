@@ -2,19 +2,17 @@
 {% load static %} 
 {% block content %}
 
-<div>
-  <div
-    class="row d-flex align-items-center justify-content-center"
-    style="height: 90vh; width: 100%"
-  >
-    <div class="col-2" style="height: 750px">
-      <div class="mt-4">
-        <div class="players-list" id="players_list"></div>
-      </div>
+<div class="container-fluid super-center">
+  <div class="row justify-content-center my-auto">
+
+    <!-- PLayers card info -->
+    <div class="col-md-2" id="players_field" style="align-self: start;">
+      <div class="players-list" id="players_list"></div>
     </div>
+    <!-- End Players info -->
 
     <!-- Game field -->
-    <div class="col-8" style="width: 1000px; height: 750px" id="game_field">
+    <div class="col-md-6" id="game_field" style="align-self: start;">
       <div class="grid" style="--bs-rows: 6; --bs-columns: 8; --bs-gap: 0em">
         <!-- 1 column -->
         <!-- start -->
@@ -180,32 +178,34 @@
     </div>
     <!-- End Game field -->
 
-    <div class="col-2" style="margin-left: 5vh; height: 750px">
-      <div class="mt-4">
-        <div class="players-list" style="text-align: start">
-          <div class="card-title fs-2">Командный Бизнес</div>
-          <div class="display-5 mt-4" id="command_bank"></div>
+    <!-- Command Info -->
+    <div class="col-md-2" id="command_field" style="align-self: start;">
+        <div class="players-list text-start">
+          <div class="card-title h3">Командный Бизнес</div>
+          <div class="mt-4 mb-4" id="command_bank"></div>
 
           <div>
-            <div class="row text-muted mt-4 mb-2">
+            <div class="row text-muted mb-2">
               <div class="col-4">Игрок</div>
               <div class="col-2">Доля</div>
-              <div class="col-4">Бизнесы</div>
+              <!-- <div class="col-4">Бизнесы</div> -->
             </div>
             <div id="command_players"></div>
           </div>
         </div>
-      </div>
     </div>
+    <!-- End command info -->
+
   </div>
 
-  <footer class="footer text-center my-4 mt-4">
+  <footer class="footer text-center mt-4">
     <a class="btn text-muted" type="btn" href="/game_settings/">
       ⚙️ Настройка игры
     </a>
     <a class="btn text-muted" type="btn" href="/finish/">
       Результаты 📜
     </a>
+    <div class="session-pass"><small>Код сессии:</small> 12345</div>
   </footer>
 </div>
 

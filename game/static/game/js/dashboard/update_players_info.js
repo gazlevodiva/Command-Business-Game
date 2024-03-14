@@ -20,13 +20,13 @@ async function updatePlayersInfo(players) {
 
 function createPlayerElement(player) {
   const playerElement = document.createElement("div");
-  playerElement.classList.add("mb-3");
+  playerElement.classList.add("player-info-card");
 
   const rowElement = document.createElement("div");
   rowElement.classList.add("row");
 
   if (player.is_turn) {
-    rowElement.classList.add("current-turn", "m-4");
+    rowElement.classList.add("current-turn");
   }
 
   const iconElement = createIconElement(player);
@@ -47,15 +47,17 @@ function createIconElement(player) {
     "flex-column",
     "justify-content-center"
   );
+  iconElement.classList.add("player-info-icon-element");
 
   const icon = document.createElement("div");
   icon.style.margin = "0";
-  icon.style.fontSize = "45px";
+  icon.style.fontSize = "2vw";
   icon.textContent = player.icon;
   icon.classList.add("text-center");
   iconElement.appendChild(icon);
 
   const levelDiv = document.createElement("div");
+  iconElement.classList.add("player-info-level-element");
   levelDiv.classList.add("text-muted", "text-center");
   levelDiv.textContent = player.level + " круг";
   iconElement.appendChild(levelDiv);
@@ -89,9 +91,9 @@ function createInfoElement(player) {
 function createPlayerNameElement(player) {
   const playerNameElement = document.createElement("a");
 
+  playerNameElement.classList.add("player-info-name-element");
   playerNameElement.classList.add("card-title");
-  playerNameElement.classList.add("text-dark", "text-decoration-none", "text-break");
-  playerNameElement.classList.add("fs-4");
+  playerNameElement.classList.add("text-muted", "text-decoration-none", "text-break");
 
   playerNameElement.href = "/player_control_" + player.id + "/";
   playerNameElement.textContent = player.name;
@@ -101,9 +103,9 @@ function createPlayerNameElement(player) {
 
 function createBusinessesCountElement(player) {
   const businessesCountElement = document.createElement("div");
+
+  businessesCountElement.classList.add("player-info-business-element");
   businessesCountElement.classList.add("text-muted");
-  businessesCountElement.classList.add("h5");
-  // businessesCountElement.textContent = '🏦'.repeat(player.businesses.length);
 
   const defaultBusinesses = player.businesses
     .filter(business => business.status === "DEFOULT")
@@ -116,12 +118,15 @@ function createBusinessesCountElement(player) {
    .join('');
 
   businessesCountElement.textContent = defaultBusinesses + activeBusinesses;
+
+  businessesCountElement.textContent = '🏦'.repeat(10);
   return businessesCountElement;
 }
 
 function createBalanceElement(player) {
   const balanceElement = document.createElement("div");
-  balanceElement.classList.add("fs-3");
+
+  balanceElement.classList.add("player-info-balance-element");
   balanceElement.textContent = formatNumber(player.balance);
 
   if (player.balance < 0) {

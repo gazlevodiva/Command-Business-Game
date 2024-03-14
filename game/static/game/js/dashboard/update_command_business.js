@@ -15,14 +15,19 @@ async function updateCommandBusiness(commandBank, commandPlayers) {
     commandPlayers.forEach((commandPlayer) => {
       if (commandPlayer.count > 0) {
         var rowDiv = document.createElement("div");
-        rowDiv.className = "row mt-2 mb-2";
+        rowDiv.classList.add("row");
+        rowDiv.classList.add("mt-2");
+        rowDiv.classList.add("mb-2");
+        rowDiv.classList.add("player-info-command-card");
 
         var colNameDiv = document.createElement("div");
-        colNameDiv.className = "col-4 h5 text-break";
+        colNameDiv.classList.add("col-4");
+        colNameDiv.classList.add("text-muted");
+        colNameDiv.classList.add("player-info-name-element");
         colNameDiv.textContent = commandPlayer.name;
 
         var colShareDiv = document.createElement("div");
-        colShareDiv.className = "col-2 h5";
+        colShareDiv.classList.add("col-2");
         colShareDiv.textContent = commandPlayer.share + "%";
         if (commandPlayer.share < 1) {
           colShareDiv.textContent = "~1%";
@@ -31,8 +36,9 @@ async function updateCommandBusiness(commandBank, commandPlayers) {
         }
 
         var colBusinessDiv = document.createElement("div");
-        colBusinessDiv.className = "col-4 h5";
-        // colBusinessDiv.textContent = '🏦'.repeat(commandPlayer.businesses.length); // normal for 7 biz
+        // colBusinessDiv.classList.add("col-4");
+        colBusinessDiv.classList.add("text-muted");
+        colBusinessDiv.classList.add("player-info-business-element");
         const defaultBusinesses = commandPlayer.businesses
           .filter(business => business.status === "DEFOULT")
           .map(() => '🔥')
@@ -44,6 +50,7 @@ async function updateCommandBusiness(commandBank, commandPlayers) {
           .join('');
 
         colBusinessDiv.textContent = defaultBusinesses + activeBusinesses;
+        colBusinessDiv.textContent = '🏦'.repeat(10); // normal for 7 biz
 
         rowDiv.appendChild(colNameDiv);
         rowDiv.appendChild(colShareDiv);

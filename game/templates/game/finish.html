@@ -36,6 +36,8 @@
               </div>
             {% endfor %}
 
+            {% if player_info.player.name != "X" %}
+
             <button
               type="button"
               class="btn btn-outline-primary mt-3 p-2"
@@ -83,6 +85,8 @@
                 </div>
               </div>
             </div>
+
+            {% endif %}
           </div>
         </div>
       </div>
