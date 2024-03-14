@@ -8,6 +8,7 @@ from game.methods.BusinessMethods import setPersonalBusinessIncome
 
 from game.models.Moves import Moves
 from game.models.Actions import Actions
+from game.models.PlayersBusinessStatus import PlayersBusinessStatus
 
 
 def is_new_level(player):
@@ -71,19 +72,20 @@ def set_new_level(move):
 
     # 3 STEP - Count business income or outcome
     for player_business in getBusinesses(move.player):
-        if player_business.is_command:
+
+        status = player_business.latest_status
+
+        if player_business.is_command and status == "ACTIVE":
             business_actions = (
                 setCommandBusinessIncome(player_business, move)[3]
             )
-
             for business_action in business_actions:
                 actions.append(business_action)
 
-        if not player_business.is_command:
+        if not player_business.is_command and status == "ACTIVE":
             business_actions = (
                 setPersonalBusinessIncome(player_business, move)[3]
             )
-
             for business_action in business_actions:
                 actions.append(business_action)
 
