@@ -1,6 +1,6 @@
 from game.methods.dashboard_methods import get_players_data
 from game.methods.dashboard_methods import get_dashboard_actions
-from game.methods.dashboard_methods import get_command_players_data   
+from game.methods.dashboard_methods import get_command_players_data
 from game.methods.dashboard_methods import get_command_business_bank
 from game.methods.dashboard_methods import get_votion_from_last_move
 
@@ -35,7 +35,8 @@ def dashboard_online(request, session):
 @check_user_session_hash
 def dashboard(request, session):
     if session.online:
-        return render(request, "game/dashboard_online.html")
+        context = {"session_code": str(session.session_code)}
+        return render(request, "game/dashboard_online.html", context)
 
     if not session.online:
         return render(request, "game/dashboard.html")

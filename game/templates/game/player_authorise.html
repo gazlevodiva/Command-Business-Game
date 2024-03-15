@@ -25,16 +25,14 @@
             {% csrf_token %}
             <div class="form-floating mb-3">
               <input
-                type="text"
-                name="new_player_name"
+                type="number"
+                name="session_game_code"
                 class="form-control"
                 id="floatingInput"
-                placeholder="Например: Толик"
-                maxlength="9"
-                pattern="\S(.*\S)?"
+                maxlength="6"
                 required
               />
-              <label for="floatingInput">Введите имя нового игрока</label>
+              <label for="floatingInput">Введите код сессии</label>
             </div>
 
             <div class="d-grid">
@@ -44,7 +42,7 @@
             </div>
           </form>
 
-          <p class="text-center text-muted mt-4 mb-0">{{ session_name }}</p>
+          <p class="text-center text-muted mt-4 mb-0">{{ session.session_name }}</p>
         </div>
       </div>
     </div>

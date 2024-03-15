@@ -6,25 +6,21 @@ import hashlib
 
 
 class GameSessions(models.Model):
-    
     GAME_MODE_CATEGORY = (
         ('NORMAL', 'normal mode'),
         ('REALITY', 'reality mode'),
         ('HARDCORE', 'hardcore mode')
     )
 
-    session_name = models.CharField( max_length=100 )
-    session_hash = models.CharField( default="generated", max_length=10, unique=True )
-    session_code = models.IntegerField( default=1234 )
-    description  = models.CharField( default='', max_length=256  ) 
-
-    player_balance = models.IntegerField( default=60000 )
-    bank_balance   = models.IntegerField( default=200000 )
-
-    game_mode = models.CharField( max_length=9, choices=GAME_MODE_CATEGORY, default='NORMAL' )
-    online    = models.BooleanField( default=True )
-
-    created_date = models.DateTimeField( default=timezone.now )
+    session_name = models.CharField(max_length=100)
+    session_hash = models.CharField(default="generated", max_length=10, unique=True)
+    session_code = models.IntegerField(default=123456)
+    description  = models.CharField(default='', max_length=256)
+    player_balance = models.IntegerField(default=60000)
+    bank_balance   = models.IntegerField(default=200000)
+    game_mode = models.CharField(max_length=9, choices=GAME_MODE_CATEGORY, default='NORMAL')
+    online    = models.BooleanField(default=True)
+    created_date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.session_name
@@ -39,7 +35,7 @@ class GameSessions(models.Model):
             hash_hex = hash_object.hexdigest()
 
             self.session_hash = hash_hex[:10]
-            self.session_code = ''.join([str(random.randint(0, 9)) for _ in range(4)])
+            self.session_code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
 
             if self.game_mode == 'NORMAL':
                 self.player_balance = 60000
@@ -68,7 +64,7 @@ class GameSessions(models.Model):
             new_player = Player.objects.create(
                 name         = playerX_name,
                 icon         = "❌",
-                visible      = False, 
+                visible      = False,
                 game_session = self
             )
 

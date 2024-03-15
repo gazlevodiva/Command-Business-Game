@@ -122,6 +122,8 @@ investAllCheckbox2?.addEventListener("click", function () {
 // Sale Command Business Share
 const sale_share_50 = document.getElementById("sale-share-50");
 sale_share_50?.addEventListener("click", async function () {
+  sale_share_50.classList.add("disabled");
+  
   await sellCommandBusinessShare(50000);
   updatePlayerControlData();
 });
@@ -322,7 +324,7 @@ function createBusinessCardPlayerController(playerBusiness) {
     if(payment.count <= 0 ){
       paymentDiv.classList.add("text-danger");
     }
-    paymentDiv.textContent = `Круг ${payment.player_level}: рент. ${payment.rentability}% , ${payment.count};`;
+    paymentDiv.textContent = `Круг ${payment.player_level}: рент. ${payment.rentability}% ${formatNumber(payment.count)};`;
     cardHistoryDiv.appendChild(paymentDiv);
   });
 
