@@ -200,7 +200,7 @@ def set_go_to_start(move: Moves) -> Optional[Actions]:
             move_stage="CONTINUE",
             name="Переходит сразу на старт",
             category="OTHER",
-            visible=True,
+            visible=False,
             is_command=False,
             is_personal=True,
             is_public=True,

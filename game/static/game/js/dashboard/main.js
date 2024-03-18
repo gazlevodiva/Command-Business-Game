@@ -6,7 +6,7 @@ var isAnimating = false;
 
 window.onload = async function () {
   await updateOnlineDashboard();
-  setInterval(checkAndUpdateDashboard, 1000); 
+  setInterval(checkAndUpdateDashboard, 1000); //comment for debug
 }
 
 

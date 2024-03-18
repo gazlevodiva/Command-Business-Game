@@ -95,7 +95,7 @@ def setPersonalBusinessIncome(player_business, move):
     )
 
     name = (
-        f"Личный бизнес {player_business.business.name}, рент. {rentability}%"
+        f"ЛБ {player_business.business.name}, рент. {rentability}%"
     )
     payment_action = Actions.objects.create(
         move=move,
@@ -117,12 +117,16 @@ def setCommandBusinessIncome(player_business, move):
     defoult, rentability, profit, defoult_action = getBusinessProfit(
         player_business, move
     )
-    command_business_players = getCommandPlayers(player_business.player.game_session)
+    command_business_players = getCommandPlayers(
+        player_business.player.game_session
+    )
+    business = player_business.business
 
     # 20% after add to admin
     players_bank = int(profit * 0.8)
     admin_share = profit - players_bank
     admin_player = player_business.player
+
 
     payment_actions = []
     if defoult_action:
@@ -141,11 +145,11 @@ def setCommandBusinessIncome(player_business, move):
             # Count new shares. Admin +20%
             if command_player["move__player"] == admin_player:
                 count += admin_share
-                name = f"КБ {player_business.business.name}, рент. {rentability}%"
+                name = f"КБ {business.name}, рент. {rentability}%"
                 is_personal = True
                 is_public = True
             else:
-                name = f"Доход от КБ"
+                name = "Доход от КБ"
                 is_personal = True
                 is_public = False
 
@@ -161,7 +165,7 @@ def setCommandBusinessIncome(player_business, move):
             payment_actions.append(payment_action)
 
     if profit <= 0:
-        name = f"КБ {player_business.business.name}, рент. {rentability}%"
+        name = f"КБ {business.name}, рент. {rentability}%"
         payment_action = Actions.objects.create(
             move=move,
             name=name,

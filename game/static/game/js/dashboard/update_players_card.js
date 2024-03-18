@@ -70,11 +70,19 @@ async function updatePlayerCardOnGameTable(player) {
 }
 
 function createPlayerCard(player, newid='') {
+  
   const playerCellPosition = document.getElementById("cell-" + player.current_position);
+  const cellPlayers = playerCellPosition.querySelectorAll(".player-card");
   const newPlayerCard = document.createElement("div");
   newPlayerCard.textContent = player.icon;
   newPlayerCard.className = "player-card";
-  newPlayerCard.id = "player-" + player.id+newid;
+  newPlayerCard.id = "player-"+ player.id+newid;
+
+
+  var index_posible_list = [0, 1, 2, 3, 4, 5];
+  let index_occupied_list = [];
+  var player_index = index_posible_list.find(index => !index_occupied_list.includes(index));
+  newPlayerCard.setAttribute('data-index', player_index);
 
   playerCellPosition.appendChild(newPlayerCard);
   setNewPLayerCardPostionInCell(playerCellPosition, newPlayerCard);
@@ -82,15 +90,14 @@ function createPlayerCard(player, newid='') {
 }
 
 function setNewPLayerCardPostionInCell(cell, card) {
-  var players = cell.querySelectorAll(".player-card");
-  var player_index = players.length - 1;
+  var player_index = Number(card.getAttribute('data-index'));
   var rowIndex = Math.floor(player_index / 3);
   var columnIndex = player_index % 3;
 
-  var cellWidth = cell.clientWidth; // 125
-  var cellHeight = cell.clientHeight; // 125
-  var cardWidth = card.clientWidth; // 45
-  var cardHeight = card.clientHeight; // 45
+  var cellWidth = cell.clientWidth;
+  var cellHeight = cell.clientHeight;
+  var cardWidth = card.clientWidth;
+  var cardHeight = card.clientHeight;
 
   var randomX = (cellWidth / 3) * columnIndex + (cellWidth / 3 - cardWidth) / 2;
   var randomY = (cellHeight / 2) * rowIndex + (cellHeight / 2 - cardHeight) / 2;
@@ -98,7 +105,7 @@ function setNewPLayerCardPostionInCell(cell, card) {
   card.style.left = randomX + "px";
   card.style.top = randomY + "px";
 
-  return { randomX: randomX, randomY: randomY };
+  return {randomX: randomX, randomY: randomY, index: player_index};
 }
 
 function animateCard(card, animation) {
