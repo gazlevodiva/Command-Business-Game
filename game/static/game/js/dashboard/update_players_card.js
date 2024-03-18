@@ -81,6 +81,9 @@ function createPlayerCard(player, newid='') {
 
   var index_posible_list = [0, 1, 2, 3, 4, 5];
   let index_occupied_list = [];
+  cellPlayers.forEach((playerCard) => {
+    index_occupied_list.push(Number(playerCard.getAttribute('data-index')));
+  });
   var player_index = index_posible_list.find(index => !index_occupied_list.includes(index));
   newPlayerCard.setAttribute('data-index', player_index);
 
