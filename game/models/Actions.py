@@ -3,6 +3,7 @@ from django.utils import timezone
 
 from game.models.Moves import Moves
 
+
 class Actions(models.Model):
 
     ACTIONS_CATEGORY = (
@@ -31,17 +32,17 @@ class Actions(models.Model):
         ('END', 'end'),
         ('-', 'none'),
     )
-    
-    move         = models.ForeignKey( Moves, null=True, on_delete=models.CASCADE )
-    move_stage   = models.CharField( max_length=9, choices=MOVE_STAGE, default='CONTINUE', null=True )
-    name         = models.CharField( max_length=200 )
-    count        = models.IntegerField( default=0 )
-    category     = models.CharField( max_length=10, choices=ACTIONS_CATEGORY, default='OTHER' )
-    is_personal  = models.BooleanField( default=True )
-    is_public    = models.BooleanField( default=False )
-    is_command   = models.BooleanField( default=False )
-    visible      = models.BooleanField( default=True )
-    created_date = models.DateTimeField( default=timezone.now )
+
+    move = models.ForeignKey(Moves, null=True, on_delete=models.CASCADE)
+    move_stage = models.CharField(max_length=9, choices=MOVE_STAGE, default='CONTINUE', null=True)
+    name = models.CharField(max_length=200)
+    count = models.IntegerField(default=0)
+    category = models.CharField(max_length=10, choices=ACTIONS_CATEGORY, default='OTHER')
+    is_personal = models.BooleanField(default=True)
+    is_public = models.BooleanField(default=False)
+    is_command = models.BooleanField(default=False)
+    visible = models.BooleanField(default=True)
+    created_date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         if not self.move:

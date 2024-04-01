@@ -117,6 +117,12 @@ function createBusinessesCountElement(player) {
     .map(() => '🏦')
    .join('');
 
+  // List like -> ['🔥Kafe', 'Shop', ...]  
+  const businessNames = player.businesses.map(business => 
+    business.status === "DEFOULT" ? `🔥${business.name}` : business.name
+  );
+
+
   businessesCountElement.textContent = defaultBusinesses + activeBusinesses;
 
   // businessesCountElement.textContent = '🏦'.repeat(10);

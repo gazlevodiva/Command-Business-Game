@@ -36,25 +36,25 @@ GAME_FIELD = {
 
 def set_skip_move(move: Moves) -> Optional[Actions]:
     """
-    Creates an action indicating that the player 
+    Creates an action indicating that the player
     has decided to skip their turn.
 
-    This function is used when a player chooses 
+    This function is used when a player chooses
     not to make a move. It logs this decision
-    as an action with the specified attributes, 
+    as an action with the specified attributes,
     marking the move as skipped.
 
     Args:
     move (Moves): The move instance that is being skipped.
 
     Returns:
-    Optional[Actions]: The action instance created for the skipped move. 
+    Optional[Actions]: The action instance created for the skipped move.
     Returns None if the action creation fails due to an error.
     """
     try:
         action = Actions.objects.create(
             move=move,
-            name="Пропускает ход",
+            name="Пропустил ход",
             category="OTHER",
             is_command=False,
             is_personal=True,
@@ -101,8 +101,8 @@ def set_end_move(move: Moves) -> Optional[Actions]:
 
 def set_start_move(move: Moves) -> Optional[Actions]:
     """
-    Creates an action at the start of a move, indicating 
-    the player's position and whether it involves a 
+    Creates an action at the start of a move, indicating
+    the player's position and whether it involves a
     command based on the game field.
 
     Args:
@@ -118,7 +118,7 @@ def set_start_move(move: Moves) -> Optional[Actions]:
         action = Actions.objects.create(
             move=move,
             move_stage="START",
-            name=f"Переходит на {GAME_FIELD.get(move.position, 'undefined-cell')}",
+            name=f"Перешел на {GAME_FIELD.get(move.position, 'undefined-cell')}",
             category="POSITION",
             visible=False,
             is_command=is_command,
@@ -151,7 +151,7 @@ def set_dice_roll(move: Moves, value: str) -> Optional[Actions]:
             Actions.objects.create(
                 move=move,
                 move_stage="START",
-                name="Бросает кубик",
+                name="Бросил кубик",
                 category="DICE_VALUE",
                 visible=False,
                 is_command=False,
@@ -171,7 +171,7 @@ def set_dice_roll(move: Moves, value: str) -> Optional[Actions]:
                 is_public=True,
             )
             return value_action
-        
+
     except Exception as e:
         print(f"Error in set_dice_roll: {e}")
         return None
@@ -198,7 +198,7 @@ def set_go_to_start(move: Moves) -> Optional[Actions]:
         action = Actions.objects.create(
             move=move,
             move_stage="CONTINUE",
-            name="Переходит сразу на старт",
+            name="Перешел на старт",
             category="OTHER",
             visible=False,
             is_command=False,
@@ -256,7 +256,7 @@ def set_back_to_start(move: Moves) -> Optional[Actions]:
             set_end_move(new_move)
 
             return new_move
-        
+
     except Exception as e:
         print(f"Error in set_back_to_start: {e}")
         return None

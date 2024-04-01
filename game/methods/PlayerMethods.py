@@ -4,12 +4,17 @@ from django.db.models import Q, Sum, Subquery, OuterRef
 
 from game.models.Moves import Moves
 from game.models.Player import Player
+from game.models.Surprises import Surprises
 from game.models.Actions import Actions
 from game.models.MemoryAnswers import MemoryAnswers
 from game.models.PlayersBusiness import PlayersBusiness
 from game.models.CommandPayments import CommandPayments
 from game.models.PlayersBusinessStatus import PlayersBusinessStatus
 from game.methods.BusinessMethods import getBusinessPayments
+from game.methods.MoveMethods import set_end_move
+
+from typing import Optional
+from django.db import transaction
 
 
 SALARY = {
@@ -63,28 +68,16 @@ def getInflation(move):
         if player_balance > 0:
             count = -int(player_balance / 2)
 
-        name = f"📉 Инфляция"
-
         return Actions.objects.create(
             move=move,
-            name=name,
+            name="📉Инфляция",
             count=count,
             category="INFL",
             is_personal=True,
             is_public=True,
         )
 
-    name = "Инфляции нет"
-
-    return Actions.objects.create(
-        move=move,
-        name=name,
-        count=0,
-        category="OTHER",
-        is_personal=True,
-        is_public=False,
-        visible=False,
-    )
+    return None
 
 
 def getSalary(move):
@@ -96,7 +89,7 @@ def getSalary(move):
 
     return Actions.objects.create(
         move=move,
-        name="Зарплата",
+        name="Получил зарплату",
         count=salary,
         category="SLR",
         is_personal=True,
@@ -163,7 +156,7 @@ def getCommandBusinesses(player=None):
 
 def newBusiness(move, business, is_command):
     if is_command:
-        name = f"КБ. Стал администратором в {business.name}"
+        name = f"Стал администратором в КБ {business.name}"
 
         Actions.objects.create(
             move=move,
@@ -187,7 +180,7 @@ def newBusiness(move, business, is_command):
         )
 
     if not is_command:
-        name = f"Купил личный бизнес {business.name}"
+        name = f"Купил ЛБ {business.name}"
 
         Actions.objects.create(
             move=move,
@@ -210,6 +203,89 @@ def newBusiness(move, business, is_command):
         move=move,
         status="ACTIVE"
     )
+
+
+def sell_command_business(move: Moves, players_business: PlayersBusiness):
+    """
+    Executes a sell action for a player's business in the game.
+
+    This function is called when a player decides to sell their business.
+    It calculates the sell price of the business, logs the sale as an action,
+    and records the payment. This action and its details are logged
+    with the specified attributes, marking the business as sold.
+
+    Args:
+        move (Moves): The move instance associated with the selling action.
+        players_business (PlayersBusiness): The business that is being sold.
+    """
+    try:
+        with transaction.atomic():
+            sell_price = players_business.business.cost*0.95
+            name = f"Продал КБ {players_business.business.name}"
+
+            Actions.objects.create(
+                move=move,
+                move_stage="START",
+                count=0,
+                name=name,
+                category="SELL_BIS",
+                is_command=True,
+                is_personal=True,
+                is_public=True,
+            )
+
+            CommandPayments.objects.create(
+                count=sell_price,
+                category="SELL_BIS",
+                move=move
+            )
+
+            PlayersBusinessStatus.objects.create(
+                move=move,
+                players_business=players_business,
+                status="SOLD"
+            )
+
+    except Exception as e:
+        print(f"Error in sell_command_business: {e}")
+
+
+def sell_personal_business(move: Moves, players_business: PlayersBusiness):
+    """
+    Executes a sell action for a player's business in the game.
+
+    This function is called when a player decides to sell their business.
+    It calculates the sell price of the business, logs the sale as an action,
+    and records the payment. This action and its details are logged
+    with the specified attributes, marking the business as sold.
+
+    Args:
+        move (Moves): The move instance associated with the selling action.
+        players_business (PlayersBusiness): The business that is being sold.
+    """
+    try:
+        with transaction.atomic():
+            sell_price = players_business.business.cost*0.95
+            name = f"Продал ЛБ {players_business.business.name}"
+
+            Actions.objects.create(
+                move=move,
+                move_stage="START",
+                count=sell_price,
+                name=name,
+                category="SELL_BIS",
+                is_personal=True,
+                is_public=False,
+            )
+
+            PlayersBusinessStatus.objects.create(
+                move=move,
+                players_business=players_business,
+                status="SOLD"
+            )
+
+    except Exception as e:
+        print(f"Error in sell_personal_business: {e}")
 
 
 def PlayerXReinvest(move):
@@ -396,6 +472,119 @@ def firstInvestToCommandBusiness(move) -> bool:
         result = True
 
     return result
+
+
+def first_invest_to_cb(move: Moves, payment: int):
+    """
+    Executes a sell action for a player's business in the game.
+
+    This function is called when a player decides to sell their business.
+    It calculates the sell price of the business, logs the sale as an action,
+    and records the payment. This action and its details are logged
+    with the specified attributes, marking the business as sold.
+
+    Args:
+        move (Moves): The move instance associated with the selling action.
+        players_business (PlayersBusiness): The business that is being sold.
+    """
+    try:
+        with transaction.atomic():
+            CommandPayments.objects.create(
+                move=move,
+                category="DEPOSITE",
+                count=payment,
+            )
+
+            Actions.objects.create(
+                move=move,
+                category="CMND",
+                name="Вложил средства в КБ",
+                count=-payment,
+                is_command=True,
+                is_personal=True,
+                is_public=True,
+            )
+
+    except Exception as e:
+        print(f"Error in first_invest_to_cb: {e}")
+
+
+def invest_to_cb(move: Moves, payment: int):
+    """
+    Executes a sell action for a player's business in the game.
+
+    This function is called when a player decides to sell their business.
+    It calculates the sell price of the business, logs the sale as an action,
+    and records the payment. This action and its details are logged
+    with the specified attributes, marking the business as sold.
+
+    Args:
+        move (Moves): The move instance associated with the selling action.
+        players_business (PlayersBusiness): The business that is being sold.
+    """
+    try:
+        with transaction.atomic():
+            new_move = Moves.objects.create(
+                player=move.player, position=move.position
+            )
+
+            CommandPayments.objects.create(
+                move=new_move,
+                category="DEPOSITE",
+                count=payment,
+            )
+
+            Actions.objects.create(
+                move=new_move,
+                category="CMND",
+                name="Вложил средства в КБ",
+                count=-payment,
+                is_command=True,
+                is_personal=True,
+                is_public=True,
+            )
+
+            set_end_move(new_move)
+
+    except Exception as e:
+        print(f"Error in invest_to_cb: {e}")
+
+
+def set_memory_answer(move: Moves, memory: Surprises, answer: str):
+    """
+    Executes a sell action for a player's business in the game.
+
+    This function is called when a player decides to sell their business.
+    It calculates the sell price of the business, logs the sale as an action,
+    and records the payment. This action and its details are logged
+    with the specified attributes, marking the business as sold.
+
+    Args:
+        move (Moves): The move instance associated with the selling action.
+        players_business (PlayersBusiness): The business that is being sold.
+    """
+    try:
+        with transaction.atomic():
+            action = Actions.objects.create(
+                move=move,
+                move_stage="END",
+                name=memory.name,
+                count=0,
+                category="MEMO",
+                visible=False,
+                is_command=False,
+                is_personal=True,
+                is_public=False,
+            )
+
+            MemoryAnswers.objects.create(
+                action=action,
+                question=memory,
+                answer=answer,
+            )
+
+    except Exception as e:
+        print(f"Error in set_memory_answer: {e}")
 
 
 def get_player_categoties(player):

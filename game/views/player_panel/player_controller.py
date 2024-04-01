@@ -21,6 +21,9 @@ from game.methods.PlayerMethods import playerTurn
 from game.methods.PlayerMethods import isOpenCommandBusiness
 from game.methods.PlayerMethods import firstInvestToCommandBusiness
 from game.methods.PlayerMethods import get_business_card_info
+from game.methods.PlayerMethods import set_memory_answer
+from game.methods.PlayerMethods import first_invest_to_cb
+from game.methods.PlayerMethods import invest_to_cb
 
 from game.methods.BusinessMethods import getVotion
 from game.methods.BusinessMethods import playerIdForVotion
@@ -241,39 +244,16 @@ def player_control(request=None, session=None, player_id=None, modal=False):
 
     # Player Controller
     if request.method == "POST":
+
         if "player_command_payment" in request.POST:
-            # Count of command payment from POST form
-            payment = int(request.POST["player_command_payment"])
+            payment = request.POST["player_command_payment"]
             form_type = request.POST["form_type"]
 
             if form_type == "first_invest":
-                first_invest = True
-                new_move = last_move
+                first_invest_to_cb(last_move, int(payment))
 
             if form_type == "other_invest":
-                first_invest = False
-                new_move = Moves.objects.create(
-                    player=player, position=last_move.position
-                )
-
-            # Invest Money
-            CommandPayments.objects.create(
-                move=new_move,
-                category="DEPOSITE",
-                count=payment,
-            )
-            Actions.objects.create(
-                move=new_move,
-                category="CMND",
-                name="Вложил средства в КБ",
-                count=-payment,
-                is_command=True,
-                is_personal=True,
-                is_public=True,
-            )
-
-            if first_invest:
-                set_end_move(new_move)
+                invest_to_cb(last_move, int(payment))
 
         if "memory_answer" in request.POST:
             move_id = request.POST["move_id"]
@@ -281,31 +261,13 @@ def player_control(request=None, session=None, player_id=None, modal=False):
             memory_answer = request.POST["memory_answer"]
 
             move = Moves.objects.get(pk=move_id)
-            surprise = Surprises.objects.get(pk=memory_id)
+            memory = Surprises.objects.get(pk=memory_id)
 
-            action = Actions.objects.create(
-                move=move,
-                move_stage="END",
-                name=surprise.name,
-                count=0,
-                category="MEMO",
-                visible=False,
-                is_command=False,
-                is_personal=True,
-                is_public=False,
-            )
-
-            MemoryAnswers.objects.create(
-                action=action,
-                question=surprise,
-                answer=memory_answer,
-            )
+            set_memory_answer(move, memory, memory_answer)
 
         return redirect(f"/player_control_{player_id}/")
 
     context["is_open_command_business"] = isOpenCommandBusiness(player)
-
-    context["modal"] = modal
 
     if request is None:
         return context

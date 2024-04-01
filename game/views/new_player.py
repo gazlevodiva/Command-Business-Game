@@ -58,7 +58,7 @@ def new_player(request, session):
         Actions.objects.create(
             move=move,
             move_stage="END",
-            name="Начинает игру",
+            name="Начал игру",
             count=player_balance,
             category="GAMESTART",
             visible=True,

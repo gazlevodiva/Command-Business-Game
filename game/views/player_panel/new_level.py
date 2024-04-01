@@ -8,7 +8,6 @@ from game.methods.BusinessMethods import setPersonalBusinessIncome
 
 from game.models.Moves import Moves
 from game.models.Actions import Actions
-from game.models.PlayersBusinessStatus import PlayersBusinessStatus
 
 
 def is_new_level(player):
@@ -51,7 +50,7 @@ def set_new_level(move):
     Actions.objects.create(
         move=move,
         move_stage="CONTINUE",
-        name=f"Перешел на { move.player.level+1 } круг",
+        name=f"Перешел на {move.player.level+1} круг",
         count=0,
         category="NLWL",
         visible=True,
@@ -64,7 +63,8 @@ def set_new_level(move):
 
     # 1 STEP - Inflation probability
     inflation_action = getInflation(move)
-    actions.append(inflation_action)
+    if inflation_action:
+        actions.append(inflation_action)
 
     # 2 STEP - Get year salary
     salary_action = getSalary(move)

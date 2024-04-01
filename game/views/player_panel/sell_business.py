@@ -1,13 +1,12 @@
 from django.shortcuts import redirect
 
-
 from game.models.Moves import Moves
-from game.models.Actions import Actions
-from game.models.CommandPayments import CommandPayments
 from game.models.PlayersBusiness import PlayersBusiness
-from game.models.PlayersBusinessStatus import PlayersBusinessStatus
 
 from game.decorators import check_user_session_hash
+
+from game.methods.PlayerMethods import sell_personal_business
+from game.methods.PlayerMethods import sell_command_business
 
 
 @check_user_session_hash
@@ -18,46 +17,10 @@ def sell_business(request, session, player_business_id):
     last_move = Moves.objects.filter(player=player).last()
     move = Moves.objects.create(player=player, position=last_move.position)
 
-    # Minus 5% cost by sale
-    sold_business_price = players_business.business.cost*0.95
-
     if players_business.is_command:
-        name = f"Продал КБ {players_business.business.name}"
-
-        Actions.objects.create(
-            move=move,
-            move_stage="START",
-            count=0,
-            name=name,
-            category="SELL_BIS",
-            is_command=True,
-            is_personal=True,
-            is_public=True,
-        )
-
-        CommandPayments.objects.create(
-            count=sold_business_price,
-            category="SELL_BIS",
-            move=move
-        )
+        sell_command_business(move, players_business)
 
     if not players_business.is_command:
-        name = f"Продал личный бизнес {players_business.business.name}"
-
-        Actions.objects.create(
-            move=move,
-            move_stage="START",
-            count=sold_business_price,
-            name=name,
-            category="SELL_BIS",
-            is_personal=True,
-            is_public=False,
-        )
-
-    PlayersBusinessStatus.objects.create(
-        move=move, 
-        players_business=players_business, 
-        status="SOLD"
-    )
+        sell_personal_business(move, players_business)
 
     return redirect(f"/player_control_{ player.id }/")

@@ -304,13 +304,10 @@ async function updatePlayerControlData() {
 
 
 function createBusinessCardPlayerController(playerBusiness) {
-  // Get template
   const template = document.getElementById('business-card-template');
 
-  // Create copy
   const clone = document.importNode(template.content, true);
 
-  // Set data
   clone.querySelector('.card-header').textContent = playerBusiness.business.is_command ? 'Командный Бизнес 💰' : 'Личный бизнес';;
   clone.querySelector('.card-title').textContent = playerBusiness.business.name;
   clone.querySelector('.card-text').textContent = `Доход: от ${playerBusiness.business.min_rent}% до ${playerBusiness.business.max_rent}%`;

@@ -23,6 +23,8 @@ def get_dashboard_actions(session):
         .select_related('move', 'move__player')
     )
 
+    print(game_session_actions)
+
     new_level_actions_cache = {}
     business_payments_cache = {}
 
@@ -47,11 +49,11 @@ def get_dashboard_actions(session):
                 new_level_actions_cache[key] = total_count
             count = new_level_actions_cache[key]
 
-        elif action.category == "SURP" and action.is_command:
+        if action.category == "SURP" and action.is_command:
             command_payment = CommandPayments.objects.get(move=action.move)
             count = command_payment.count
 
-        elif action.category == "BSNS" and action.is_command:
+        if action.category == "BSNS" and action.is_command:
             percent_pattern = r"(-?\d+)%"
             match = re.search(percent_pattern, action.name)
 

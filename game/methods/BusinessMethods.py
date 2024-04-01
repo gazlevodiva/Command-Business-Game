@@ -23,11 +23,9 @@ def setDefoult(player_business, move):
             move=move,
         )
 
-        name = f"🔥КБ {business.name} - Дефолт"
-
         defoult_action = Actions.objects.create(
             move=move,
-            name=name,
+            name=f"🔥КБ {business.name}, дефолт",
             count=0,
             category="BSNS",
             is_command=True,
@@ -36,14 +34,12 @@ def setDefoult(player_business, move):
         )
 
     if not player_business.is_command:
-        name = f"Личный бизнес {business.name} - Дефолт"
-
         defoult_action = Actions.objects.create(
             move=move,
-            name=name,
+            name=f"🔥ЛБ {business.name}, дефолт",
             count=business_sale_price,
             category="BSNS",
-            visible=True,
+            is_command=False,
             is_personal=True,
             is_public=False,
         )
@@ -61,9 +57,6 @@ def setDefoult(player_business, move):
 def getBusinessProfit(player_business, move):
     # 1 STEP - Defoult Probability
     defoult_probability = randint(1, 16)
-    # defoult_probability = 1
-
-    # defoult_probability = 1
     if defoult_probability == 1:
         defoult_action = setDefoult(player_business, move)
         return (0, 0, 0, defoult_action)
@@ -82,7 +75,7 @@ def getBusinessProfit(player_business, move):
         count=profit,
         rentability=rentability,
         defoult_probability=defoult_probability,
-        player_level=player_business.player.level + 1,
+        player_level=player_business.player.level+1,
     )
 
     return (defoult_probability, rentability, profit, False)
@@ -93,13 +86,10 @@ def setPersonalBusinessIncome(player_business, move):
     defoult, rentability, profit, defoult_action = getBusinessProfit(
         player_business, move
     )
-
-    name = (
-        f"ЛБ {player_business.business.name}, рент. {rentability}%"
-    )
+    business_name = player_business.business.name
     payment_action = Actions.objects.create(
         move=move,
-        name=name,
+        name=f"ЛБ {business_name}, рент. {rentability}%",
         count=profit,
         category="BSNS",
         is_personal=True,
@@ -126,7 +116,6 @@ def setCommandBusinessIncome(player_business, move):
     players_bank = int(profit * 0.8)
     admin_share = profit - players_bank
     admin_player = player_business.player
-
 
     payment_actions = []
     if defoult_action:
@@ -233,11 +222,11 @@ def getCommandShare(player):
 def sellCommandShare(move, sell_count=None):
     share, count = getCommandShare(move.player)
 
-    name = f"Продал свою долю {share}% КБ за {count}"
+    count = sell_count
+    name = "Вывел средства из КБ"
 
-    if sell_count:
-        count = sell_count
-        name = "Вывел средства из КБ"
+    if not sell_count:
+        name = f"Продал свою долю {share}% КБ за {count}"
 
     Actions.objects.create(
         move=move,
@@ -494,7 +483,7 @@ def setNewVote(move, player, category):
             Actions.objects.create(
                 move=votion_move,
                 move_stage="END",
-                name=f"Стал администратором в {business.name}",
+                name=f"Стал администратором в КБ {business.name}",
                 is_command=True,
                 is_personal=True,
                 is_public=True,
@@ -518,7 +507,7 @@ def setNewVote(move, player, category):
             Actions.objects.create(
                 move=votion_move,
                 move_stage="END",
-                name="Не стал администратором",
+                name=f"Не стал администратором в КБ {business.name}",
                 is_command=True,
                 is_personal=True,
                 is_public=True,
