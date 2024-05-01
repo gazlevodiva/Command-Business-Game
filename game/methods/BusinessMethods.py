@@ -148,7 +148,8 @@ def setCommandBusinessIncome(player_business, move):
                 is_public = False
 
             # Update new action name
-            base_name += f", {command_player.name} {count}"
+            command_player_name = command_player["move__player"].name
+            base_name += f", {command_player_name} {count}"
 
             payment_action = Actions.objects.create(
                 move=new_move,
