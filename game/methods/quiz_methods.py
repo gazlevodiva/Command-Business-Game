@@ -18,7 +18,7 @@ from game.methods.MoveMethods import get_move_actions
 from django.db.models import QuerySet
 
 
-def get_or_set_quiz(move: Moves) -> dict:
+def get_or_set_quiz(move):
 
     # Get all move actions
     move_actions = get_move_actions(move)
@@ -81,7 +81,7 @@ def get_or_set_quiz(move: Moves) -> dict:
     return res
 
 
-def get_quiz(move_actions: QuerySet[Actions]):
+def get_quiz(move_actions):
     """
     Retrieves the quiz action and associated player
     quiz from a queryset of actions.
@@ -130,11 +130,7 @@ def get_quiz(move_actions: QuerySet[Actions]):
     return (quiz_action, player_quiz)
 
 
-def generate_quiz_questions(
-    businesses: List[Business],
-    quiz_action: Actions,
-    num_questions: int = 5
-) -> QuerySet[QuizQuestions]:
+def generate_quiz_questions(businesses, quiz_action, num_questions):
 
     used_questions = PlayerQuizQuestions.objects.filter(
         quiz__action__move__player=quiz_action.move.player
@@ -157,7 +153,7 @@ def generate_quiz_questions(
     return res
 
 
-def finish_player_quiz(player_quiz: PlayerQuiz):
+def finish_player_quiz(player_quiz):
     player_quiz.finished = True
     player_quiz.save()
 
@@ -165,7 +161,7 @@ def finish_player_quiz(player_quiz: PlayerQuiz):
     player_quiz.action.save()
 
 
-def can_create_quiz(actions: QuerySet[Actions]) -> bool:
+def can_create_quiz(actions):
     """
     Determines whether a new quiz can be created based
     on the following conditions:
@@ -198,7 +194,7 @@ def can_create_quiz(actions: QuerySet[Actions]) -> bool:
     return has_negative_business_actions and (unfinished_quiz_exists or not quiz_actions.exists())
 
 
-def get_business_info_for_quiz(actions: QuerySet[Actions]):
+def get_business_info_for_quiz(actions):
     # Get all business actions with negative rentability
     business_actions = actions.filter(category="BSNS", count__lt=0)
 
@@ -213,7 +209,7 @@ def get_business_info_for_quiz(actions: QuerySet[Actions]):
     return businesses, business_actions, business_payments
 
 
-def change_business_payment_by_quiz(actions: QuerySet[Actions]):
+def change_business_payment_by_quiz(actions):
 
     businesses, business_actions, business_payments = (
         get_business_info_for_quiz(actions)
