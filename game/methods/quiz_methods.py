@@ -81,7 +81,7 @@ def get_or_set_quiz(move: Moves) -> dict:
     return res
 
 
-def get_quiz(move_actions: QuerySet[Actions]) -> tuple:
+def get_quiz(move_actions: QuerySet[Actions]):
     """
     Retrieves the quiz action and associated player
     quiz from a queryset of actions.
