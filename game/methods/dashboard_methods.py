@@ -1,5 +1,6 @@
 from game.models.BusinessPayments import BusinessPayments
 from game.models.CommandPayments import CommandPayments
+from game.models.GameSessions import GameSessions
 from game.models.Actions import Actions
 from game.models.Player import Player
 from game.models.Moves import Moves
@@ -11,19 +12,109 @@ from game.methods.PlayerMethods import getBalance
 from game.methods.PlayerMethods import playerTurn
 from game.methods.PlayerMethods import getBusinesses
 
+from collections import defaultdict
 from django.db.models import Sum
 import re
 
 
-def get_dashboard_actions(session):
+def get_dashboard_actions(session: GameSessions) -> list:
     game_session_actions = (
         Actions.objects
         .filter(move__player__game_session=session)
-        .order_by("-created_date")
         .select_related('move', 'move__player')
+        .order_by("-move__number", "-created_date")
     )
 
-    print(game_session_actions)
+    # Create sorted dict like {move : [actions...], ...}
+    moves_actions = defaultdict(list)
+    for action in game_session_actions:
+        moves_actions[action.move.number].append(action)
+
+    # Generate total list of dashboard actions
+    game_actions = []
+    for move_number, actions in moves_actions.items():
+        visible_actions = [ac for ac in actions if ac.visible]
+
+        print(move_number, actions)
+
+        # Try to fing and get New Level action
+        new_level_action = next(
+            (ac for ac in actions if ac.category == "NLWL"),
+            None
+        )
+        if new_level_action:
+            total_count = sum([ac.count for ac in actions])
+            action_name = new_level_action.name
+
+            # Try to fing and get Inflation action in new level
+            inflation_action = next(
+                (ac for ac in actions if ac.category == "INFL"),
+                None
+            )
+            if inflation_action:
+                action_name = f"{new_level_action.name}. {inflation_action.name}"
+
+            game_actions.append({
+                "move_id": new_level_action.move.id,
+                "move_number": new_level_action.move.number,
+                "move_stage": new_level_action.move_stage,
+                "move_position": new_level_action.move.position,
+                "player_name": new_level_action.move.player.name,
+                "action_id": new_level_action.id,
+                "action_name": action_name,
+                "action_count": total_count,
+                "action_visible": new_level_action.visible,
+                "action_category": new_level_action.category,
+                "action_is_command": new_level_action.is_command,
+            })
+
+            # Try to fing and get Command Business action in new level
+            command_business_action = next(
+                (ac for ac in actions if ac.category == "BSNS" and ac.is_command),
+                None
+            )
+            if command_business_action:
+                print('-----', move_number, '-----', command_business_action)
+
+                payment_actions = (
+                    [ac for ac in actions if ac.is_command and ac.move.player.name != 'X']
+                )
+
+                print(payment_actions)
+
+                print('-------------------------------')
+
+        # Try to fing and get Command Surprise action
+        command_surprise_action = next(
+            (ac for ac in actions if ac.category == "SURP" and ac.is_command),
+            None
+        )
+        if command_surprise_action:
+            count = CommandPayments.objects.get(
+                move=command_surprise_action.move
+            ).count
+
+        if not new_level_action and not command_surprise_action:
+            for action in visible_actions:
+                game_actions.append({
+                    "move_id": action.move.id,
+                    "move_number": action.move.number,
+                    "move_stage": action.move_stage,
+                    "move_position": action.move.position,
+                    "player_name": action.move.player.name,
+                    "action_id": action.id,
+                    "action_name": action.name,
+                    "action_count": action.count,
+                    "action_visible": action.visible,
+                    "action_category": action.category,
+                    "action_is_command": action.is_command,
+                })
+
+    # Check results
+    for x in game_actions:
+        print(x['move_number'], x['player_name'], x['action_name'], x['action_count'])
+
+    # ////////////////////////////////////
 
     new_level_actions_cache = {}
     business_payments_cache = {}
@@ -32,12 +123,13 @@ def get_dashboard_actions(session):
     for action in game_session_actions:
         count = action.count
 
+        # New level - just total count
         if action.category == "NLWL":
             key = (action.move.number, action.move.player.id)
+
             if key not in new_level_actions_cache:
                 total_count = (
-                    Actions.objects
-                    .filter(
+                    Actions.objects.filter(
                         move__number=action.move.number,
                         move__player=action.move.player,
                         visible=True,
@@ -49,10 +141,12 @@ def get_dashboard_actions(session):
                 new_level_actions_cache[key] = total_count
             count = new_level_actions_cache[key]
 
+        # Command Surprise
         if action.category == "SURP" and action.is_command:
             command_payment = CommandPayments.objects.get(move=action.move)
             count = command_payment.count
 
+        # Command Business income
         if action.category == "BSNS" and action.is_command:
             percent_pattern = r"(-?\d+)%"
             match = re.search(percent_pattern, action.name)

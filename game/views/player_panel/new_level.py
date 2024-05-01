@@ -8,6 +8,7 @@ from game.methods.BusinessMethods import setPersonalBusinessIncome
 
 from game.models.Moves import Moves
 from game.models.Actions import Actions
+from game.methods.quiz_methods import can_create_quiz
 
 
 def is_new_level(player):
@@ -30,6 +31,7 @@ def is_new_level(player):
     result = {
         "income": 0,
         "actions": [],
+        "can_create_quiz": can_create_quiz(player_last_actions)
     }
 
     for action in player_last_actions.filter(visible=True):
@@ -37,6 +39,7 @@ def is_new_level(player):
             result["actions"].append(
                 {
                     "name": action.name,
+                    "category": action.category,
                     "count": action.count,
                 }
             )

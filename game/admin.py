@@ -1,5 +1,9 @@
 from django.contrib import admin
 
+from game.models.Quiz import QuizQuestions
+from game.models.Quiz import QuizAnswers
+from game.models.PlayerQuiz import PlayerQuiz
+from game.models.PlayerQuiz import PlayerQuizQuestions
 from game.models.Moves import Moves
 from game.models.Player import Player
 from game.models.Actions import Actions
@@ -11,6 +15,70 @@ from game.models.PlayersBusiness import PlayersBusiness
 from game.models.PlayersBusinessStatus import PlayersBusinessStatus
 from game.models.CommandPayments import CommandPayments
 from game.models.BusinessPayments import BusinessPayments
+
+
+class QuizAnswersInline(admin.TabularInline):
+    model = QuizAnswers
+    extra = 1
+
+
+class QuizQuestionsAdmin(admin.ModelAdmin):
+    list_display = ("business", "name")
+    list_filter = ("business",)
+    inlines = [QuizAnswersInline]
+
+
+admin.site.register(QuizQuestions, QuizQuestionsAdmin)
+
+
+class GameSessionFilter(admin.SimpleListFilter):
+    title = 'game session'
+    parameter_name = 'game_session'
+
+    def lookups(self, request, model_admin):
+        sessions = GameSessions.objects.all()
+        return [(session.pk, session) for session in sessions]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(action__move__player__game_session__pk=self.value())
+
+
+class PlayerFilter(admin.SimpleListFilter):
+    title = 'player'
+    parameter_name = 'player'
+
+    def lookups(self, request, model_admin):
+        if 'game_session' in request.GET:
+            players = Player.objects.filter(game_session__pk=request.GET['game_session'])
+        else:
+            players = Player.objects.all()
+        return [(player.pk, player) for player in players]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(player__pk=self.value())
+
+
+class PlayerQuizQuestionsInline(admin.TabularInline):
+    model = PlayerQuizQuestions
+    extra = 1
+    fk_name = 'quiz'
+
+
+class PlayerQuizAdmin(admin.ModelAdmin):
+    inlines = [
+        PlayerQuizQuestionsInline,
+    ]
+    list_display = ('id', 'action', 'finished', 'created_at')
+    search_fields = ['id', 'action__name']
+    list_filter = (GameSessionFilter, PlayerFilter, 'finished', 'created_at')
+
+
+admin.site.register(PlayerQuiz, PlayerQuizAdmin)
+
+
+# //////////////////////////////////////////////////
 
 
 class GameSessionsAdmin(admin.ModelAdmin):
@@ -53,7 +121,7 @@ class SurprisesAdmin(admin.ModelAdmin):
 admin.site.register(Surprises, SurprisesAdmin)
 
 
-#################################################################################
+##########################################################
 
 
 # Filter for MovesAdmin
@@ -105,7 +173,7 @@ class MovesAdmin(admin.ModelAdmin):
 admin.site.register(Moves, MovesAdmin)
 
 
-#################################################################################
+#########################################################
 
 
 # Filter for ActionsAdmin

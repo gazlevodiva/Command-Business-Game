@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Business(models.Model):
-    
+
     BUSINESS_CATEGORY = (
         ('HORECA', 'horeca'),
         ('REALTY', 'realty'),

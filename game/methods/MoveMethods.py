@@ -260,3 +260,12 @@ def set_back_to_start(move: Moves) -> Optional[Actions]:
     except Exception as e:
         print(f"Error in set_back_to_start: {e}")
         return None
+
+
+def get_move_actions(move: Moves) -> Optional[Actions]:
+    return Actions.objects.filter(
+        move__player__game_session=move.player.game_session,
+    ).filter(
+        move__number=move.number,
+        move__player=move.player,
+    )

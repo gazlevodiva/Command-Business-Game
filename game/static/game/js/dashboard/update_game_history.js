@@ -56,6 +56,7 @@ async function updateGameHistory(gameActions, votion) {
 
   // Set-up end flag
   let actionIndex = 0;
+  let lastActionPlayerName = "";
   gameActions.forEach((action) => {
 
     // Counter flag for 6 actions
@@ -76,7 +77,11 @@ async function updateGameHistory(gameActions, votion) {
       }
 
       var playerName = document.createElement("b");
-      playerName.textContent = action.move_number + ' - ' + action.player_name + ": ";
+      if(lastActionPlayerName != action.player_name){
+        playerName.textContent = action.player_name + ": ";
+        lastActionPlayerName = action.player_name;
+      }
+      
       actionDiv.appendChild(playerName);
 
       var actionText = document.createElement("span");

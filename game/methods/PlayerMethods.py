@@ -147,6 +147,7 @@ def get_business_card_info(player):
             }
         )
 
+    business_card_info.sort(key=lambda x: x['business']['status'] == 'DEFOULT')
     return business_card_info
 
 
@@ -505,6 +506,8 @@ def first_invest_to_cb(move: Moves, payment: int):
                 is_public=True,
             )
 
+            set_end_move(move)
+
     except Exception as e:
         print(f"Error in first_invest_to_cb: {e}")
 
@@ -543,8 +546,6 @@ def invest_to_cb(move: Moves, payment: int):
                 is_personal=True,
                 is_public=True,
             )
-
-            set_end_move(new_move)
 
     except Exception as e:
         print(f"Error in invest_to_cb: {e}")

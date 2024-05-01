@@ -24,6 +24,7 @@ const playerTurnPreloaderText = document.getElementById(
 );
 
 // Modals
+const quiz_modal = document.getElementById("quizModal");
 const new_level_modal = document.getElementById("newLevelModal");
 const surprise_modal = document.getElementById("surpriseModal");
 const memory_modal = document.getElementById("memoryModal");
@@ -104,6 +105,64 @@ selector_business_category?.addEventListener("change", async function () {
 });
 
 
+const quiz_btn = document.getElementById("quiz_btn");
+quiz_btn?.addEventListener("click", async function () {
+  await getQuiz(playerIdGlobal);
+  showModal(quiz_modal);
+});
+
+async function getQuiz(player_id) {
+  try {
+    const response = await fetch(`/quiz/${player_id}`);
+    const data = await response.json();
+
+    // console.log(data)
+
+    document.getElementById('player_quiz_id').value = data.quiz.player_quiz_id;
+
+    const container = document.getElementById('quiz_questions_container');
+    container.innerHTML = ''; 
+
+    data.quiz.quiz_questions.forEach(question => {
+      const questionBlock = document.createElement('div');
+      questionBlock.className = 'mb-3';
+      
+      const questionLabel = document.createElement('label');
+      questionLabel.className = 'form-label';
+      questionLabel.textContent = question.question_text;
+      questionBlock.appendChild(questionLabel);
+
+      question.answers.forEach(answer => {
+        const answerInput = document.createElement('input');
+        answerInput.type = 'radio';
+        answerInput.name = `question_${question.question_id}`;
+        answerInput.value = answer.id;
+        answerInput.className = 'form-check-input';
+        answerInput.required = true;
+
+        const answerLabel = document.createElement('label');
+        answerLabel.className = 'form-check-label';
+        answerLabel.textContent = answer.name;
+
+        const answerDiv = document.createElement('div');
+        answerDiv.className = 'form-check';
+        answerDiv.appendChild(answerInput);
+        answerDiv.appendChild(answerLabel);
+        
+        questionBlock.appendChild(answerDiv);
+      });
+
+      container.appendChild(questionBlock);
+    });
+
+    return data;
+
+  } catch (error) {
+    console.error("getQuiz error:", error);
+  }
+}
+
+
 const investAllCheckbox = document.getElementById("invest_all");
 const commandInvestInput = document.getElementById("command_invest");
 
@@ -154,18 +213,14 @@ async function sellCommandBusinessShare(count){
 
 const make_a_move_button = document.getElementById("rollButton");
 make_a_move_button?.addEventListener("click", async function () {
-
-  // commandBusinessButton.classList.add('disabled');
-  // make_a_move_button.classList.add('disabled');
-
   disableActionButtons(true);
-
-  rollTheDice();
+  await rollTheDice();
 });
 
 
 window.onload = function () {
   business_btn.hidden = true;
+  quiz_btn.hidden = true;
 
   whoisTurnPreloader();
 
@@ -483,6 +538,13 @@ async function moveReaction(data) {
       showModal(start_modal);
 
       await updatePlayerControlData();
+
+      // Check business income for quiz ????????????????????????????????????????????????????
+      if (data.is_new_level.can_create_quiz) {
+        const startText = document.getElementById("startBodyText");
+        startText.innerText = "Вы перешли на новый круг, но некоторые бизнесы понесли убытки.\nПопробуйте улучшить результаты, сыграв в викторину! 🏆"
+        quiz_btn.hidden = false;
+      }
 
       var income = data.is_new_level.income;
       var actions = data.is_new_level.actions;

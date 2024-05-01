@@ -7,6 +7,7 @@ from game.views.player_panel import buy_business
 from game.views.player_panel import sell_share
 from game.views.player_panel import whoisturn
 from game.views.player_panel import surprise
+from game.views.player_panel import quiz
 from game.views.player_panel import make_move
 from game.views import rules
 
@@ -154,5 +155,10 @@ urlpatterns = [
         route="get_votion_data/<int:move_id>/",
         view=voting.get_votion_data,
         name="get_votion_data",
+    ),
+    path(
+        route="quiz/<int:player_id>/",
+        view=quiz.get_quiz,
+        name="quiz_set_or_get",
     ),
 ]

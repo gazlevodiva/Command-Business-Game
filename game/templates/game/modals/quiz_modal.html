@@ -1,0 +1,21 @@
+<div class="modal fade" id="quizModal" tabindex="-1" aria-labelledby="quizModalLabel" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 lead" id="quizModalLabel">Викторина</h1>
+      </div>
+      <div class="modal-body">
+        <form method="POST" id="player_quiz_form">
+          {% csrf_token %}
+          <input type="hidden" id="player_id" name="player_id" value="{{ player.id }}">
+          <input type="hidden" id="form_type" name="form_type" value="player_quiz_form">
+          <input type="hidden" id="player_quiz_id" name="player_quiz_id" value="">
+          <div id="quiz_questions_container"></div>
+          <div class="modal-footer">
+            <button class="btn btn-danger" type="submit">Ответить</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

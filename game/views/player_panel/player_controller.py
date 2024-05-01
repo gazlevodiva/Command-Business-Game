@@ -8,12 +8,17 @@ from game.models.Moves import Moves
 from game.models.Player import Player
 from game.models.Actions import Actions
 from game.models.Surprises import Surprises
-from game.models.MemoryAnswers import MemoryAnswers
 from game.models.CommandPayments import CommandPayments
+from game.models.Quiz import QuizQuestions, QuizAnswers
+from game.models.PlayerQuiz import PlayerQuizQuestions, PlayerQuiz
+
+from game.methods.quiz_methods import finish_player_quiz
+from game.methods.quiz_methods import change_business_payment_by_quiz
 
 from game.methods.MoveMethods import set_go_to_start
 from game.methods.MoveMethods import set_back_to_start
 from game.methods.MoveMethods import set_end_move
+from game.methods.MoveMethods import get_move_actions
 
 from game.methods.PlayerMethods import getBalance
 from game.methods.PlayerMethods import getBusinesses
@@ -34,6 +39,7 @@ from game.methods.BusinessMethods import getBusinessPayments
 from game.decorators import check_user_session_hash
 
 from .new_level import is_new_level
+
 
 GAME_FIELD = {
     1: "start-cell",
@@ -122,6 +128,7 @@ def player_control_data(request, session, player_id):
     context["move_stage"] = player_last_action.move_stage
     context["cell_name"] = GAME_FIELD[player_move.position]
     context["cell_position"] = player_move.position
+    context["type"] = "player_control_data"
 
     # Vote for buy command business
     if player.id in playerIdForVotion(player.game_session):
@@ -143,6 +150,9 @@ def player_control_data(request, session, player_id):
         context["action_count"] = player_last_action.count
         context["action_category"] = player_last_action.category
 
+    # Quiz
+    context["player_controller_quiz"] = False
+
     # Memory
     if player_last_action.category == "MEMO":
         memories = Surprises.objects.filter(name=player_last_action.name)
@@ -158,7 +168,9 @@ def player_control_data(request, session, player_id):
 
     # Command surprise
     if player_last_action.category == "SURP" and player_last_action.is_command:
-        context["action_count"] = CommandPayments.objects.get(move=player_move).count
+        context["action_count"] = CommandPayments.objects.get(
+            move=player_move
+        ).count
 
     # If player drop the dice
     if player_actions.filter(category="DICE_VALUE").exists():
@@ -205,6 +217,7 @@ def player_control(request=None, session=None, player_id=None, modal=False):
     context["player"] = player
 
     last_move = Moves.objects.filter(player=player).last()
+
     context["move"] = last_move
     context["current_player_position"] = last_move.position
 
@@ -241,6 +254,7 @@ def player_control(request=None, session=None, player_id=None, modal=False):
     context["command_share"] = share
     context["command_count"] = count
     context["command_bank"] = bank
+    context["type"] = "player_control"
 
     # Player Controller
     if request.method == "POST":
@@ -264,6 +278,50 @@ def player_control(request=None, session=None, player_id=None, modal=False):
             memory = Surprises.objects.get(pk=memory_id)
 
             set_memory_answer(move, memory, memory_answer)
+
+        if request.POST.get('form_type') == 'player_quiz_form':
+
+            player_quiz_id = request.POST.get('player_quiz_id')
+            player_quiz = PlayerQuiz.objects.get(pk=player_quiz_id)
+            player_quiz_questions = PlayerQuizQuestions.objects.filter(
+                quiz=player_quiz
+            )
+
+            answers_count = 0
+            correct_answers_count = 0
+            for key, value in request.POST.items():
+
+                if key.startswith('question_'):
+                    question_id = key.split('_')[1]
+                    answer_id = value
+
+                    try:
+                        question = QuizQuestions.objects.get(id=question_id)
+                        answer = QuizAnswers.objects.get(id=answer_id)
+
+                        for player_question in player_quiz_questions:
+                            if player_question.question == question:
+                                player_question.answer = answer
+                                player_question.save()
+
+                        if answer.is_correct:
+                            correct_answers_count += 1
+                        answers_count += 1
+
+                    except QuizQuestions.DoesNotExist:
+                        print("Вопрос не найден")
+                    except QuizAnswers.DoesNotExist:
+                        print("Ответ не найден")
+
+            print(f"Верных ответов {correct_answers_count} из {answers_count}")
+
+            # If correct
+            if correct_answers_count >= answers_count-correct_answers_count:
+                move_actions = get_move_actions(player_quiz.action.move)
+                change_business_payment_by_quiz(move_actions)
+
+            # Finish Quiz. Change quiz action text & player_quiz status
+            finish_player_quiz(player_quiz=player_quiz)
 
         return redirect(f"/player_control_{player_id}/")
 

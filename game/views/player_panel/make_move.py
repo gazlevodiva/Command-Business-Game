@@ -2,6 +2,7 @@ from django.http import JsonResponse
 
 from game.models.Moves import Moves
 from game.models.Player import Player
+from game.models.PlayerQuiz import PlayerQuiz
 from game.models.CommandPayments import CommandPayments
 
 from game.methods.MoveMethods import set_skip_move
@@ -121,7 +122,11 @@ def player_move(request, session, player_id, dice_value):
     # For create a new level action with new move, not old
     if is_newlevel:
         set_new_level(move)
-        context["is_new_level"] = is_new_level(player)
+        new_level_actions = is_new_level(player)
+        context["is_new_level"] = new_level_actions
+
+        # 1. Check business less then 0
+        # context["quiz"] = can_create_quiz(new_level_actions.actions)
 
     if not is_newlevel:
         context["is_new_level"] = []

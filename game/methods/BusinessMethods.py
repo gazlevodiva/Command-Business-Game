@@ -2,6 +2,9 @@ from random import randint
 
 from django.db.models import Sum
 
+from typing import Optional
+import re
+
 from game.models.Moves import Moves
 from game.models.Player import Player
 from game.models.Actions import Actions
@@ -121,6 +124,8 @@ def setCommandBusinessIncome(player_business, move):
     if defoult_action:
         payment_actions.append(defoult_action)
 
+    base_name = f"КБ {business.name}, рент. {rentability}%"
+
     if profit > 0:
         for command_player in command_business_players:
             # Players profit
@@ -142,9 +147,12 @@ def setCommandBusinessIncome(player_business, move):
                 is_personal = True
                 is_public = False
 
+            # Update new action name
+            base_name += f", {command_player.name} {count}"
+
             payment_action = Actions.objects.create(
                 move=new_move,
-                name=name,
+                name=base_name,
                 count=count,
                 category="BSNS",
                 is_command=True,
@@ -540,3 +548,47 @@ def player_id_for_votion(game_session):
         if player["move__player"].visible
     ]
     return players
+
+
+def get_business_payment_by_action(
+    action: Actions
+) -> Optional[BusinessPayments]:
+    """
+    Retrieves a BusinessPayments object based on a given
+    action if it meets specific criteria.
+
+    Parameters:
+    action (Action): The Action object for which a related
+    BusinessPayments object needs to be found.
+
+    Returns:
+    Optional[BusinessPayments]: A BusinessPayments object if found,
+    otherwise None.
+
+    Description:
+    This function checks if the given action falls under the 'BSNS'
+    category and is a command action. It then searches for a percentage
+    value within the action's name using a regular expression. If
+    a percentage is found, it attempts to retrieve a BusinessPayments
+    object that matches the action's move player, move number, and
+    the found percentage of profitability. The function returns
+    the first matching BusinessPayments object if it exists;
+    otherwise, it returns None.
+    """
+
+    if action.category == "BSNS":
+        percent_pattern = r"(-?\d+)%"
+        match = re.search(percent_pattern, action.name)
+
+        if match:
+            percent = int(match.group(1))
+            business_payment_query = BusinessPayments.objects.filter(
+                move__player=action.move.player,
+                move__number=action.move.number,
+                rentability=percent
+            )
+
+            if business_payment_query.exists():
+                return business_payment_query.first()
+
+    return None

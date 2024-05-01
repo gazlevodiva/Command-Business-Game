@@ -24,6 +24,7 @@ class Actions(models.Model):
         ('START_VOTE', 'start vote'),
         ('VOTE_FOR', 'vote for'),
         ('VOTE_AGN', 'vote against'),
+        ('QUIZ', 'quiz'),
     )
 
     MOVE_STAGE = (
@@ -33,7 +34,7 @@ class Actions(models.Model):
         ('-', 'none'),
     )
 
-    move = models.ForeignKey(Moves, null=True, on_delete=models.CASCADE)
+    move = models.ForeignKey(Moves, null=True, on_delete=models.CASCADE) 
     move_stage = models.CharField(max_length=9, choices=MOVE_STAGE, default='CONTINUE', null=True)
     name = models.CharField(max_length=200)
     count = models.IntegerField(default=0)
