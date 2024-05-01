@@ -124,22 +124,33 @@ def setCommandBusinessIncome(player_business, move):
     if defoult_action:
         payment_actions.append(defoult_action)
 
+    # Main action name for command Business Admin
     base_name = f"КБ {business.name}, рент. {rentability}%"
 
     if profit > 0:
+
+        all_players_info = ""
         for command_player in command_business_players:
+            share_count = int(players_bank * command_player["share"] / 100)
+            player_name = command_player["move__player"].name
+            if command_player["move__player"].visible:
+                all_players_info += f", {player_name} {share_count}"
+
+        for command_player in command_business_players:
+
             # Players profit
             count = int(players_bank * command_player["share"] / 100)
 
             # Create move for every command player
             new_move = Moves.objects.create(
-                player=command_player["move__player"], number=move.number
+                player=command_player["move__player"],
+                number=move.number
             )
 
             # Count new shares. Admin +20%
             if command_player["move__player"] == admin_player:
                 count += admin_share
-                name = f"КБ {business.name}, рент. {rentability}%"
+                name = base_name + all_players_info
                 is_personal = True
                 is_public = True
             else:
@@ -147,13 +158,9 @@ def setCommandBusinessIncome(player_business, move):
                 is_personal = True
                 is_public = False
 
-            # Update new action name
-            command_player_name = command_player["move__player"].name
-            base_name += f", {command_player_name} {count}"
-
             payment_action = Actions.objects.create(
                 move=new_move,
-                name=base_name,
+                name=name,
                 count=count,
                 category="BSNS",
                 is_command=True,
