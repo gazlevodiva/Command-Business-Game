@@ -21,6 +21,7 @@ def get_dashboard_actions(session: GameSessions) -> list:
     game_session_actions = (
         Actions.objects
         .filter(move__player__game_session=session)
+        .filter(is_public=True)
         .select_related('move', 'move__player')
         .order_by("-move__number", "-created_date")
     )

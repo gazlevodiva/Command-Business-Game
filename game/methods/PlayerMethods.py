@@ -589,7 +589,21 @@ def set_memory_answer(move: Moves, memory: Surprises, answer: str):
 
 
 def get_player_categoties(player):
-    player_businesses = getBusinesses(player)
+    player_businesses = (
+        PlayersBusiness.objects
+        .annotate(
+            latest_status=Subquery(
+                PlayersBusinessStatus.objects
+                .filter(players_business=OuterRef("pk"))
+                .order_by("-move")
+                .values("status")[:1]
+            )
+        )
+        .filter(
+            Q(player=player) &
+            Q(latest_status="ACTIVE")
+        )
+    )
 
     categories = ["PERSONAL"]
     for player_business in player_businesses:
