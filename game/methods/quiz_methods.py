@@ -164,7 +164,7 @@ def can_create_quiz(actions):
 
     """
     # Check for any business actions with negative counts
-    has_negative_business_actions = actions.filter(
+    have_negative_business_actions = actions.filter(
         category="BSNS",
         count__lt=0
     ).exists()
@@ -172,20 +172,18 @@ def can_create_quiz(actions):
     # Retrieve all quiz actions and check if there's an
     # unfinished PlayerQuiz associated with any
     quiz_actions = actions.filter(category="QUIZ")
-    if not quiz_actions.exists():
-        return True, False
+    have_quiz_actions = quiz_actions.exists()
 
-    quizes = PlayerQuiz.objects.filter(
-        action__in=quiz_actions,
-    )
-    unfinished_quiz_exists = quizes.filter(finished=False).exists()
+    quizes = PlayerQuiz.objects.filter(action__in=quiz_actions)
+    have_unfinished_quiz = quizes.filter(finished=False).exists()
 
     # Return True if there are negative business actions and
     # no unfinished quizzes, otherwise False
-    return (
-        (has_negative_business_actions and unfinished_quiz_exists),
-        unfinished_quiz_exists
-    )
+    can_create_quiz = have_negative_business_actions and not have_quiz_actions
+
+    is_active_quiz = quizes.exists() and have_unfinished_quiz
+
+    return can_create_quiz, is_active_quiz
 
 
 def get_business_info_for_quiz(actions):

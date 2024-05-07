@@ -530,8 +530,6 @@ async function moveReaction(data) {
   // await updatePlayerControlData();
   playerMoveIdGlobal = data.move_id;
 
-  console.log(data)
-
   if (data.next_cell) {
     playerNextCellGlobal = data.next_cell_move;    
   }
@@ -544,80 +542,82 @@ async function moveReaction(data) {
     }
   }
 
-  if (data.is_new_level.active_quiz) {
-    updateQuizModal(data.is_new_level.active_quiz);
-    showModal(quiz_modal);
-    return;
-  }
-
-  if (data.is_new_level.can_create_quiz) {
-    const startText = document.getElementById("startBodyText");
-    startText.innerText = `Вы перешли на новый круг, но некоторые бизнесы понесли убытки.\n
-    Попробуйте улучшить результаты, сыграв в викторину! 🏆
-    `
-    quiz_btn.hidden = false;
-  }
-
-  if (data.is_new_level.quiz_result) {
-    const startText = document.getElementById("startBodyText");
-    quiz_result_btn.hidden = false;
-
-    const quizResults = data.is_new_level.quiz_result.quiz_result;
-    const resultsContainer = document.createElement('div');
-    resultsContainer.classList.add('text-start');
-    resultsContainer.classList.add('mt-3');
-    resultsContainer.id = "quiz-container"
-    resultsContainer.style.display = 'none';
-
-    var positive_answers_count = 0;
-    var negative_answers_count = 0;
-
-    quizResults.forEach(questionData => {
-        const questionElement = document.createElement('div');
-        questionElement.classList.add('question');
-
-        const questionTitle = document.createElement('h5');
-        questionTitle.textContent = questionData.question.name;
-        questionElement.appendChild(questionTitle);
-
-        const answersList = document.createElement('ul');
-
-        questionData.question_answers.forEach(answer => {
-            const answerItem = document.createElement('li');
-            answerItem.textContent = answer.name;
-
-            if (questionData.player_answer.id === answer.id) {
-                answerItem.style.color = answer.is_correct ? 'green' : 'red';
-            }
-
-            if (answer.is_correct && questionData.player_answer.id !== answer.id) {
-                answerItem.style.color = 'green';
-            }
-
-            answersList.appendChild(answerItem);
-        });
-
-        questionElement.appendChild(answersList);
-        resultsContainer.appendChild(questionElement);
-
-        if (questionData.player_answer.is_correct){
-          positive_answers_count +=1
-        } else {
-          negative_answers_count +=1
-        }
-
-    });
-
-    if(positive_answers_count >= negative_answers_count){
-      startText.innerText = `Вы смогли ответить правильно на большинство вопросов, результаты будут исправлены🏆`
-    } else {
-      startText.innerText = `Вы не смогли улучшить результаты (`
+  if (data.is_new_level){
+    if (data.is_new_level.active_quiz) {
+      updateQuizModal(data.is_new_level.active_quiz);
+      showModal(quiz_modal);
+      return;
     }
-
-    if (startText.nextSibling) {
-        startText.parentNode.insertBefore(resultsContainer, startText.nextSibling);
-    } else {
-        startText.parentNode.appendChild(resultsContainer);
+  
+    if (data.is_new_level.can_create_quiz) {
+      const startText = document.getElementById("startBodyText");
+      startText.innerText = `Вы перешли на новый круг, но некоторые бизнесы понесли убытки.\n
+      Попробуйте улучшить результаты, сыграв в викторину! 🏆
+      `
+      quiz_btn.hidden = false;
+    }
+  
+    if (data.is_new_level.quiz_result) {
+      const startText = document.getElementById("startBodyText");
+      quiz_result_btn.hidden = false;
+  
+      const quizResults = data.is_new_level.quiz_result.quiz_result;
+      const resultsContainer = document.createElement('div');
+      resultsContainer.classList.add('text-start');
+      resultsContainer.classList.add('mt-3');
+      resultsContainer.id = "quiz-container"
+      resultsContainer.style.display = 'none';
+  
+      var positive_answers_count = 0;
+      var negative_answers_count = 0;
+  
+      quizResults.forEach(questionData => {
+          const questionElement = document.createElement('div');
+          questionElement.classList.add('question');
+  
+          const questionTitle = document.createElement('h5');
+          questionTitle.textContent = questionData.question.name;
+          questionElement.appendChild(questionTitle);
+  
+          const answersList = document.createElement('ul');
+  
+          questionData.question_answers.forEach(answer => {
+              const answerItem = document.createElement('li');
+              answerItem.textContent = answer.name;
+  
+              if (questionData.player_answer.id === answer.id) {
+                  answerItem.style.color = answer.is_correct ? 'green' : 'red';
+              }
+  
+              if (answer.is_correct && questionData.player_answer.id !== answer.id) {
+                  answerItem.style.color = 'green';
+              }
+  
+              answersList.appendChild(answerItem);
+          });
+  
+          questionElement.appendChild(answersList);
+          resultsContainer.appendChild(questionElement);
+  
+          if (questionData.player_answer.is_correct){
+            positive_answers_count +=1
+          } else {
+            negative_answers_count +=1
+          }
+  
+      });
+  
+      if(positive_answers_count >= negative_answers_count){
+        startText.innerText = `Вы смогли ответить правильно на большинство вопросов, результаты будут исправлены🏆`
+      } else {
+        startText.innerText = `Вы не смогли улучшить результаты (`
+      }
+  
+      if (startText.nextSibling) {
+          startText.parentNode.insertBefore(resultsContainer, startText.nextSibling);
+      } else {
+          startText.parentNode.appendChild(resultsContainer);
+      }
     }
   }
 
