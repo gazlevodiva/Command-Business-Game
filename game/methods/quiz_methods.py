@@ -51,7 +51,7 @@ def get_or_set_quiz(move):
         ).values('id', 'name', 'is_correct')
 
         answers = list(answers)
-        # shuffle(answers)
+        shuffle(answers)
 
         quiz_questions_fin.append({
             'question_id': question.id,
