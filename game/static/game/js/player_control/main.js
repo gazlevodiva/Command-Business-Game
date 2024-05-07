@@ -81,6 +81,8 @@ new_level_accept_btn?.addEventListener("click", async function () {
     await handleCloseButtonClick();
   }
   playerNextCellGlobal = false;
+  const quizContainer = document.getElementById('quiz-container');
+  quizContainer.style.display = "none"
 });
 
 const gotostart_accept_btn = document.getElementById("gotostart_accept");

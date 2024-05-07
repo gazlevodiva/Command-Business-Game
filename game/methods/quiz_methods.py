@@ -31,9 +31,9 @@ def get_or_set_quiz(move):
 
     if not quiz_questions:
         quiz_questions = generate_quiz_questions(
-            businesses=[24],
+            businesses=businesses,
             quiz_action=quiz_action,
-            num_questions=5
+            num_questions=3
         )
 
         for question in quiz_questions:
