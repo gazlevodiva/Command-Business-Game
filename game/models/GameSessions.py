@@ -24,11 +24,11 @@ class GameSessions(models.Model):
 
     def __str__(self):
         return self.session_name
-    
+
     def save(self, *args, **kwargs):
 
         created = self.pk is None
-        
+
         if created:
             input_string = self.session_name + str(datetime.timestamp(self.created_date))
             hash_object = hashlib.sha256(input_string.encode('utf-8'))

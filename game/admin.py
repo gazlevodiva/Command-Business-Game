@@ -63,13 +63,11 @@ class PlayerFilter(admin.SimpleListFilter):
 class PlayerQuizQuestionsInline(admin.TabularInline):
     model = PlayerQuizQuestions
     extra = 1
+    max_num = 10
     fk_name = 'quiz'
 
 
 class PlayerQuizAdmin(admin.ModelAdmin):
-    inlines = [
-        PlayerQuizQuestionsInline,
-    ]
     list_display = ('id', 'action', 'finished', 'created_at')
     search_fields = ['id', 'action__name']
     list_filter = (GameSessionFilter, PlayerFilter, 'finished', 'created_at')
@@ -77,6 +75,11 @@ class PlayerQuizAdmin(admin.ModelAdmin):
 
 admin.site.register(PlayerQuiz, PlayerQuizAdmin)
 
+
+class PlayerQuizQuestionsAdmin(admin.ModelAdmin):
+    list_display = ('quiz', 'answer', 'question', 'created_at')
+
+admin.site.register(PlayerQuizQuestions, PlayerQuizQuestionsAdmin)
 
 # //////////////////////////////////////////////////
 

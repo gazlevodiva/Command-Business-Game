@@ -104,62 +104,76 @@ selector_business_category?.addEventListener("change", async function () {
   getPlayerBusinessData(selector_business_category.value);
 });
 
-
+const quiz_result_btn = document.getElementById("quiz_result_btn");
 const quiz_btn = document.getElementById("quiz_btn");
 quiz_btn?.addEventListener("click", async function () {
   await getQuiz(playerIdGlobal);
   showModal(quiz_modal);
 });
 
+quiz_result_btn.addEventListener('click', function() {
+  const quizContainer = document.getElementById('quiz-container');
+
+  if (quizContainer.style.display === 'none' ){
+    quizContainer.style.display = "block"
+    quiz_result_btn.textContent = "Скрыть результаты"
+  } else {
+    quizContainer.style.display = "none"
+    quiz_result_btn.textContent = "Результаты викторины"
+  }
+  
+});
+
 async function getQuiz(player_id) {
   try {
     const response = await fetch(`/quiz/${player_id}`);
     const data = await response.json();
-
-    // console.log(data)
-
-    document.getElementById('player_quiz_id').value = data.quiz.player_quiz_id;
-
-    const container = document.getElementById('quiz_questions_container');
-    container.innerHTML = ''; 
-
-    data.quiz.quiz_questions.forEach(question => {
-      const questionBlock = document.createElement('div');
-      questionBlock.className = 'mb-3';
-      
-      const questionLabel = document.createElement('label');
-      questionLabel.className = 'form-label';
-      questionLabel.textContent = question.question_text;
-      questionBlock.appendChild(questionLabel);
-
-      question.answers.forEach(answer => {
-        const answerInput = document.createElement('input');
-        answerInput.type = 'radio';
-        answerInput.name = `question_${question.question_id}`;
-        answerInput.value = answer.id;
-        answerInput.className = 'form-check-input';
-        answerInput.required = true;
-
-        const answerLabel = document.createElement('label');
-        answerLabel.className = 'form-check-label';
-        answerLabel.textContent = answer.name;
-
-        const answerDiv = document.createElement('div');
-        answerDiv.className = 'form-check';
-        answerDiv.appendChild(answerInput);
-        answerDiv.appendChild(answerLabel);
-        
-        questionBlock.appendChild(answerDiv);
-      });
-
-      container.appendChild(questionBlock);
-    });
-
-    return data;
+    if(data){
+      updateQuizModal(data.quiz);
+    }
 
   } catch (error) {
     console.error("getQuiz error:", error);
   }
+}
+
+function updateQuizModal(quiz_data){
+  document.getElementById('player_quiz_id').value = quiz_data.player_quiz_id;
+
+  const container = document.getElementById('quiz_questions_container');
+  container.innerHTML = ''; 
+
+  quiz_data.quiz_questions.forEach(question => {
+    const questionBlock = document.createElement('div');
+    questionBlock.className = 'mb-3';
+    
+    const questionLabel = document.createElement('label');
+    questionLabel.className = 'form-label';
+    questionLabel.textContent = question.question_text;
+    questionBlock.appendChild(questionLabel);
+
+    question.answers.forEach(answer => {
+      const answerInput = document.createElement('input');
+      answerInput.type = 'radio';
+      answerInput.name = `question_${question.question_id}`;
+      answerInput.value = answer.id;
+      answerInput.className = 'form-check-input';
+      answerInput.required = true;
+
+      const answerLabel = document.createElement('label');
+      answerLabel.className = 'form-check-label';
+      answerLabel.textContent = answer.name;
+
+      const answerDiv = document.createElement('div');
+      answerDiv.className = 'form-check';
+      answerDiv.appendChild(answerInput);
+      answerDiv.appendChild(answerLabel);
+      
+      questionBlock.appendChild(answerDiv);
+    });
+
+    container.appendChild(questionBlock);
+  });
 }
 
 
@@ -221,6 +235,7 @@ make_a_move_button?.addEventListener("click", async function () {
 window.onload = function () {
   business_btn.hidden = true;
   quiz_btn.hidden = true;
+  quiz_result_btn.hidden = true;
 
   whoisTurnPreloader();
 
@@ -513,8 +528,9 @@ async function goToStart() {
 
 async function moveReaction(data) {
   // await updatePlayerControlData();
- 
   playerMoveIdGlobal = data.move_id;
+
+  console.log(data)
 
   if (data.next_cell) {
     playerNextCellGlobal = data.next_cell_move;    
@@ -522,29 +538,96 @@ async function moveReaction(data) {
 
   if (data.votion) {
     voteMoveIdGlobal = data.votion.move_id;
-
     if (playerIdGlobal === data.votion.player_id) {
       showVotionModal(data.votion);
       return;
+    }
+  }
 
+  if (data.is_new_level.active_quiz) {
+    updateQuizModal(data.is_new_level.active_quiz);
+    showModal(quiz_modal);
+    return;
+  }
+
+  if (data.is_new_level.can_create_quiz) {
+    const startText = document.getElementById("startBodyText");
+    startText.innerText = `Вы перешли на новый круг, но некоторые бизнесы понесли убытки.\n
+    Попробуйте улучшить результаты, сыграв в викторину! 🏆
+    `
+    quiz_btn.hidden = false;
+  }
+
+  if (data.is_new_level.quiz_result) {
+    const startText = document.getElementById("startBodyText");
+    quiz_result_btn.hidden = false;
+
+    const quizResults = data.is_new_level.quiz_result.quiz_result;
+    const resultsContainer = document.createElement('div');
+    resultsContainer.classList.add('text-start');
+    resultsContainer.classList.add('mt-3');
+    resultsContainer.id = "quiz-container"
+    resultsContainer.style.display = 'none';
+
+    var positive_answers_count = 0;
+    var negative_answers_count = 0;
+
+    quizResults.forEach(questionData => {
+        const questionElement = document.createElement('div');
+        questionElement.classList.add('question');
+
+        const questionTitle = document.createElement('h5');
+        questionTitle.textContent = questionData.question.name;
+        questionElement.appendChild(questionTitle);
+
+        const answersList = document.createElement('ul');
+
+        questionData.question_answers.forEach(answer => {
+            const answerItem = document.createElement('li');
+            answerItem.textContent = answer.name;
+
+            if (questionData.player_answer.id === answer.id) {
+                answerItem.style.color = answer.is_correct ? 'green' : 'red';
+            }
+
+            if (answer.is_correct && questionData.player_answer.id !== answer.id) {
+                answerItem.style.color = 'green';
+            }
+
+            answersList.appendChild(answerItem);
+        });
+
+        questionElement.appendChild(answersList);
+        resultsContainer.appendChild(questionElement);
+
+        if (questionData.player_answer.is_correct){
+          positive_answers_count +=1
+        } else {
+          negative_answers_count +=1
+        }
+
+    });
+
+    if(positive_answers_count >= negative_answers_count){
+      startText.innerText = `Вы смогли ответить правильно на большинство вопросов, результаты будут исправлены🏆`
+    } else {
+      startText.innerText = `Вы не смогли улучшить результаты (`
+    }
+
+    if (startText.nextSibling) {
+        startText.parentNode.insertBefore(resultsContainer, startText.nextSibling);
+    } else {
+        startText.parentNode.appendChild(resultsContainer);
     }
   }
 
   var cell_name = data.cell_name;
-
   switch (cell_name) {
 
     case "start-cell":
       showModal(start_modal);
 
       await updatePlayerControlData();
-
-      // Check business income for quiz ????????????????????????????????????????????????????
-      if (data.is_new_level.can_create_quiz) {
-        const startText = document.getElementById("startBodyText");
-        startText.innerText = "Вы перешли на новый круг, но некоторые бизнесы понесли убытки.\nПопробуйте улучшить результаты, сыграв в викторину! 🏆"
-        quiz_btn.hidden = false;
-      }
 
       var income = data.is_new_level.income;
       var actions = data.is_new_level.actions;

@@ -1,21 +1,14 @@
-from game.models.Moves import Moves
 from game.models.Actions import Actions
-from game.models.Business import Business
-
 from game.models.Quiz import QuizQuestions
 from game.models.Quiz import QuizAnswers
-
 from game.models.PlayerQuiz import PlayerQuizQuestions
 from game.models.PlayerQuiz import PlayerQuiz
 
 import re
 from random import sample, shuffle
-from typing import List
 from django.db.models import Subquery
-
 from game.methods.BusinessMethods import get_business_payment_by_action
 from game.methods.MoveMethods import get_move_actions
-from django.db.models import QuerySet
 
 
 def get_or_set_quiz(move):
@@ -24,10 +17,7 @@ def get_or_set_quiz(move):
     move_actions = get_move_actions(move)
 
     # Check and try get quiz
-    quiz_action, player_quiz = get_quiz(move_actions)
-
-    if player_quiz.finished:
-        return False
+    quiz_action, player_quiz = set_quiz(move_actions)
 
     # Get all business info
     businesses, business_actions, business_payments = (
@@ -61,7 +51,7 @@ def get_or_set_quiz(move):
         ).values('id', 'name', 'is_correct')
 
         answers = list(answers)
-        shuffle(answers)
+        # shuffle(answers)
 
         quiz_questions_fin.append({
             'question_id': question.id,
@@ -81,7 +71,7 @@ def get_or_set_quiz(move):
     return res
 
 
-def get_quiz(move_actions):
+def set_quiz(move_actions):
     """
     Retrieves the quiz action and associated player
     quiz from a queryset of actions.
@@ -172,8 +162,6 @@ def can_create_quiz(actions):
         actions (QuerySet[Action]): QuerySet of Action objects related
         to current player or game session.
 
-    Returns:
-        bool: True if a new quiz can be created, False otherwise.
     """
     # Check for any business actions with negative counts
     has_negative_business_actions = actions.filter(
@@ -184,14 +172,20 @@ def can_create_quiz(actions):
     # Retrieve all quiz actions and check if there's an
     # unfinished PlayerQuiz associated with any
     quiz_actions = actions.filter(category="QUIZ")
-    unfinished_quiz_exists = PlayerQuiz.objects.filter(
+    if not quiz_actions.exists():
+        return True, False
+
+    quizes = PlayerQuiz.objects.filter(
         action__in=quiz_actions,
-        finished=False
-    ).exists()
+    )
+    unfinished_quiz_exists = quizes.filter(finished=False).exists()
 
     # Return True if there are negative business actions and
     # no unfinished quizzes, otherwise False
-    return has_negative_business_actions and (unfinished_quiz_exists or not quiz_actions.exists())
+    return (
+        (has_negative_business_actions and unfinished_quiz_exists),
+        unfinished_quiz_exists
+    )
 
 
 def get_business_info_for_quiz(actions):
@@ -225,3 +219,54 @@ def change_business_payment_by_quiz(actions):
         business_action.name = new_action_name
         business_action.count = 0
         business_action.save()
+
+
+def get_finished_quiz(actions):
+    quiz_actions = actions.filter(category="QUIZ")
+    if not quiz_actions.exists():
+        return False
+
+    player_quiz = PlayerQuiz.objects.filter(
+        action__in=quiz_actions,
+    )
+
+    if not player_quiz[0].finished:
+        return False
+
+    player_quiz_questions = PlayerQuizQuestions.objects.filter(
+        quiz__in=player_quiz
+    )
+
+    quiz_result = []
+    for player_quiz_question in player_quiz_questions:
+        all_question_answers = QuizAnswers.objects.filter(
+            question=player_quiz_question.question
+        ).values('id', 'name', 'is_correct')
+
+        player_answer = None
+        if player_quiz_question.answer:
+            player_answer = {
+                "id": player_quiz_question.answer.id,
+                "name": player_quiz_question.answer.name,
+                "is_correct": player_quiz_question.answer.is_correct,
+            }
+
+        quiz_question = {
+                "id": player_quiz_question.question.id,
+                "name": player_quiz_question.question.name,
+            }
+
+        quiz_result.append(
+            {
+                "question": quiz_question,
+                "player_answer": player_answer,
+                "question_answers": list(all_question_answers)
+            }
+        )
+
+    res = {
+        "player_quiz_id": player_quiz[0].id,
+        "quiz_action_id": player_quiz[0].action.id,
+        "quiz_result": quiz_result,
+    }
+    return res

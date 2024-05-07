@@ -313,8 +313,6 @@ def player_control(request=None, session=None, player_id=None, modal=False):
                     except QuizAnswers.DoesNotExist:
                         print("Ответ не найден")
 
-            print(f"Верных ответов {correct_answers_count} из {answers_count}")
-
             # If correct
             if correct_answers_count >= answers_count-correct_answers_count:
                 move_actions = get_move_actions(player_quiz.action.move)

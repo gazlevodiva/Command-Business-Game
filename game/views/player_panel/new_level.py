@@ -8,7 +8,9 @@ from game.methods.BusinessMethods import setPersonalBusinessIncome
 
 from game.models.Moves import Moves
 from game.models.Actions import Actions
+from game.methods.quiz_methods import get_or_set_quiz
 from game.methods.quiz_methods import can_create_quiz
+from game.methods.quiz_methods import get_finished_quiz
 
 
 def is_new_level(player):
@@ -28,10 +30,22 @@ def is_new_level(player):
         print("Player finish new_level move.")
         return False
 
+    can_create_qz, is_active_qz = can_create_quiz(player_last_actions)
+
+    if is_active_qz:
+        active_quiz = get_or_set_quiz(player_move)
+    else:
+        active_quiz = False
+
+    finished_quiz = get_finished_quiz(player_last_actions)
+
     result = {
         "income": 0,
         "actions": [],
-        "can_create_quiz": can_create_quiz(player_last_actions)
+        "active_quiz": active_quiz,
+        "finished_quiz": False,
+        "can_create_quiz": can_create_qz,
+        "quiz_result": finished_quiz,
     }
 
     for action in player_last_actions.filter(visible=True):
