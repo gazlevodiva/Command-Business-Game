@@ -104,7 +104,7 @@ def get_dashboard_actions(session: GameSessions) -> list:
                     "player_name": command_business_action.move.player.name,
                     "action_id": command_business_action.id,
                     "action_name": command_business_action.name,
-                    "action_count": count,
+                    "action_count": count.count,
                     "action_visible": command_business_action.visible,
                     "action_category": command_business_action.category,
                     "action_is_command": command_business_action.is_command,
@@ -151,14 +151,13 @@ def get_dashboard_actions(session: GameSessions) -> list:
                 })
 
     # Check results
-    for x in game_actions:
-        print(
-            x['move_number'],
-            x['player_name'],
-            x['action_name'],
-            x['action_count']
-        )
-
+    # for x in game_actions:
+    #     print(
+    #         x['move_number'],
+    #         x['player_name'],
+    #         x['action_name'],
+    #         x['action_count']
+    #     )
 
     return game_actions
 
