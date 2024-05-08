@@ -290,15 +290,24 @@ def sell_personal_business(move: Moves, players_business: PlayersBusiness):
 
 
 def PlayerXReinvest(move):
-    player_x = Player.objects.get(name="X", game_session=move.player.game_session)
+    player_x = Player.objects.get(
+        name="X",
+        game_session=move.player.game_session
+    )
     player_x_balance = getBalance(player_x)
 
+    if not player_x_balance:
+        return
+    
     if player_x_balance == 0:
         return
 
     name = f"Вложил в КБ {player_x_balance}"
 
-    new_move = Moves.objects.create(player=player_x, number=move.number)
+    new_move = Moves.objects.create(
+        player=player_x,
+        number=move.number
+    )
 
     Actions.objects.create(
         move=new_move,
@@ -311,7 +320,9 @@ def PlayerXReinvest(move):
     )
 
     CommandPayments.objects.create(
-        move=new_move, category="DEPOSITE", count=player_x_balance
+        move=new_move,
+        category="DEPOSITE",
+        count=player_x_balance
     )
 
 
