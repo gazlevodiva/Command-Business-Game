@@ -24,7 +24,7 @@ def dashboard_online(request, session):
 
     context["votion"] = get_votion_from_last_move(session)
     context["players"] = get_players_data(session)
-    context['game_actions'] = get_dashboard_actions(session)
+    context['game_actions'] = get_dashboard_actions(session)[:15]
     context["command_bank"] = get_command_business_bank(session)
     context["command_players"] = get_command_players_data(session)
 

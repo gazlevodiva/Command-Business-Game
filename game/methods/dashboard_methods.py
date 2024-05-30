@@ -95,6 +95,11 @@ def get_dashboard_actions(session: GameSessions) -> list:
             )
             if command_business_action:
                 count = get_business_payment_by_action(command_business_action)
+                if not count:
+                    action_count = 0
+
+                if count:
+                    action_count = count.count
 
                 game_actions.append({
                     "move_id": command_business_action.move.id,
@@ -104,7 +109,7 @@ def get_dashboard_actions(session: GameSessions) -> list:
                     "player_name": command_business_action.move.player.name,
                     "action_id": command_business_action.id,
                     "action_name": command_business_action.name,
-                    "action_count": count.count,
+                    "action_count": action_count,
                     "action_visible": command_business_action.visible,
                     "action_category": command_business_action.category,
                     "action_is_command": command_business_action.is_command,
