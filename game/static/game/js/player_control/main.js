@@ -82,7 +82,9 @@ new_level_accept_btn?.addEventListener("click", async function () {
   }
   playerNextCellGlobal = false;
   const quizContainer = document.getElementById('quiz-container');
-  quizContainer.style.display = "none";
+  if(quizContainer){
+    quizContainer.style.display = "none";
+  }
   quiz_result_btn.hidden = true;
 });
 
@@ -550,6 +552,12 @@ async function moveReaction(data) {
       updateQuizModal(data.is_new_level.active_quiz);
       showModal(quiz_modal);
       return;
+    }
+
+    if (!data.is_new_level.can_create_quiz){
+      const startText = document.getElementById("startBodyText");
+      startText.innerText = "Вы перешли на новый круг 🎉";
+      quiz_btn.hidden = true;
     }
   
     if (data.is_new_level.can_create_quiz) {
